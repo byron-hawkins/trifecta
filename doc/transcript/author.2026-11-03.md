@@ -14,7 +14,7 @@ A number of key factors about behavioral capability remain in question about the
        which one logical temperature is concluded at time t on the basis of potentially many temperature sensors
        (and the same for pressure). To account for unknowns, introduce flex point (1) "sensor interpretation".
     2. Interface details such as the communication mechanism and value representation are not specified. For
-       example, it is not know whether a sensor (a) provides a driver for the software host, (b) performs push
+       example, it is not known whether a sensor (a) provides a driver for the software host, (b) performs push
        notification of changes, or (c) transforms hardware receptor signals into temprature units. It is also not
        known whether sensors can differ in these respects: can multiple sensors with differing operate simultaneously,
        each with a differing output mechanism? Introduce flex point (2) "sensor bridge".
@@ -32,11 +32,14 @@ A number of key factors about behavioral capability remain in question about the
        beneficial overall. Introduce flex point (5) "condition cost model".
     4. Configuration of stage durations **t1**, **t2** and **t3** has not been temporally constrained. Introduce
        flex point (6) "dynamic stage durations".
-    5. No awareness mechanism for resource errors has been identified. Introduce flex point (7) "resource driver"
+    5. A resource error may occur passively, without notifying its current user (if any), or it may be active,
+       forcibly terminating usage. This transition will also need to be tested, even if instructions indicate
+       that error states need not be handled (i.e., the handler can be trivbial). Introduce flex point (7)
+       "resource driver"
     6. Resource state "busy" is not defined relative to stage consumption of a resource. Introduce assumption
        (2) "idle until action taken".
     7. Stage execution is named but not defined, leaving in question the duration and sequence of resource-
-       consuming tasks within a stage. Introduce flex point (7) "stage task sequence".
+       consuming tasks within a stage. Introduce flex point (8) "stage task sequence".
 
 
 
@@ -63,7 +66,11 @@ A number of key factors about behavioral capability remain in question about the
 6. Dynamic Stage Durations
     1. role: enable stage scheduling to respond punctually when stage durations change, without re-initialization
     2. caveat: subject to flex point (5)
-7. Stage Task Sequence
+7. Resource Driver
+    1. role: adapt resource usage to multiple modes of operation (at least `passive` and  active`)
+        - configurable per resource type
+        - mockable
+8. Stage Task Sequence
     1. role: partition a stage into a sequence of tasks, each potentially having distinct resource usage
 
 
