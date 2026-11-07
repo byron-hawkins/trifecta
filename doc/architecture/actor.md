@@ -4,6 +4,15 @@
 
 `namespace trifecta.actor`
 
+## StageSet
+
+### Data Structure
+
+- class StageSet
+  - contains
+    - <singleton>
+    - Dictionary<IStageConfiguration.IdType, IStageConfiguration> Members
+
 ## Actor
 
 To perform a sequence of Task comprising a stage for some duration 100ms <= tx <= 5s, while responding to
@@ -23,7 +32,6 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
 
 ### Data Structure
 
-
 - class Actor
   - capabilities
     - environment.IConditionAware
@@ -32,7 +40,13 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
   - contains
     - stage.IStageConfiguration
     - ITaskSequence
-
+    - ActorPhase
+  - reads
+    - environment.SensorInterpreter
+    - resource.ResourceQueueSet
+  - performs
+    - void Start()
+    - void Exit(ActorPhase mode, System.Action Finalize)
 
 
 
@@ -42,17 +56,55 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
 
 - class Task
   - contains
-    - registry of ITaskAware
+    - ArrayList<ITaskAware>
     - collection of available resource.ResourceInstance
+    - System.Threading.TimeSpan CancelGranularity
   - performs
     - TaskStatus GetStatus()
     - TaskStatus Execute()
+
+
+## Director
+
+Attempts to optimize productivity by regulating the number of concurrent actors.
+
+### Data Structure
+
+- class Director
+  - capabilities
+    - environment.IConditionAware
+    - ICastManager
+  - contains
+    - <singleton>
+    - Dictionary<Stage, ArrayList<Actor>> Cast
+    - ICastOptimizer
+  - reads
+    - StageSet
+    - environment.SensorInterpreter
+    - resource.ResourceQueueSet
+    - resource.ResourcePool
+  - performs
+    - void Conclude(bool nicely)
+
 
 
 ## Interfaces
 
 - interface ITaskAware
   -
+
+- interface ICastManager
+  - void Interrupt(Actor, ActorPhase)
+  - void Initiate(IStageConfiguration.IdType)
+
+- interface ICastOptimizer
+
+- interface IStageConfiguration
+  - types
+    - using TypeId = int
+  - performs
+    - TypeId Id()
+    - System.Threading.TimeSpan OccupancyLimit()
 
 
 ## Enumerations
@@ -62,3 +114,12 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
   - running
   - completed
   - error
+
+- ActorPhase
+  - ready
+  - queue
+  - work
+  - suspension
+  - exit_at_cost
+  - exit_at_completion
+  - exit_now

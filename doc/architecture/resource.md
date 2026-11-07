@@ -4,7 +4,18 @@
 
 `namespace trifecta.resource`
 
-## Resource Type
+## ResourcePool
+
+Configurable set of resources potentially available to the machine.
+
+### Data Structure
+
+- class ResourcePool
+  - contains
+    - <singleton>
+    - Dictionary<ResourceType, ArrayList<ResourceInstance>>
+
+## ResourceType
 
 ### Data Structure
 
@@ -21,6 +32,8 @@ operations concurrently.
 - class ResourceInstance
   - contains
     - IResourceDriver
+  - performs
+    - ResourceDriverStatus GetStatus()
 
 ## ResourceQueueSet
 
@@ -29,6 +42,18 @@ resource acquisition policy can fail with deadlock. Instead, a single monitor RQ
 resource queues RQS, allowing a consumer to atomically push back on the queue of each needed resource. Mutual
 waiting is avoided because it only occurs where a group of consumers having overlapping resource needs has been
 enqeueued with differing precedence on at least two queues of RQS.
+
+### Data Structure
+
+- class ResourceQueueSet
+  - contains
+    - <singleton>
+    - Dictionary<ResourceType, Queue<IResourceConsumer>>
+    -
+  - performs
+    - void push(IResourceConsumer)
+
+
 
 ## Interfaces
 
@@ -41,6 +66,10 @@ enqeueued with differing precedence on at least two queues of RQS.
 
 - interface IActiveResourceDriver
   - ResourceDriverStatus Work()
+
+- interface IResourceConsumer
+  - IEnumerable<ResourceType> Scope()
+  - void Grant(ResourceInstance)
 
 ## Enumerations
 
