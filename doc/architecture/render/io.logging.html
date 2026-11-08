@@ -35,7 +35,6 @@
 <body>
   <p><em>Author: Byron</em></p>
   <p><em>Subject: outline I/O facilities for the application</em></p>
-
   <p><code>namespace trifecta.io</code></p>
 
   <h2>ComponentLog</h2>
@@ -50,8 +49,8 @@
           <ul>
             <li>[singleton]</li>
             <li>System.Threading.Lock _lock</li>
-            <li>ITextLogSink Sink</li>
-            <li>System.Dictionary&lt;ThreadId, string&gt; ComponentNames</li>
+            <li>ITextLogSink _sink</li>
+            <li>System.Dictionary&lt;ThreadId, string&gt; _componentNames</li>
           </ul>
         </li>
         <li>operations
@@ -76,9 +75,14 @@
   <h3>Data Structure</h3>
   <ul>
     <li>class FileLog : ITextLogSink
-      <ul><li>composition
-        <ul><li>System.IO.StreamWriter Sink</li></ul>
-      </li></ul>
+      <ul>
+        <li>composition
+          <ul>
+            <li>LogContext _context</li>
+            <li>System.IO.StreamWriter _sink</li>
+          </ul>
+        </li>
+      </ul>
     </li>
   </ul>
 
@@ -104,6 +108,20 @@
     </li>
   </ul>
 
+  <h2>Enumerations</h2>
+  <ul>
+    <li>enum LogContext
+      <ul><li>composition
+        <ul>
+          <li>toddler</li>
+          <li>macarena</li>
+          <li>ensemble</li>
+          <li>simulation</li>
+        </ul>
+      </li></ul>
+    </li>
+  </ul>
+
   <h2>Diagrams</h2>
   <pre class="mermaid">
 classDiagram
@@ -111,7 +129,7 @@ namespace trifecta.io {
   class ComponentLog {
     singleton
     System.Threading.Lock _lock
-    System.Dictionary~ThreadId, string~ ComponentNames
+    System.Dictionary~ThreadId, string~ _componentNames
     +Configure(ITextLogSink sink) void
     +Register(string componentName) LifespanToken
   }
@@ -119,9 +137,22 @@ namespace trifecta.io {
     &lt;&lt;interface&gt;&gt;
     +Log(string message) void
   }
+  class FileLog {
+    LogContext _context
+    System.IO.StreamWriter _sink
+  }
+  class LogContext {
+    &lt;&lt;enumeration&gt;&gt;
+    toddler
+    macarena
+    ensemble
+    simulation
+  }
 }
-ComponentLog *-- ITextLogSink : Sink
+ComponentLog *-- ITextLogSink : _sink
+FileLog ..|> ITextLogSink
+FileLog *-- LogContext : _context
   </pre>
-  <p><small>Diagrams are rendered with the current Mermaid release from jsDelivr; rendering requires an internet connection.</small></p>
+  <p><small>Diagrams use Mermaid from jsDelivr; rendering requires an internet connection.</small></p>
 </body>
 </html>

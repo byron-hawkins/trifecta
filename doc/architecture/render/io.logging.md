@@ -17,8 +17,8 @@
   - composition
     - [singleton]
     - System.Threading.Lock _lock
-    - ITextLogSink Sink
-    - System.Dictionary<ThreadId, string> ComponentNames
+    - ITextLogSink _sink
+    - System.Dictionary<ThreadId, string> _componentNames
   - operations
     - void Configure(ITextLogSink sink)
     - LifespanToken Register(string componentName)
@@ -33,9 +33,11 @@
 
 ### Data Structure
 
+<!--- @type --->
 - class FileLog : ITextLogSink
   - composition
-    - System.IO.StreamWriter Sink
+    - LogContext _context
+    - System.IO.StreamWriter _sink
 
 ## Prompt
 
@@ -59,6 +61,16 @@ the factory and are routed to static singletons (e.g., actor.Directory.instance(
   - operations
     - void Log(string message)
 
+## Enumerations
+
+<!--- @type --->
+- enum LogContext
+  - composition
+    - toddler
+    - macarena
+    - ensemble
+    - simulation
+
 ## Diagrams
 
 ```mermaid
@@ -67,7 +79,7 @@ namespace trifecta.io {
   class ComponentLog {
     singleton
     System.Threading.Lock _lock
-    System.Dictionary~ThreadId, string~ ComponentNames
+    System.Dictionary~ThreadId, string~ _componentNames
     +Configure(ITextLogSink sink) void
     +Register(string componentName) LifespanToken
   }
@@ -75,6 +87,19 @@ namespace trifecta.io {
     <<interface>>
     +Log(string message) void
   }
+  class FileLog {
+    LogContext _context
+    System.IO.StreamWriter _sink
+  }
+  class LogContext {
+    <<enumeration>>
+    toddler
+    macarena
+    ensemble
+    simulation
+  }
 }
-ComponentLog *-- ITextLogSink : Sink
+ComponentLog *-- ITextLogSink : _sink
+FileLog ..|> ITextLogSink
+FileLog *-- LogContext : _context
 ```

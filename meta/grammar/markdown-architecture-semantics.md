@@ -54,12 +54,16 @@ The terms **MUST**, **MUST NOT**, and **MAY** are normative.
      the entry indicate otherwise. Consumers MUST NOT generate a separate
      diagram type element for that unresolved type; the entry is a named field
      type that readers are expected to recognize.
-4. `operations` records callable operations of the annotated type.
-5. `inherits` records base types or interfaces of the annotated type.
-6. `capabilities` records interfaces implemented by the annotated type. In the
+   - When the annotated declaration is an enum, each composition entry is an
+     enum constant. It MUST be represented as an enum member, not as a field.
+4. An enum declaration has no class composition fields or operations; its
+   composition entries are the enum constants.
+5. `operations` records callable operations of the annotated type.
+6. `inherits` records base types or interfaces of the annotated type.
+7. `capabilities` records interfaces implemented by the annotated type. In the
    IR, each such entry MUST be represented in `base_types` with
    `relation: implements`.
-7. `[singleton]` has the meaning defined for composition entries above. It is
+8. `[singleton]` has the meaning defined for composition entries above. It is
    not a standalone type declaration.
 
 ## 4. Diagram directives
@@ -93,7 +97,9 @@ The terms **MUST**, **MUST NOT**, and **MAY** are normative.
 9. Mermaid class bodies MUST be terminated by `}`. A closing brace MUST be
    followed by the next declaration on a new line; semicolon terminators MUST
    NOT be added.
-10. The representation of the generated diagram file (raw Mermaid source or a
+10. A Mermaid class diagram MUST represent an enum using a `class` block with
+    the `<<enumeration>>` stereotype, with its enum constants listed as members.
+11. The representation of the generated diagram file (raw Mermaid source or a
    fenced block), and the behavior for a requested type that has no matching
    annotation remain unspecified.
 

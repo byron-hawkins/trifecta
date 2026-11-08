@@ -25,23 +25,32 @@
 <operation-element-list> ::= <newline> <element-bullet> <operation-element> <operation-element-list> | <newline> <element-bullet> <operation-element>
 <base-type-list> ::= <newline> <element-bullet> <c#-type> <base-type-list> | <newline> <element-bullet> <c#-type>
 <type-element> ::= <type-alias> | <nested-type-declaration>
-<composition-element> ::= "[singleton]" | <field-declaration>
+<composition-element> ::= "[singleton]" | <field-declaration> | <enum-member>
 <operation-element> ::= <method-declaration> | <constructor-declaration>
 <type-alias> ::= "using " <c#-identifier> " = " <c#-type>
 <nested-type-declaration> ::= <type-declaration-fragment>
+<enum-member> ::= <c#-identifier>
 <field-declaration> ::= <member-modifiers> <c#-type> " " <c#-identifier>
 <method-declaration> ::= <member-modifiers> <c#-type> " " <c#-identifier> "(" <parameter-list> ")"
 <constructor-declaration> ::= <member-modifiers> <c#-identifier> "(" <parameter-list> ")"
 <parameter-list> ::= <parameter> | <parameter> ", " <parameter-list> | <empty>
-<parameter> ::= <parameter-modifiers> <c#-type> " " <c#-identifier>
+<parameter> ::= <parameter-modifiers> <c#-type> " " <c#-identifier> <optional-default-value>
+<optional-default-value> ::= " = " <c#-constant-expression> | <empty>
+<c#-constant-expression> ::= (a C# constant expression supported as a parameter default)
 <member-modifiers> ::= (zero or more C# member modifiers, followed by one space when non-empty)
 <parameter-modifiers> ::= (zero or more C# parameter modifiers, followed by one space when non-empty)
+<type-declaration-fragment> ::= <class-declaration> | <interface-declaration> | <enum-declaration>
+<class-declaration> ::= "class " <c#-identifier> <optional-base-list>
+<interface-declaration> ::= "interface " <c#-identifier> <optional-base-list>
+<enum-declaration> ::= "enum " <c#-identifier>
+<optional-base-list> ::= " : " <c#-type-list> | <empty>
+<c#-type-list> ::= <c#-type> | <c#-type> ", " <c#-type-list>
 <c#-type> ::= (valid C# type syntax, including qualified and constructed generic types)
 
-<annotation-diagram> ::= <newline> "<!--- @diagram [" <file-path> "] [" <type-list> "] --->"
-<type-list> ::= <type-declaration-fragment> | <type-declaration-fragment> ", " <type-list>
-<type-declaration-fragment> ::= <kind> " " <c#-identifier>
-<kind> ::= "class" | "interface"
+<annotation-diagram> ::= <newline> "<!--- @diagram [" <file-path> "] [" <type-list> "] -->"
+<type-list> ::= <diagram-type-declaration> | <diagram-type-declaration> ", " <type-list>
+<diagram-type-declaration> ::= <kind> " " <c#-identifier>
+<kind> ::= "class" | "interface" | "enum"
 
 <newline> ::= "\n" | "\r\n"
 <category-bullet> ::= "  - "

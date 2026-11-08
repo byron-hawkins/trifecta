@@ -57,7 +57,15 @@
     },
     {
       "kind": "markdown",
-      "text": "## FileLogSink\n\n### Data Structure\n\n- class FileLog : ITextLogSink\n  - composition\n    - System.IO.StreamWriter Sink\n\n## Prompt\n\nA console interface for the user to query state and issue commands.\n\n## CommandParser\n\nLoads a sequence of commands from a structured file (e.g., JSON). Each command indicates a delay since the last\ncommand, an action to take, and an optional tag string. Commands simulate manual oversight and administration of\nthe factory and are routed to static singletons (e.g., actor.Directory.instance()._____()).\n\n## Interfaces"
+      "text": "## FileLogSink\n\n### Data Structure"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.io.FileLog"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Prompt\n\nA console interface for the user to query state and issue commands.\n\n## CommandParser\n\nLoads a sequence of commands from a structured file (e.g., JSON). Each command indicates a delay since the last\ncommand, an action to take, and an optional tag string. Commands simulate manual oversight and administration of\nthe factory and are routed to static singletons (e.g., actor.Directory.instance()._____()).\n\n## Interfaces"
     },
     {
       "kind": "type",
@@ -66,6 +74,14 @@
     {
       "kind": "type",
       "type_id": "type:trifecta.io.ITextLogSink"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Enumerations"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.io.LogContext"
     },
     {
       "kind": "markdown",
@@ -95,7 +111,13 @@
         }
       ],
       "modifiers": [],
-      "base_types": [],
+      "base_types": [
+        {
+          "name": "ITextLog",
+          "relation": "implements",
+          "source_text": "ITextLog"
+        }
+      ],
       "aliases": [
         {
           "name": "ThreadId",
@@ -132,7 +154,7 @@
         },
         {
           "kind": "field",
-          "name": "Sink",
+          "name": "_sink",
           "type": {
             "name": "ITextLogSink"
           },
@@ -142,7 +164,7 @@
         },
         {
           "kind": "field",
-          "name": "ComponentNames",
+          "name": "_componentNames",
           "type": {
             "name": "System.Dictionary",
             "type_arguments": [
@@ -174,6 +196,23 @@
             }
           ],
           "source_text": "void Configure(ITextLogSink sink)"
+        },
+        {
+          "kind": "method",
+          "name": "Log",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "message",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "source_text": "void Log(string message)"
         },
         {
           "kind": "method",
@@ -215,11 +254,92 @@
       "base_types": [
         {
           "name": "IDisposable",
-          "relation": "extends",
+          "relation": "implements",
           "source_text": "IDisposable"
         }
       ],
       "members": []
+    },
+    {
+      "id": "type:trifecta.io.FileLog",
+      "kind": "class",
+      "name": "FileLog",
+      "namespace": "trifecta.io",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.io",
+          "id": "context:namespace:trifecta.io:1"
+        },
+        {
+          "kind": "class",
+          "name": "FileLogSink",
+          "id": "context:class:FileLogSink:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [
+        {
+          "name": "ITextLogSink",
+          "relation": "implements",
+          "source_text": "ITextLogSink"
+        }
+      ],
+      "members": [
+        {
+          "kind": "field",
+          "name": "_context",
+          "type": {
+            "name": "LogContext"
+          },
+          "modifiers": [
+            "private"
+          ]
+        },
+        {
+          "kind": "field",
+          "name": "_basename",
+          "type": {
+            "name": "string"
+          },
+          "modifiers": [
+            "private"
+          ]
+        },
+        {
+          "kind": "field",
+          "name": "_sink",
+          "type": {
+            "name": "System.IO.StreamWriter"
+          },
+          "modifiers": [
+            "private"
+          ]
+        },
+        {
+          "kind": "constructor",
+          "name": "FileLog",
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "context",
+              "type": {
+                "name": "LogContext"
+              }
+            },
+            {
+              "name": "basename",
+              "type": {
+                "name": "string"
+              },
+              "default_value": "\"trace\""
+            }
+          ],
+          "source_text": "FileLog(LogContext context, string basename = \"trace\")"
+        }
+      ]
     },
     {
       "id": "type:trifecta.io.ITextLog",
@@ -288,6 +408,39 @@
           "source_text": "void Log(string message)"
         }
       ]
+    },
+    {
+      "id": "type:trifecta.io.LogContext",
+      "kind": "enum",
+      "name": "LogContext",
+      "namespace": "trifecta.io",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.io",
+          "id": "context:namespace:trifecta.io:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "enum_member",
+          "name": "toddler"
+        },
+        {
+          "kind": "enum_member",
+          "name": "macarena"
+        },
+        {
+          "kind": "enum_member",
+          "name": "ensemble"
+        },
+        {
+          "kind": "enum_member",
+          "name": "simulation"
+        }
+      ]
     }
   ],
   "diagrams": [
@@ -303,8 +456,19 @@
           "kind": "interface",
           "name": "ITextLogSink",
           "type_id": "type:trifecta.io.ITextLogSink"
+        },
+        {
+          "kind": "class",
+          "name": "FileLog",
+          "type_id": "type:trifecta.io.FileLog"
+        },
+        {
+          "kind": "enum",
+          "name": "LogContext",
+          "type_id": "type:trifecta.io.LogContext"
         }
       ]
     }
-  ]
+  ],
+  "diagnostics": []
 }

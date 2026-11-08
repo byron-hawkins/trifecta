@@ -11,14 +11,14 @@
 ### Data Structure
 
 <!--- @type --->
-- class ComponentLog
+- class ComponentLog : ITextLog
   - types
     - using ThreadId = int
   - composition
     - [singleton]
     - System.Threading.Lock _lock
-    - ITextLogSink Sink
-    - System.Dictionary<ThreadId, string> ComponentNames
+    - ITextLogSink _sink
+    - System.Dictionary<ThreadId, string> _componentNames
   - operations
     - void Configure(ITextLogSink sink)
     - LifespanToken Register(string componentName)
@@ -33,9 +33,14 @@
 
 ### Data Structure
 
+<!--- @type --->
 - class FileLog : ITextLogSink
   - composition
-    - System.IO.StreamWriter Sink
+    - LogContext _context
+    - string _basename
+    - System.IO.StreamWriter _sink
+  - operations
+    - FileLog(LogContext context, string basename = "trace")
 
 ## Prompt
 
@@ -59,6 +64,16 @@ the factory and are routed to static singletons (e.g., actor.Directory.instance(
   - operations
     - void Log(string message)
 
+## Enumerations
+
+<!--- @type --->
+- enum LogContext
+  - composition
+    - toddler
+    - macarena
+    - ensemble
+    - simulation
+
 ## Diagrams
 
-<!--- @diagram [figures/io.logging.md] [class ComponentLog, interface ITextLogSink] -->
+<!--- @diagram [figures/io.logging.md] [class ComponentLog, interface ITextLog, interface ITextLogSink, class FileLog, enum LogContext] -->

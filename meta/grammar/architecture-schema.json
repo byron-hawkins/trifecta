@@ -155,7 +155,7 @@
           "description": "Deterministic identity within the source project."
         },
         "kind": {
-          "enum": ["class", "interface"]
+          "enum": ["class", "interface", "enum"]
         },
         "name": {
           "type": "string",
@@ -204,6 +204,9 @@
               },
               {
                 "$ref": "#/$defs/method"
+              },
+              {
+                "$ref": "#/$defs/enumMember"
               }
             ]
           }
@@ -493,6 +496,30 @@
         }
       }
     },
+    "enumMember": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": {
+          "const": "enum_member"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "description": "Optional source text for an explicit enum constant value."
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "source_text": {
+          "type": "string"
+        }
+      }
+    },
     "typeAlias": {
       "type": "object",
       "additionalProperties": false,
@@ -541,7 +568,7 @@
       "required": ["kind", "name"],
       "properties": {
         "kind": {
-          "enum": ["class", "interface"]
+          "enum": ["class", "interface", "enum"]
         },
         "name": {
           "type": "string",
@@ -644,9 +671,10 @@
     "supported": [
       "Namespace declarations map to each contained type's namespace.",
       "Using aliases map to aliases.",
-      "Class and interface declarations map to types.",
+      "Class, interface, and enum declarations map to types.",
       "Fields map to field members.",
       "Auto-properties map to property members.",
+      "Enum constants map to enum_member entries.",
       "Constructors map to constructor members.",
       "Method declarations map to method members.",
       "A class base class maps to base_types with relation extends.",
