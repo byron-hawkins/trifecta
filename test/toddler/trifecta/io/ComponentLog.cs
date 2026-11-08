@@ -22,6 +22,10 @@ public class ComponentLog : ITextLog
     {
     }
 
+    public void Flush()
+    {
+    }
+
     public LifespanToken Register(string componentName)
     {
         return null!;

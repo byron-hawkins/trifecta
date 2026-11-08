@@ -1,49 +1,27 @@
 using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using trifecta.io;
+using trifecta.test.common;
 using Xunit;
 
-namespace trifecta.io.Tests;
+namespace trifecta.test.io;
 
-public sealed class ComponentLogTests
+[Collection("ComponentLog tests")]
+public sealed class ComponentLogTests : ComponentLogTestBase
 {
     [Fact]
-    public async Task WritesSingleMessageToLog()
+    public void WritesSingleMessageToLog()
     {
         var basename = $"ComponentLogTests-{Guid.NewGuid():N}";
-        var logDirectory = Environment.GetEnvironmentVariable("TRIFECTA_LOG_DIR");
-        Assert.False(
-            string.IsNullOrWhiteSpace(logDirectory),
-            "Set TRIFECTA_LOG_DIR to the desired top-level log directory.");
-
-        var outputDirectory = Path.Combine(logDirectory!, LogContext.macarena.ToString());
-        var log = new FileLog(LogContext.macarena, basename);
-
-        ComponentLog.singleton.Configure(log);
+        setup(basename);
         ComponentLog.singleton.Log("Hello Log");
+        finish();
 
-        var deadline = DateTime.UtcNow.AddSeconds(3);
-        string[] logFiles = [];
-        while (DateTime.UtcNow < deadline)
-        {
-            logFiles = Directory.Exists(outputDirectory)
-                ? Directory.GetFiles(outputDirectory, $"{basename}.*.log")
-                : [];
-
-            if (logFiles.Length > 0)
-            {
-                break;
-            }
-
-            await Task.Delay(50);
-        }
-
+        var logFiles = FindLogFiles();
         Assert.True(
             logFiles.Length > 0,
-            $"Expected a log file named '{basename}.<timestamp>.log' in '{outputDirectory}'.");
+            $"Expected a log file named '{basename}.<timestamp>.log' in '{OutputDirectory}'.");
 
-        var contents = await File.ReadAllTextAsync(logFiles.Single());
+        var contents = ReadLog();
         Assert.Contains("Hello Log", contents, StringComparison.Ordinal);
     }
 }

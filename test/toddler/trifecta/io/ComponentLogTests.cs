@@ -2,32 +2,27 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using trifecta.io;
+using trifecta.test.common;
 using Xunit;
 
-namespace trifecta.io.Tests;
+namespace trifecta.test.io;
 
-public sealed class ComponentLogTests
+public sealed class ComponentLogTests : ComponentLogTestBase
 {
     [Fact]
     public async Task WritesSingleMessageToLog()
     {
         var basename = $"ComponentLogTests-{Guid.NewGuid():N}";
-        var outputDirectory = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "log",
-            LogContext.toddler.ToString());
-        var log = new FileLog(LogContext.toddler, basename);
-
-        ComponentLog.singleton.Configure(log);
+        setup(basename);
         ComponentLog.singleton.Log("Hello Log");
+        finish();
 
         var deadline = DateTime.UtcNow.AddSeconds(3);
         string[] logFiles = [];
         while (DateTime.UtcNow < deadline)
         {
-            logFiles = Directory.Exists(outputDirectory)
-                ? Directory.GetFiles(outputDirectory, $"{basename}.*.log")
-                : [];
+            logFiles = FindLogFiles();
 
             if (logFiles.Length > 0)
             {
@@ -39,7 +34,7 @@ public sealed class ComponentLogTests
 
         Assert.True(
             logFiles.Length > 0,
-            $"Expected a log file named '{basename}.<timestamp>.log' in '{outputDirectory}'.");
+            $"Expected a log file named '{basename}.<timestamp>.log' in '{OutputDirectory}'.");
 
         var contents = await File.ReadAllTextAsync(logFiles.Single());
         Assert.Contains("Hello Log", contents, StringComparison.Ordinal);

@@ -2,28 +2,40 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using ThreadId = System.Int32;
 
-namespace trifecta.io;
+namespace trifecta {
+namespace io {
 
 public class ComponentLog : ITextLog {
   public static ComponentLog singleton = new();
 
   ComponentLog() { _sink = new ConsoleLog(); }
 
-  public void Configure(ITextLogSink sink) { _sink = sink; }
+  public void Configure(ITextLogSink sink) {
+    using (_lock.EnterScope()) { _sink = sink; }
+  }
 
-  public void Log(string message) {
-    using (_lock.EnterScope()) { _sink.Log(message); }
+  public void Log(string message, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0, [CallerMemberName] string member = "") {
+    string filename = Path.GetFileName(path);
+    string component = _componentNames.GetValueOrDefault(Thread.CurrentThread.ManagedThreadId, "<unknown-component-id>");
+    using (_lock.EnterScope()) { _sink.Log($"[{component}.{member} {filename}.{line}]: {message}"); }
+  }
+
+  public void Flush() {
+    using (_lock.EnterScope()) { _sink.Flush(); }
   }
 
   public LifespanToken Register(string componentName) {
-    _componentNames[Thread.CurrentThread.ManagedThreadId] = componentName;
+    using (_lock.EnterScope()) { _componentNames[Thread.CurrentThread.ManagedThreadId] = componentName; }
     return new LifespanToken();
   }
 
-  public void Release() { _componentNames.Remove(Thread.CurrentThread.ManagedThreadId); }
+  public void Release() {
+    using (_lock.EnterScope()) { _componentNames.Remove(Thread.CurrentThread.ManagedThreadId); }
+  }
 
   private Lock _lock = new();
   private ITextLogSink _sink;
@@ -32,6 +44,7 @@ public class ComponentLog : ITextLog {
 
 public class ConsoleLog : ITextLogSink {
   public void Log(string message) { Console.WriteLine(message); }
+  public void Flush() {}
 }
 
 public class FileLog : ITextLogSink {
@@ -51,6 +64,8 @@ public class FileLog : ITextLogSink {
 
   public void Log(string message) { _sink.WriteLine(message); }
 
+  public void Flush() { _sink.Flush(); }
+
   private LogContext _context;
   private string _basename;
   private StreamWriter _sink;
@@ -58,4 +73,7 @@ public class FileLog : ITextLogSink {
 
 public class LifespanToken : IDisposable {
   public void Dispose() { ComponentLog.singleton.Release(); }
+}
+
+}
 }

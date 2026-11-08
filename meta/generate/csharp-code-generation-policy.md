@@ -11,3 +11,7 @@ formatting conventions.
 3. Generated declarations MUST preserve the source model's names, types,
    modifiers, parameter defaults, and member behavior; formatting and member
    ordering MUST NOT change their semantics.
+4. Shared test base classes MUST be placed in `test/<suite>/common` and use the
+   `trifecta.test.common` namespace. Test cases MUST use namespaces that follow
+   `trifecta.test.<area>`; for example, logging tests use
+   `trifecta.test.io`.
