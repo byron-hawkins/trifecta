@@ -1,0 +1,310 @@
+{
+  "format": "markdown-architecture-smd",
+  "version": 1,
+  "source": {
+    "kind": "markdown",
+    "path": "doc/architecture/io.md"
+  },
+  "contexts": [
+    {
+      "id": "context:namespace:trifecta.io:1",
+      "kind": "namespace",
+      "name": "trifecta.io"
+    },
+    {
+      "id": "context:class:ComponentLog:1",
+      "kind": "class",
+      "name": "ComponentLog"
+    },
+    {
+      "id": "context:class:FileLogSink:1",
+      "kind": "class",
+      "name": "FileLogSink"
+    }
+  ],
+  "blocks": [
+    {
+      "kind": "markdown",
+      "text": "*Author: Byron*\n\n*Subject: outline I/O facilities for the application*"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:namespace:trifecta.io:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "`namespace trifecta.io`"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:ComponentLog:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## ComponentLog\n\n### Data Structure"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.io.ComponentLog"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.io.LifespanToken"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:FileLogSink:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## FileLogSink\n\n### Data Structure\n\n- class FileLog : ITextLogSink\n  - composition\n    - System.IO.StreamWriter Sink\n\n## Prompt\n\nA console interface for the user to query state and issue commands.\n\n## CommandParser\n\nLoads a sequence of commands from a structured file (e.g., JSON). Each command indicates a delay since the last\ncommand, an action to take, and an optional tag string. Commands simulate manual oversight and administration of\nthe factory and are routed to static singletons (e.g., actor.Directory.instance()._____()).\n\n## Interfaces"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.io.ITextLog"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.io.ITextLogSink"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Diagrams"
+    },
+    {
+      "kind": "diagram",
+      "diagram_index": 0
+    }
+  ],
+  "types": [
+    {
+      "id": "type:trifecta.io.ComponentLog",
+      "kind": "class",
+      "name": "ComponentLog",
+      "namespace": "trifecta.io",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.io",
+          "id": "context:namespace:trifecta.io:1"
+        },
+        {
+          "kind": "class",
+          "name": "ComponentLog",
+          "id": "context:class:ComponentLog:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [
+        {
+          "name": "ThreadId",
+          "target": {
+            "name": "int"
+          },
+          "source_text": "using ThreadId = int"
+        }
+      ],
+      "members": [
+        {
+          "kind": "field",
+          "name": "singleton",
+          "type": {
+            "name": "ComponentLog"
+          },
+          "modifiers": [
+            "public",
+            "static"
+          ],
+          "annotations": [
+            "singleton"
+          ]
+        },
+        {
+          "kind": "field",
+          "name": "_lock",
+          "type": {
+            "name": "System.Threading.Lock"
+          },
+          "modifiers": [
+            "private"
+          ]
+        },
+        {
+          "kind": "field",
+          "name": "Sink",
+          "type": {
+            "name": "ITextLogSink"
+          },
+          "modifiers": [
+            "private"
+          ]
+        },
+        {
+          "kind": "field",
+          "name": "ComponentNames",
+          "type": {
+            "name": "System.Dictionary",
+            "type_arguments": [
+              {
+                "name": "ThreadId"
+              },
+              {
+                "name": "string"
+              }
+            ]
+          },
+          "modifiers": [
+            "private"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Configure",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "sink",
+              "type": {
+                "name": "ITextLogSink"
+              }
+            }
+          ],
+          "source_text": "void Configure(ITextLogSink sink)"
+        },
+        {
+          "kind": "method",
+          "name": "Register",
+          "return_type": {
+            "name": "LifespanToken"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "componentName",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "source_text": "LifespanToken Register(string componentName)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.io.LifespanToken",
+      "kind": "class",
+      "name": "LifespanToken",
+      "namespace": "trifecta.io",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.io",
+          "id": "context:namespace:trifecta.io:1"
+        },
+        {
+          "kind": "class",
+          "name": "ComponentLog",
+          "id": "context:class:ComponentLog:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [
+        {
+          "name": "IDisposable",
+          "relation": "extends",
+          "source_text": "IDisposable"
+        }
+      ],
+      "members": []
+    },
+    {
+      "id": "type:trifecta.io.ITextLog",
+      "kind": "interface",
+      "name": "ITextLog",
+      "namespace": "trifecta.io",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.io",
+          "id": "context:namespace:trifecta.io:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Log",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "message",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "source_text": "void Log(string message)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.io.ITextLogSink",
+      "kind": "interface",
+      "name": "ITextLogSink",
+      "namespace": "trifecta.io",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.io",
+          "id": "context:namespace:trifecta.io:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Log",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "message",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "source_text": "void Log(string message)"
+        }
+      ]
+    }
+  ],
+  "diagrams": [
+    {
+      "path": "figures/io.logging.md",
+      "types": [
+        {
+          "kind": "class",
+          "name": "ComponentLog",
+          "type_id": "type:trifecta.io.ComponentLog"
+        },
+        {
+          "kind": "interface",
+          "name": "ITextLogSink",
+          "type_id": "type:trifecta.io.ITextLogSink"
+        }
+      ]
+    }
+  ]
+}

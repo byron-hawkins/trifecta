@@ -1,0 +1,680 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trifecta.invalid/meta/architecture-schema",
+  "title": "Trifecta architecture structured-markdown IR",
+  "description": "JSON Schema for the language-neutral architecture IR produced from annotated Markdown or the supported declaration subset of C#.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "version", "source", "types"],
+  "properties": {
+    "format": {
+      "const": "markdown-architecture-smd"
+    },
+    "version": {
+      "const": 1
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "contexts": {
+      "type": "array",
+      "description": "Context tags in source order. Types also record their resolved active contexts.",
+      "items": {
+        "$ref": "#/$defs/context"
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "description": "Optional source-order sequence preserving Markdown around annotations. Declaration details are held in types and diagrams.",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/markdownBlock"
+          },
+          {
+            "$ref": "#/$defs/contextBlock"
+          },
+          {
+            "$ref": "#/$defs/typeBlock"
+          },
+          {
+            "$ref": "#/$defs/diagramBlock"
+          }
+        ]
+      }
+    },
+    "types": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/type"
+      }
+    },
+    "diagrams": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/diagram"
+      }
+    },
+    "diagnostics": {
+      "type": "array",
+      "description": "Parser or mapping diagnostics. Unsupported syntax must not be silently discarded.",
+      "items": {
+        "$ref": "#/$defs/diagnostic"
+      }
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path"],
+      "properties": {
+        "kind": {
+          "enum": ["markdown", "csharp"]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language_version": {
+          "type": "string",
+          "description": "Optional C# language version used when parsing C# input."
+        }
+      }
+    },
+    "sourceLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_line", "end_line"],
+      "properties": {
+        "start_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "start_column": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end_column": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "contextRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": {
+          "enum": ["namespace", "class"]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "description": "Reference to the corresponding entry in contexts."
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "name"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": ["namespace", "class"]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        }
+      }
+    },
+    "type": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "name", "namespace", "modifiers", "base_types", "members"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Deterministic identity within the source project."
+        },
+        "kind": {
+          "enum": ["class", "interface"]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "namespace": {
+          "type": ["string", "null"],
+          "description": "Fully qualified namespace, or null for the global namespace."
+        },
+        "contexts": {
+          "type": "array",
+          "description": "Active source contexts associated with this type.",
+          "items": {
+            "$ref": "#/$defs/contextRef"
+          }
+        },
+        "modifiers": {
+          "$ref": "#/$defs/typeModifiers"
+        },
+        "base_types": {
+          "type": "array",
+          "description": "Direct class/interface relationships. Use extends for a base class or an interface extended by another interface; use implements for an interface implemented by a class or struct.",
+          "items": {
+            "$ref": "#/$defs/baseType"
+          }
+        },
+        "aliases": {
+          "type": "array",
+          "description": "Type aliases declared in the type's source scope and included by the mapping.",
+          "items": {
+            "$ref": "#/$defs/typeAlias"
+          }
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/field"
+              },
+              {
+                "$ref": "#/$defs/property"
+              },
+              {
+                "$ref": "#/$defs/constructor"
+              },
+              {
+                "$ref": "#/$defs/method"
+              }
+            ]
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "description": "Descriptive capabilities not represented by C# interface relationships. Markdown capability entries naming interfaces map to base_types with relation implements.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "source_text": {
+          "type": "string",
+          "description": "Optional exact source fragment for traceability."
+        }
+      }
+    },
+    "typeModifiers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["public", "internal", "protected", "private", "abstract", "sealed", "static", "partial", "readonly", "ref"]
+      }
+    },
+    "baseType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "relation"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "relation": {
+          "enum": ["extends", "implements"]
+        },
+        "resolved_name": {
+          "type": "string",
+          "description": "Optional fully qualified name when semantic resolution succeeds."
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "source_text": {
+          "type": "string"
+        }
+      }
+    },
+    "typeRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resolved_name": {
+          "type": "string",
+          "description": "Optional fully qualified name when semantic resolution succeeds."
+        },
+        "type_arguments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/typeRef"
+          }
+        },
+        "array_rank": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nullable": {
+          "type": "boolean"
+        },
+        "source_text": {
+          "type": "string"
+        }
+      }
+    },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "$ref": "#/$defs/typeRef"
+        },
+        "modifiers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["ref", "out", "in", "params", "this"]
+          }
+        },
+        "default_value": {
+          "type": "string",
+          "description": "Source text for a supported constant/default expression."
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        }
+      }
+    },
+    "memberModifiers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["public", "internal", "protected", "private", "static", "readonly", "const", "abstract", "virtual", "override", "sealed", "async", "extern", "required"]
+      }
+    },
+    "memberAnnotations": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Semantic markers such as singleton; meanings are defined in markdown-architecture-semantics.md.",
+      "items": {
+        "enum": ["singleton"]
+      }
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name", "type", "modifiers"],
+      "properties": {
+        "kind": {
+          "const": "field"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "$ref": "#/$defs/typeRef"
+        },
+        "modifiers": {
+          "$ref": "#/$defs/memberModifiers"
+        },
+        "initializer": {
+          "type": "string",
+          "description": "Source text for a supported initializer expression."
+        },
+        "annotations": {
+          "$ref": "#/$defs/memberAnnotations"
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "source_text": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "annotations": {
+                "contains": {
+                  "const": "singleton"
+                }
+              }
+            },
+            "required": ["annotations"]
+          },
+          "then": {
+            "properties": {
+              "modifiers": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "public"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "static"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "property": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name", "type", "modifiers", "accessors"],
+      "properties": {
+        "kind": {
+          "const": "property"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "$ref": "#/$defs/typeRef"
+        },
+        "modifiers": {
+          "$ref": "#/$defs/memberModifiers"
+        },
+        "accessors": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["get", "set", "init"]
+          }
+        },
+        "initializer": {
+          "type": "string"
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "source_text": {
+          "type": "string"
+        }
+      }
+    },
+    "constructor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name", "modifiers", "parameters"],
+      "properties": {
+        "kind": {
+          "const": "constructor"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Constructor name, normally the containing type name."
+        },
+        "modifiers": {
+          "$ref": "#/$defs/memberModifiers"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/parameter"
+          }
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "source_text": {
+          "type": "string"
+        }
+      }
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name", "return_type", "modifiers", "parameters"],
+      "properties": {
+        "kind": {
+          "const": "method"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "return_type": {
+          "$ref": "#/$defs/typeRef"
+        },
+        "modifiers": {
+          "$ref": "#/$defs/memberModifiers"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/parameter"
+          }
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "source_text": {
+          "type": "string"
+        }
+      }
+    },
+    "typeAlias": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "target"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "$ref": "#/$defs/typeRef"
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "source_text": {
+          "type": "string"
+        }
+      }
+    },
+    "diagram": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "types"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Relative to the containing document's path."
+        },
+        "types": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/diagramType"
+          }
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        }
+      }
+    },
+    "diagramType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": {
+          "enum": ["class", "interface"]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type_id": {
+          "type": "string",
+          "description": "Reference to the matching entry in types when resolved."
+        }
+      }
+    },
+    "markdownBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "text"],
+      "properties": {
+        "kind": {
+          "const": "markdown"
+        },
+        "text": {
+          "type": "string"
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        }
+      }
+    },
+    "contextBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "context_id"],
+      "properties": {
+        "kind": {
+          "const": "context"
+        },
+        "context_id": {
+          "type": "string"
+        }
+      }
+    },
+    "typeBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "type_id"],
+      "properties": {
+        "kind": {
+          "const": "type"
+        },
+        "type_id": {
+          "type": "string"
+        }
+      }
+    },
+    "diagramBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "diagram_index"],
+      "properties": {
+        "kind": {
+          "const": "diagram"
+        },
+        "diagram_index": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["severity", "code", "message"],
+      "properties": {
+        "severity": {
+          "enum": ["info", "warning", "error"]
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        }
+      }
+    }
+  },
+  "x-smd-serialization": {
+    "format": "JSON",
+    "encoding": "UTF-8",
+    "indentation_spaces": 2,
+    "newline": "LF",
+    "final_newline": true,
+    "object_key_order": "The order declared for each object's properties in this schema; any extension keys follow in Unicode code-point order.",
+    "array_order": "Defined by markdown-architecture-semantics.md; source-derived arrays preserve source order, while set-valued arrays use their specified canonical order."
+  },
+  "x-csharp-mapping": {
+    "supported": [
+      "Namespace declarations map to each contained type's namespace.",
+      "Using aliases map to aliases.",
+      "Class and interface declarations map to types.",
+      "Fields map to field members.",
+      "Auto-properties map to property members.",
+      "Constructors map to constructor members.",
+      "Method declarations map to method members.",
+      "A class base class maps to base_types with relation extends.",
+      "An interface base interface maps to base_types with relation extends.",
+      "Implemented interfaces map to base_types with relation implements."
+    ],
+    "excluded": [
+      "Method bodies and executable statement trees.",
+      "Custom property accessor bodies.",
+      "Events, indexers, operators, delegates, records, and unsupported declarations.",
+      "Arbitrary expression trees, local functions, and control flow."
+    ],
+    "requirements": [
+      "Parse C# with Roslyn or an equivalent syntax-aware parser, not regular expressions.",
+      "Preserve unsupported syntax in diagnostics with source locations; do not silently discard it.",
+      "Keep written type syntax when semantic name resolution is unavailable.",
+      "Populate resolved_name only when project compilation resolves a type.",
+      "Infer singleton metadata only when an explicitly defined pattern matches; otherwise keep the field ordinary."
+    ]
+  },
+  "x-markdown-mapping": {
+    "categories": {
+      "types": "Aliases or nested type declarations when represented by the schema.",
+      "composition": "Field members; the singleton marker becomes field metadata.",
+      "operations": "Method members.",
+      "inherits": "base_types entries with relation extends.",
+      "capabilities": "base_types entries with relation implements when entries name interfaces."
+    },
+    "note": "Capability entries that are not interface names require explicit semantics before mapping to the optional descriptive capabilities field."
+  }
+}

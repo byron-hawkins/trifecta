@@ -1,0 +1,54 @@
+(* author: Byron *)
+(* author: Copilot *)
+
+(* BNF extension: any expression in parentheses should be interpreted as a free-form text description *)
+
+<document> ::= <markdown-fragment> <annotation-tail>
+<annotation-tail> ::= <annotation> <markdown-fragment> <annotation-tail> | <empty>
+<annotation> ::= <annotation-context-tag> | <annotation-type> | <annotation-diagram>
+
+<annotation-context-tag> ::= <newline> "<!--- @context " <annotation-context> " --->" <newline>
+<annotation-context> ::= <annotation-context-label> " " <c#-identifier>
+<annotation-context-label> ::= "namespace" | "class"
+
+<annotation-type> ::= <annotation-type-tag> <newline> <type-outline>
+<annotation-type-tag> ::= <newline> "<!--- @type --->"
+<type-outline> ::= "- " <type-declaration-fragment> <category-list> <newline> <newline>
+<category-list> ::= <element-category> <category-list> | <empty>
+<element-category> ::= <newline> <category-bullet> "types" <type-element-list>
+                     | <newline> <category-bullet> "composition" <composition-element-list>
+                     | <newline> <category-bullet> "operations" <operation-element-list>
+                     | <newline> <category-bullet> "inherits" <base-type-list>
+                     | <newline> <category-bullet> "capabilities" <base-type-list>
+<type-element-list> ::= <newline> <element-bullet> <type-element> <type-element-list> | <newline> <element-bullet> <type-element>
+<composition-element-list> ::= <newline> <element-bullet> <composition-element> <composition-element-list> | <newline> <element-bullet> <composition-element>
+<operation-element-list> ::= <newline> <element-bullet> <operation-element> <operation-element-list> | <newline> <element-bullet> <operation-element>
+<base-type-list> ::= <newline> <element-bullet> <c#-type> <base-type-list> | <newline> <element-bullet> <c#-type>
+<type-element> ::= <type-alias> | <nested-type-declaration>
+<composition-element> ::= "[singleton]" | <field-declaration>
+<operation-element> ::= <method-declaration> | <constructor-declaration>
+<type-alias> ::= "using " <c#-identifier> " = " <c#-type>
+<nested-type-declaration> ::= <type-declaration-fragment>
+<field-declaration> ::= <member-modifiers> <c#-type> " " <c#-identifier>
+<method-declaration> ::= <member-modifiers> <c#-type> " " <c#-identifier> "(" <parameter-list> ")"
+<constructor-declaration> ::= <member-modifiers> <c#-identifier> "(" <parameter-list> ")"
+<parameter-list> ::= <parameter> | <parameter> ", " <parameter-list> | <empty>
+<parameter> ::= <parameter-modifiers> <c#-type> " " <c#-identifier>
+<member-modifiers> ::= (zero or more C# member modifiers, followed by one space when non-empty)
+<parameter-modifiers> ::= (zero or more C# parameter modifiers, followed by one space when non-empty)
+<c#-type> ::= (valid C# type syntax, including qualified and constructed generic types)
+
+<annotation-diagram> ::= <newline> "<!--- @diagram [" <file-path> "] [" <type-list> "] --->"
+<type-list> ::= <type-declaration-fragment> | <type-declaration-fragment> ", " <type-list>
+<type-declaration-fragment> ::= <kind> " " <c#-identifier>
+<kind> ::= "class" | "interface"
+
+<newline> ::= "\n" | "\r\n"
+<category-bullet> ::= "  - "
+<element-bullet> ::= "    - "
+
+<empty> ::= (empty)
+<markdown-fragment> ::= (Markdown text up to, but not including, the newline immediately before the next
+                         annotation tag; may be empty)
+<c#-identifier> ::= (a valid c# identifier)
+<file-path> ::= (a valid relative file path, taken as relative to the containing document's path)

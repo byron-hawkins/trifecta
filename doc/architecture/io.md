@@ -2,31 +2,39 @@
 
 *Subject: outline I/O facilities for the application*
 
+<!--- @context namespace trifecta.io --->
 `namespace trifecta.io`
 
+<!--- @context class ComponentLog --->
 ## ComponentLog
 
 ### Data Structure
 
+<!--- @type --->
 - class ComponentLog
-  - <singleton>
   - types
     - using ThreadId = int
-  - contains
-    - class LifespanToken : IDisposable
-    - iTextLogSink Sink
-    - Dictionary<ThreadId, string> ComponentNames
-    - Monitor
-  - performs
-    - void Configure(ITextLogSink)
-    - LifespanToken Register(string ComponentName)
+  - composition
+    - [singleton]
+    - System.Threading.Lock _lock
+    - ITextLogSink Sink
+    - System.Dictionary<ThreadId, string> ComponentNames
+  - operations
+    - void Configure(ITextLogSink sink)
+    - LifespanToken Register(string componentName)
 
+<!--- @type --->
+- class LifespanToken
+  - inherits
+    - IDisposable
+
+<!--- @context class FileLogSink --->
 ## FileLogSink
 
 ### Data Structure
 
 - class FileLog : ITextLogSink
-  - contains
+  - composition
     - System.IO.StreamWriter Sink
 
 ## Prompt
@@ -41,9 +49,16 @@ the factory and are routed to static singletons (e.g., actor.Directory.instance(
 
 ## Interfaces
 
+<!--- @type --->
 - interface ITextLog
-  - void Log(string)
+  - operations
+    - void Log(string message)
 
+<!--- @type --->
 - interface ITextLogSink
-  - void Log(string)
+  - operations
+    - void Log(string message)
 
+## Diagrams
+
+<!--- @diagram [figures/io.logging.md] [class ComponentLog, interface ITextLogSink] -->
