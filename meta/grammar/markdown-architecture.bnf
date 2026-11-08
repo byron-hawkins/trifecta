@@ -39,18 +39,21 @@
 <c#-constant-expression> ::= (a C# constant expression supported as a parameter default)
 <member-modifiers> ::= (zero or more C# member modifiers, followed by one space when non-empty)
 <parameter-modifiers> ::= (zero or more C# parameter modifiers, followed by one space when non-empty)
-<type-declaration-fragment> ::= <class-declaration> | <interface-declaration> | <enum-declaration>
-<class-declaration> ::= "class " <c#-identifier> <optional-base-list>
-<interface-declaration> ::= "interface " <c#-identifier> <optional-base-list>
+<type-declaration-fragment> ::= <class-declaration> | <interface-declaration> | <struct-declaration> | <enum-declaration>
+<class-declaration> ::= "class " <c#-identifier> <optional-type-parameter-list> <optional-base-list>
+<interface-declaration> ::= "interface " <c#-identifier> <optional-type-parameter-list> <optional-base-list>
+<struct-declaration> ::= "struct " <c#-identifier> <optional-type-parameter-list> <optional-base-list>
 <enum-declaration> ::= "enum " <c#-identifier>
+<optional-type-parameter-list> ::= "<" <type-parameter-list> ">" | <empty>
+<type-parameter-list> ::= <c#-identifier> | <c#-identifier> ", " <type-parameter-list>
 <optional-base-list> ::= " : " <c#-type-list> | <empty>
 <c#-type-list> ::= <c#-type> | <c#-type> ", " <c#-type-list>
 <c#-type> ::= (valid C# type syntax, including qualified and constructed generic types)
 
-<annotation-diagram> ::= <newline> "<!--- @diagram [" <file-path> "] [" <type-list> "] -->"
+<annotation-diagram> ::= <newline> "<!--- @diagram [" <file-path> "] [" <type-list> "] --->"
 <type-list> ::= <diagram-type-declaration> | <diagram-type-declaration> ", " <type-list>
-<diagram-type-declaration> ::= <kind> " " <c#-identifier>
-<kind> ::= "class" | "interface" | "enum"
+<diagram-type-declaration> ::= <kind> " " <c#-identifier> <optional-type-parameter-list>
+<kind> ::= "class" | "interface" | "struct" | "enum"
 
 <newline> ::= "\n" | "\r\n"
 <category-bullet> ::= "  - "

@@ -1,3 +1,4 @@
+*author: Copilot*
 *Author: Byron*
 
 *Subject: outline I/O facilities for the application*

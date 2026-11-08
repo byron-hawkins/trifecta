@@ -1,3 +1,6 @@
+/* stub: Copilot */
+/* author: Byron */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +37,15 @@ public class ComponentLog : ITextLog {
   }
 
   public void Release() {
-    using (_lock.EnterScope()) { _componentNames.Remove(Thread.CurrentThread.ManagedThreadId); }
+    using (_lock.EnterScope()) {
+      string? component = _componentNames[Thread.CurrentThread.ManagedThreadId];
+      if (component is string name) {
+        Log($"ComponentLog releases component {name}");
+        _componentNames.Remove(Thread.CurrentThread.ManagedThreadId);
+      } else {
+        throw new InvalidOperationException($"ComponetLog failed to identify thread {Thread.CurrentThread.ManagedThreadId} at thread exit");
+      }
+    }
   }
 
   private Lock _lock = new();

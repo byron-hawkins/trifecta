@@ -1,3 +1,6 @@
+/* stub: Copilot */
+/* author: Byron */
+
 namespace trifecta {
 namespace io {
 

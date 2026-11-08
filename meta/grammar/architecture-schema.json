@@ -1,12 +1,16 @@
 {
+  "$comment": "author: Copilot",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://trifecta.invalid/meta/architecture-schema",
   "title": "Trifecta architecture structured-markdown IR",
   "description": "JSON Schema for the language-neutral architecture IR produced from annotated Markdown or the supported declaration subset of C#.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "version", "source", "types"],
+  "required": ["author", "format", "version", "source", "types"],
   "properties": {
+    "author": {
+      "const": "Copilot"
+    },
     "format": {
       "const": "markdown-architecture-smd"
     },
@@ -155,15 +159,29 @@
           "description": "Deterministic identity within the source project."
         },
         "kind": {
-          "enum": ["class", "interface", "enum"]
+          "enum": ["class", "interface", "struct", "enum"]
         },
         "name": {
           "type": "string",
           "minLength": 1
         },
+        "type_parameters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Generic type parameter names in declaration order."
+        },
         "namespace": {
           "type": ["string", "null"],
           "description": "Fully qualified namespace, or null for the global namespace."
+        },
+        "containing_type_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "ID of the containing type for a nested type."
         },
         "contexts": {
           "type": "array",
@@ -245,6 +263,13 @@
         },
         "relation": {
           "enum": ["extends", "implements"]
+        },
+        "type_arguments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/typeRef"
+          },
+          "description": "Constructed generic arguments for this base type, in source order."
         },
         "resolved_name": {
           "type": "string",
@@ -568,11 +593,20 @@
       "required": ["kind", "name"],
       "properties": {
         "kind": {
-          "enum": ["class", "interface", "enum"]
+          "enum": ["class", "interface", "struct", "enum"]
         },
         "name": {
           "type": "string",
           "minLength": 1
+        },
+        "type_parameters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Generic type parameter placeholders for the selected generic type definition, in declaration order."
         },
         "type_id": {
           "type": "string",
@@ -671,7 +705,9 @@
     "supported": [
       "Namespace declarations map to each contained type's namespace.",
       "Using aliases map to aliases.",
-      "Class, interface, and enum declarations map to types.",
+      "Class, interface, struct, and enum declarations map to types.",
+      "Generic declaration parameters map to type_parameters in declaration order.",
+      "Nested declarations map to containing_type_id referencing their containing type.",
       "Fields map to field members.",
       "Auto-properties map to property members.",
       "Enum constants map to enum_member entries.",
@@ -679,7 +715,8 @@
       "Method declarations map to method members.",
       "A class base class maps to base_types with relation extends.",
       "An interface base interface maps to base_types with relation extends.",
-      "Implemented interfaces map to base_types with relation implements."
+      "Implemented interfaces map to base_types with relation implements.",
+      "Constructed generic base types map their arguments to base_types.type_arguments."
     ],
     "excluded": [
       "Method bodies and executable statement trees.",
@@ -696,12 +733,13 @@
     ]
   },
   "x-markdown-mapping": {
+    "type_declarations": "Class, interface, struct, and enum outlines map to types. Generic parameters map to type_parameters. When a class context names a different type than the outline declares, containing_type_id identifies that context type.",
     "categories": {
       "types": "Aliases or nested type declarations when represented by the schema.",
       "composition": "Field members; the singleton marker becomes field metadata.",
       "operations": "Method members.",
-      "inherits": "base_types entries with relation extends.",
-      "capabilities": "base_types entries with relation implements when entries name interfaces."
+      "inherits": "base_types entries with relation extends; constructed generic arguments map to type_arguments.",
+      "capabilities": "base_types entries with relation implements when entries name interfaces; constructed generic arguments map to type_arguments."
     },
     "note": "Capability entries that are not interface names require explicit semantics before mapping to the optional descriptive capabilities field."
   }

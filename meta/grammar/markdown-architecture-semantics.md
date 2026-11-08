@@ -1,3 +1,5 @@
+*author: Copilot*
+
 # Markdown architecture annotation semantics
 
 This document defines the meaning of annotations parsed using
@@ -36,13 +38,23 @@ The terms **MUST**, **MUST NOT**, and **MAY** are normative.
    context has no context association.
 6. A new class context replaces the previous active class context; it does not
    end the active namespace context.
+7. When a type annotation occurs under an active class context and its declared
+   type name differs from that context's class name, the declared type is nested
+   directly within the type named by that class context. The SMD MUST set
+   `containing_type_id` to the containing type's ID. A class-context type
+   annotation whose declared name matches the context name describes the
+   containing type itself and MUST NOT have `containing_type_id`.
 
 ## 3. Type outline meaning
 
 1. The declaration in a type outline identifies the type described by that
    annotation. Its categories and entries are metadata belonging to that type.
-2. `types` records type-related declarations, such as aliases or nested types.
-3. `composition` records members or parts of the annotated class.
+   Supported declaration kinds are class, interface, struct, and enum.
+2. Generic declaration parameters MUST be recorded in `type_parameters` in
+   source order. Generic base-type arguments MUST be recorded in
+   `base_types[].type_arguments` as structured type references.
+3. `types` records type-related declarations, such as aliases or nested types.
+4. `composition` records members or parts of the annotated class or struct.
    - `[singleton]` denotes a public static singleton instance of the
      annotated class, defined within that class. A representative declaration
      is `public static Type singleton = new()`, where `Type` is the annotated
@@ -56,21 +68,23 @@ The terms **MUST**, **MUST NOT**, and **MAY** are normative.
      type that readers are expected to recognize.
    - When the annotated declaration is an enum, each composition entry is an
      enum constant. It MUST be represented as an enum member, not as a field.
-4. An enum declaration has no class composition fields or operations; its
+5. An enum declaration has no class/struct composition fields or operations; its
    composition entries are the enum constants.
-5. `operations` records callable operations of the annotated type.
-6. `inherits` records base types or interfaces of the annotated type.
-7. `capabilities` records interfaces implemented by the annotated type. In the
+6. `operations` records callable operations of the annotated type.
+7. `inherits` records base types or interfaces of the annotated type.
+8. `capabilities` records interfaces implemented by the annotated type. In the
    IR, each such entry MUST be represented in `base_types` with
    `relation: implements`.
-8. `[singleton]` has the meaning defined for composition entries above. It is
+9. `[singleton]` has the meaning defined for composition entries above. It is
    not a standalone type declaration.
 
 ## 4. Diagram directives
 
 1. A diagram directive selects the listed types for diagram generation. Type
    names in the directive are resolved against type annotations in the parsed
-   document.
+   document. A generic type selection MUST use its definition's type parameter
+   names in declaration order (for example, `interface ISensorDriverActive<T>`),
+   not concrete type arguments.
 2. The directive's `<file-path>` is relative to the containing document's path.
    The generated Mermaid diagram MUST be written at that path.
 3. A rendered copy of the source document MUST be written to
@@ -99,7 +113,15 @@ The terms **MUST**, **MUST NOT**, and **MAY** are normative.
    NOT be added.
 10. A Mermaid class diagram MUST represent an enum using a `class` block with
     the `<<enumeration>>` stereotype, with its enum constants listed as members.
-11. The representation of the generated diagram file (raw Mermaid source or a
+11. A Mermaid class diagram MUST represent a struct using a `class` block with
+    the `<<struct>>` stereotype.
+12. A selected generic type MUST be rendered as its generic definition, using
+   Mermaid's `~` delimiters for its type parameters (for example,
+   `class ISensorDriverActive~T~`). Member signatures MUST retain those
+   parameter names. A generic type MUST NOT be expanded into separate concrete
+   instantiations unless concrete type arguments are explicitly requested by a
+   future rule.
+13. The representation of the generated diagram file (raw Mermaid source or a
    fenced block), and the behavior for a requested type that has no matching
    annotation remain unspecified.
 
@@ -147,8 +169,9 @@ identically:
 
 ## 7. IR serialization and stable diffs
 
-1. An `.smd` file MUST be UTF-8 JSON. Its top-level `format` and `version` fields
-   MUST identify the format as `markdown-architecture-smd`, version `1`.
+1. An `.smd` file MUST be UTF-8 JSON. Its top-level `author`, `format`, and
+   `version` fields MUST identify the generator as `Copilot` and the format as
+   `markdown-architecture-smd`, version `1`.
    `source.path` MUST be relative to the workspace root and use `/` separators.
 2. JSON objects MUST be serialized with properties in the order declared for
    that object in `architecture-schema.json`. Extension properties, if allowed
@@ -172,7 +195,9 @@ identically:
    defined in Section 5.
 6. IDs MUST be deterministic for the same source and mapping rules:
    - A type ID is `type:` followed by its fully qualified name. Nested type
-     names use `+` between containing and nested type names.
+     names use `+` between containing and nested type names. A generic type
+     appends a backtick and its parameter count to its name in the ID (for
+     example, `ISensorDriverPassive\`1`).
    - A context ID is `context:` followed by its kind, name, and one-based
      occurrence number among context tags with the same kind and name in the
      source, separated by colons.

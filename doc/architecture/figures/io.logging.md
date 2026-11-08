@@ -1,3 +1,5 @@
+*author: Copilot*
+
 ```mermaid
 classDiagram
 namespace trifecta.io {
