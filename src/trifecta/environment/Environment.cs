@@ -1,10 +1,6 @@
 /* author: Byron */
 /* stub: Copilot */
 
-using SensorId = System.Int32;
-using Temperature = System.Single;
-using Pressure = System.Int32;
-
 namespace trifecta.environment;
 
 public interface IConditionTypes {}

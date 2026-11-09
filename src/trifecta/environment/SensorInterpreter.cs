@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
-using SensorId = System.Int32;
-using Temperature = System.Single;
-using Pressure = System.Int32;
 using trifecta.io;
 
 namespace trifecta {

@@ -1,8 +1,4 @@
 /* author: Copilot */
-using SensorId = System.Int32;
-using Temperature = System.Single;
-using Pressure = System.Int32;
-
 namespace trifecta {
 namespace environment {
 

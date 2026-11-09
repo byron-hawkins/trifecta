@@ -1,9 +1,6 @@
 /* author: Copilot */
 using System.Collections.Generic;
 using System.Threading;
-using SensorId = System.Int32;
-using Temperature = System.Single;
-using Pressure = System.Int32;
 
 namespace trifecta.environment;
 

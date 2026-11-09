@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using ThreadId = System.Int32;
 
 namespace trifecta.io;
 

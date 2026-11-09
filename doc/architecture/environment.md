@@ -9,7 +9,7 @@
 ## SensorController
 
 <!--- @type --->
-- class SensorController : IConditionTypes
+- class SensorController
   - composition
     - [singleton]
     - System.Collections.Generic.List<ISensorDriver> _actives
@@ -24,7 +24,7 @@
 ## SensorInterpreter
 
 <!--- @type --->
-- class SensorInterpreter : IConditionTypes, ISensorAware<Temperature>, ISensorAware<Pressure>
+- class SensorInterpreter , ISensorAware<Temperature>, ISensorAware<Pressure>
   - composition
     - [singleton]
     - System.Threading.Lock _lock
@@ -41,13 +41,13 @@
     - void Relax(IConditionParanoid relax)
 
 <!--- @type --->
-- struct Thresholds : IConditionTypes
+- struct Thresholds
   - composition
     - public Temperature[] t
     - public Pressure[] p
 
 <!--- @type --->
-- struct Granularity : IConditionTypes
+- struct Granularity
   - composition
     - public Temperature t
     - public Pressure p
@@ -55,26 +55,19 @@
 ## Interfaces
 
 <!--- @type --->
-- interface IConditionTypes
-  - types
-    - using Temperature = float
-    - using Pressure = int
-    - using SensorId = int
-
-<!--- @type --->
-- interface IConditionAware : IConditionTypes
+- interface IConditionAware
   - operations
     - void ThresholdCross(Temperature t)
     - void ThresholdCross(Pressure p)
 
 <!--- @type --->
-- interface IConditionParanoid : IConditionAware, IConditionTypes
+- interface IConditionParanoid : IConditionAware
   - operations
     - void Change(Temperature t)
     - void Change(Pressure p)
 
 <!--- @type --->
-- interface ISensorDriver : IConditionTypes
+- interface ISensorDriver
   - operations
     - SensorId GetId()
     - SensorType GetType()
@@ -92,7 +85,7 @@
     - T Read()
 
 <!--- @type --->
-- interface ISensorAware<T> : IConditionTypes
+- interface ISensorAware<T>
   - operations
     - void SensorUpdate(SensorId id, T reading)
 

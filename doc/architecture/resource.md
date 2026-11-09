@@ -2,39 +2,27 @@
 
 *Subject: outline an event model for an application resource*
 
+<!--- @context namespace trifecta.resource --->
 `namespace trifecta.resource`
 
-## ResourcePool
+<!--- @context class ResourceQueue --->
+## ResourceQueue
 
 Configurable set of resources potentially available to the machine.
 
 ### Data Structure
 
-- class ResourcePool
-  - contains
-    - <singleton>
-    - Dictionary<ResourceType, ArrayList<ResourceInstance>>
+<!--- @type --->
+- class ResourceQueue
+  - composition
+    - System.Threading.Lock _lock
+    - Queue<ResourceInstance> _resources
+    - Queue<IResourceConsumer> _consumers
+  - operations
+    - void Push(IResourceConsumer consumer)
+    - void Push(ResourceInstance resource)
 
-## ResourceType
-
-### Data Structure
-
-- class ResourceType
-  - UsageMode GetUsageMode()
-
-## ResourceInstance
-
-To avoid limitations on the kinds of resources that can be incorporated into a Stage, a resource interface
-needs to provide for both passive and active usage models. Active usage occupies the calling thread for the
-duration of usage, while passive usage can be trivially started, permitting the caller to perform other
-operations concurrently.
-
-- class ResourceInstance
-  - contains
-    - IResourceDriver
-  - performs
-    - ResourceDriverStatus GetStatus()
-
+<!--- @context class ResourceQueueSet --->
 ## ResourceQueueSet
 
 Since multiple Stage types may run concurrently, and since each Stage may require multiple resources, a greedy
@@ -45,39 +33,71 @@ enqeueued with differing precedence on at least two queues of RQS.
 
 ### Data Structure
 
+<!--- @type --->
 - class ResourceQueueSet
-  - contains
-    - <singleton>
-    - Dictionary<ResourceType, Queue<IResourceConsumer>>
-    -
-  - performs
-    - void push(IResourceConsumer)
+  - composition
+    - [singleton]
+    - Task _self
+    - readonly object _idle
+    - System.Threading.Lock _multilock
+    - Dictionary<ResourceName, ResourceQueue> _queues
+  - operations
+    - void Start()
+    - void Stop()
+    - void MultiPush(IResourceConsumer consumer)
 
+<!--- @context class ResourceInstance --->
+## ResourceInstance
 
+To avoid limitations on the kinds of resources that can be incorporated into a Stage, a resource interface
+needs to provide for both passive and active usage models. Active usage occupies the calling thread for the
+duration of usage, while passive usage can be trivially started, permitting the caller to perform other
+operations concurrently.
+
+<!--- @type --->
+- class ResourceInstance
+  - composition
+    - IResourceDriver _driver
+    - ResourceDriverStatus _status
+  - operations
+    - ResourceDriverStatus GetStatus()
 
 ## Interfaces
 
+<!--- @type --->
 - interface IResourceDriver
-  - ResourceDriverStatus GetStatus()
+  - operations
+    - ResourceDriverStatus GetStatus()
 
+<!--- @type --->
 - interface IPassiveResourceDriver
-  - ResourceDriverStatus Start()
-  - ResourceDriverStatus Stop()
+  - operations
+    - ResourceDriverStatus Start()
+    - ResourceDriverStatus Stop()
 
+<!--- @type --->
 - interface IActiveResourceDriver
-  - ResourceDriverStatus Work()
+  - operations
+    - ResourceDriverStatus Work()
 
+<!--- @type --->
 - interface IResourceConsumer
-  - IEnumerable<ResourceType> Scope()
-  - void Grant(ResourceInstance)
+  - operations
+    - IEnumerable<ResourceName> Scope()
+    - void Grant(ResourceInstance resource)
 
 ## Enumerations
 
-- UsageMode
-  - active
-  - passive
+<!--- @type --->
+- enum ResourceMode
+  - composition
+    - active
+    - passive
 
-- ResourceDriverStatus
-  - idle
-  - working
-  - error
+<!--- @type --->
+- enum ResourceDriverStatus
+  - composition
+    - idle
+    - working
+    - error
+

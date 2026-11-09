@@ -45,6 +45,27 @@ The terms **MUST**, **MUST NOT**, and **MAY** are normative.
    annotation whose declared name matches the context name describes the
    containing type itself and MUST NOT have `containing_type_id`.
 
+## 2a. Global alias lists
+
+1. An `@alias-list` contains one or more `global using` type aliases, one per
+   line, terminated by a blank line. The Markdown form omits C# semicolons;
+   generated C# declarations MUST include them.
+2. Record each list in the document SMD's `global_alias_lists` array, with its
+   aliases in source order. If `blocks` are emitted, represent each list with
+   an `alias_list` block whose `alias_list_index` refers to its zero-based
+   index in `global_alias_lists`.
+3. `doc/architecture/globals.md` is the project-wide source of global aliases
+   for architecture documents. A consumer resolving types across these
+   documents MUST load its alias lists; the active namespace or class context
+   provides provenance only and does not limit alias scope. A C# global using
+   remains scoped to the compilation containing its declaration, so the
+   generated declarations must be included in each consuming project.
+4. Duplicate global alias names, conflicting local alias names, unresolved
+   targets, and cyclic alias definitions MUST be reported as errors rather
+   than silently selected or replaced. Alias targets MUST be valid in the
+   generated C# compilation; do not assume an unqualified name such as `Int32`
+   resolves without an appropriate import or explicit qualification.
+
 ## 3. Type outline meaning
 
 1. The declaration in a type outline identifies the type described by that
@@ -183,7 +204,8 @@ identically:
    by a later schema version, MUST follow defined properties in Unicode
    code-point order.
 3. JSON arrays MUST use these orders:
-   - `blocks`, top-level `contexts`, `types`, `diagrams`, each type's
+   - `blocks`, top-level `contexts`, `types`, `global_alias_lists`, and
+     `diagrams`, each alias list's `contexts` and `aliases`, each type's
      `contexts`, `base_types`, `aliases`, and `members`, diagram `types`,
      method and constructor `parameters`, and type arguments preserve source
      order.

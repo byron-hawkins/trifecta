@@ -5,11 +5,15 @@
 
 <document> ::= <markdown-fragment> <annotation-tail>
 <annotation-tail> ::= <annotation> <markdown-fragment> <annotation-tail> | <empty>
-<annotation> ::= <annotation-context-tag> | <annotation-type> | <annotation-diagram>
+<annotation> ::= <annotation-context-tag> | <annotation-type> | <annotation-alias-list> | <annotation-diagram>
 
 <annotation-context-tag> ::= <newline> "<!--- @context " <annotation-context> " --->" <newline>
-<annotation-context> ::= <annotation-context-label> " " <c#-identifier>
-<annotation-context-label> ::= "namespace" | "class"
+<annotation-context> ::= "namespace " <qualified-namespace-name> | "class " <c#-identifier>
+<qualified-namespace-name> ::= <c#-identifier> | <c#-identifier> "." <qualified-namespace-name>
+
+<annotation-alias-list> ::= <newline> "<!--- @alias-list --->" <newline> <global-alias-list> <newline> <newline>
+<global-alias-list> ::= <global-type-alias> | <global-type-alias> <newline> <global-alias-list>
+<global-type-alias> ::= "global " <type-alias>
 
 <annotation-type> ::= <annotation-type-tag> <newline> <type-outline>
 <annotation-type-tag> ::= <newline> "<!--- @type --->"

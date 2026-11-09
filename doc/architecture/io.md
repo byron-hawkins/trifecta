@@ -13,8 +13,6 @@
 
 <!--- @type --->
 - class ComponentLog : ITextLog
-  - types
-    - using ThreadId = int
   - composition
     - [singleton]
     - System.Threading.Lock _lock

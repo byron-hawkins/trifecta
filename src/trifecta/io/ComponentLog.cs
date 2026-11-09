@@ -7,7 +7,6 @@ using System.IO;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using ThreadId = System.Int32;
 
 namespace trifecta {
 namespace io {

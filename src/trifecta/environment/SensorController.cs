@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Temperature = System.Single;
-using Pressure = System.Int32;
-using SensorId = System.Int32;
 using trifecta.io;
 
 namespace trifecta {
@@ -60,6 +57,7 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
       task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop the SensorController");
     }
     task.Wait();
+    using (_lock.EnterScope()) { _self = null; }
   }
 
   public void SensorUpdate(SensorId id, Temperature reading) {}

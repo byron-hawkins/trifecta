@@ -3,9 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using Temperature = System.Single;
-using Pressure = System.Int32;
-using SensorId = System.Int32;
 using trifecta.environment;
 
 namespace trifecta {

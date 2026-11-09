@@ -42,6 +42,9 @@
             "$ref": "#/$defs/typeBlock"
           },
           {
+            "$ref": "#/$defs/aliasListBlock"
+          },
+          {
             "$ref": "#/$defs/diagramBlock"
           }
         ]
@@ -51,6 +54,13 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/type"
+      }
+    },
+    "global_alias_lists": {
+      "type": "array",
+      "description": "Document-level global alias lists in source order.",
+      "items": {
+        "$ref": "#/$defs/globalAliasList"
       }
     },
     "diagrams": {
@@ -574,6 +584,30 @@
         }
       }
     },
+    "globalAliasList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["aliases"],
+      "properties": {
+        "contexts": {
+          "type": "array",
+          "description": "Active source contexts; global aliases do not inherit their scope.",
+          "items": {
+            "$ref": "#/$defs/contextRef"
+          }
+        },
+        "aliases": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/typeAlias"
+          }
+        },
+        "source_location": {
+          "$ref": "#/$defs/sourceLocation"
+        }
+      }
+    },
     "diagram": {
       "type": "object",
       "additionalProperties": false,
@@ -662,6 +696,20 @@
         },
         "type_id": {
           "type": "string"
+        }
+      }
+    },
+    "aliasListBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "alias_list_index"],
+      "properties": {
+        "kind": {
+          "const": "alias_list"
+        },
+        "alias_list_index": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     },

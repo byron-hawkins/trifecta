@@ -13,14 +13,15 @@
     - <singleton>
     - Dictionary<IStageConfiguration.IdType, IStageConfiguration> Members
 
+<!--- @context struct Actor --->
 ## Actor
 
-To perform a sequence of Task comprising a stage for some duration 100ms <= tx <= 5s, while responding to
+To perform a sequence of Scene comprising a stage for some duration 100ms <= tx <= 5s, while responding to
 changes in conditions, an autonomous Actor will operate on its own threaed and coordinate events under a
-single instance-specific lock. All actions will be trivial except when performing a Task that involves
+single instance-specific lock. All actions will be trivial except when performing a Scene that involves
 significant continuous computation. Responsiveness to concurrent events during computation will depend on
-granularity of the computation steps; for example, if a Task performs computation in 10ms loop iterations,
-then events relevant to the Actor may go unnoticed for as long as 10ms. For a Task that consumes one or
+granularity of the computation steps; for example, if a Scene performs computation in 10ms loop iterations,
+then events relevant to the Actor may go unnoticed for as long as 10ms. For a Scene that consumes one or
 more resources and does not perform computation, it is assumed that the Actor remains passively available
 for event notification while each resource performs work on s separate driver thread.
 
@@ -32,36 +33,32 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
 
 ### Data Structure
 
-- class Actor
-  - capabilities
-    - environment.IConditionAware
-    - resource.IDriverAware
-    - resource.IResourceConsumer
-  - contains
-    - stage.IStageConfiguration
-    - ITaskSequence
-    - ActorPhase
-  - reads
-    - environment.SensorInterpreter
-    - resource.ResourceQueueSet
-  - performs
+<!--- @type --->
+- class Actor : environment.IConditionAware, resource.IResourceConsumer
+  - composition
+    - Actor(ActorConfiguration configuration)
+    - ActorConfiguration _configuration
+    - Scene _onstage
+    - ActorPhase _phase
+  - operations
     - void Start()
-    - void Exit(ActorPhase mode, System.Action Finalize)
+    - void Stop(ActorPhase mode, System.Action finalize)
 
-
-
-## Task
+<!--- @context class Scene --->
+## Scene
 
 ### Data Structure
 
-- class Task
-  - contains
-    - ArrayList<ITaskAware>
-    - collection of available resource.ResourceInstance
-    - System.Threading.TimeSpan CancelGranularity
-  - performs
-    - TaskStatus GetStatus()
-    - TaskStatus Execute()
+<!--- @type --->
+- class Scene
+  - composition
+    - SceneConfiguration _configuration
+    - List<resource.ResourceInstance> _resources;
+    - SceneStatus _status
+  - operations
+    - Scene(SceneConfiguration configuration)
+    - SceneStatus GetStatus()
+    - SceneStatus Execute()
 
 
 ## Director
@@ -70,28 +67,29 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
 
 ### Data Structure
 
-- class Director
-  - capabilities
-    - environment.IConditionAware
-    - ICastManager
-  - contains
-    - <singleton>
-    - Dictionary<Stage, ArrayList<Actor>> Cast
-    - ICastOptimizer
-  - reads
-    - StageSet
-    - environment.SensorInterpreter
-    - resource.ResourceQueueSet
-    - resource.ResourcePool
-  - performs
-    - void Conclude(bool nicely)
+- class Director : environment.IConditionAware, ICastManager
+  - composition
+    - [singleton]
+    - Dictionary<ActorTypeId, List<Actor>> _cast
+    - CastOptimizer _optimizer
+  - operations
+    - Director(DirectorConfiguration configuration)
+    - void Start()
+    - void Stop(bool nicely)
 
+<!--- @context class CastOptimizer --->
+## CastOptimizer
+
+<!--- @type --->
+- class CastOptimizer
+  - composition
+    - TransitionMode _mode
+    - ICastManager _manager
+  - operations
+    - CastOptimizer(TransitionMode mode, ICastManager manager)
 
 
 ## Interfaces
-
-- interface ITaskAware
-  -
 
 - interface ICastManager
   - void Interrupt(Actor, ActorPhase)
@@ -99,17 +97,10 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
 
 - interface ICastOptimizer
 
-- interface IStageConfiguration
-  - types
-    - using TypeId = int
-  - performs
-    - TypeId Id()
-    - System.Threading.TimeSpan OccupancyLimit()
-
 
 ## Enumerations
 
-- TaskStatus
+- SceneStatus
   - pending
   - running
   - completed
