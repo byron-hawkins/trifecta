@@ -1,0 +1,27 @@
+{
+  "mode": "quickstop",
+  "roles": [
+    {
+      "id": 1,
+      "tmin": 20.0,
+      "pmax": 10,
+      "scenes": [
+        {
+          "duration-ms": 3000,
+          "tickrate": 10,
+          "resources": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "duration-ms": 2000,
+          "tickrate": 20,
+          "resources": [
+            "A"
+          ]
+        }
+      ]
+    }
+  ]
+}

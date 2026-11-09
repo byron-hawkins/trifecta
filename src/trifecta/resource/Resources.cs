@@ -6,15 +6,23 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using trifecta.io;
+using trifecta.stage;
 
 namespace trifecta {
 namespace resource {
 
 public class ResourceQueue {
+  public ResourceQueue(ResourceType configuration) {
+    ComponentLog.singleton.Log($"Constructing a ResourceQueue for resource {configuration.name}");
+
+    _configuration = configuration;
+  }
+
   public void Push(IResourceConsumer consumer) {}
 
   public void Push(ResourceInstance resource) {}
 
+  private ResourceType _configuration;
   private Lock _lock = new();
   private Queue<ResourceInstance> _resources = new();
   private Queue<IResourceConsumer> _consumers = new();
@@ -24,9 +32,12 @@ public class ResourceQueueSet {
   public static ResourceQueueSet singleton = new();
 
   public void configure(ResourceSet resources) {
-    // throw if started or whatever
+    ComponentLog.singleton.Log("Request to configure the ResourceQueueSet");
+
+    if (_started) throw new InvalidOperationException("Cannot configure the ResourceQueueSet after it has been started");
+
     _resources = resources;
-    // configure stuff now
+    foreach (ResourceType t in _resources.elements) { _queues[t.name] = new ResourceQueue(t); }
   }
 
   public void Start() {
@@ -128,16 +139,17 @@ public interface IResourceDriver {
 }
 
 public interface IPassiveResourceDriver : IResourceDriver {
-  ResourceDriverStatus Work();
+  ResourceDriverStatus Work(TimeSpan duration);
 }
 
 public class PassiveResourceDriver : IPassiveResourceDriver {
-  PassiveResourceDriver(TimeSpan tickrate) : _tickrate(tickrate) {}
+  PassiveResourceDriver(TimeSpan tickrate) { _tickrate = tickrate; }
 
   public ResourceDriverStatus GetStatus() { return _status; }
 
   public ResourceDriverStatus Work(TimeSpan duration) {
     // pause _tickrate until done, checking _status for change to error or stop
+    return ResourceDriverStatus.working;
   }
 
   private ResourceDriverStatus _status = ResourceDriverStatus.idle;

@@ -1,0 +1,16 @@
+{
+  "elements": [
+    {
+      "name": "A",
+      "quantity": 4,
+      "tickrate": 10,
+      "mode": "passive"
+    },
+    {
+      "name": "B",
+      "quantity": 6,
+      "tickrate": 20,
+      "mode": "passive"
+    }
+  ]
+}
