@@ -40,14 +40,12 @@ public class SensorDriverFactory {
 }
 
 public class SensorScript<T> {
-  public IReadOnlyList<Event> Events => _events;
+  public List<Event> events = [];
 
   public struct Event {
     public TimeSpan duration;
     public T value;
   }
-
-  private List<Event> _events = [];
 }
 
 public class ScriptedSensorDriver<T> : ISensorDriver {

@@ -34,11 +34,11 @@ public sealed class ConfigurationFileLoaderTests {
     Assert.Equal(TimeSpan.FromMilliseconds(50), configuration.tickinterval);
     Assert.Equal(SensorType.temperature, configuration.type);
     Assert.Equal(SensorMode.passive, configuration.mode);
-    Assert.Equal(2, script.Events.Count);
-    Assert.Equal(TimeSpan.FromMilliseconds(3000), script.Events[0].duration);
-    Assert.Equal(10.0f, script.Events[0].value);
-    Assert.Equal(TimeSpan.FromMilliseconds(1000), script.Events[1].duration);
-    Assert.Equal(50.0f, script.Events[1].value);
+    Assert.Equal(2, script.events.Count);
+    Assert.Equal(TimeSpan.FromMilliseconds(3000), script.events[0].duration);
+    Assert.Equal(10.0f, script.events[0].value);
+    Assert.Equal(TimeSpan.FromMilliseconds(1000), script.events[1].duration);
+    Assert.Equal(50.0f, script.events[1].value);
   }
 
   [Fact]
@@ -55,11 +55,11 @@ public sealed class ConfigurationFileLoaderTests {
     var script = ConfigurationFileLoader.parse<SensorScript<float>>(filename);
 
     Assert.NotNull(script);
-    Assert.Equal(2, script.Events.Count);
-    Assert.Equal(TimeSpan.FromMilliseconds(3000), script.Events[0].duration);
-    Assert.Equal(10.0f, script.Events[0].value);
-    Assert.Equal(TimeSpan.FromMilliseconds(1000), script.Events[1].duration);
-    Assert.Equal(50.0f, script.Events[1].value);
+    Assert.Equal(2, script.events.Count);
+    Assert.Equal(TimeSpan.FromMilliseconds(3000), script.events[0].duration);
+    Assert.Equal(10.0f, script.events[0].value);
+    Assert.Equal(TimeSpan.FromMilliseconds(1000), script.events[1].duration);
+    Assert.Equal(50.0f, script.events[1].value);
   }
 }
 
