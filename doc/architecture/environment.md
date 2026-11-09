@@ -12,13 +12,13 @@
 - class SensorController : IConditionTypes
   - composition
     - [singleton]
-    - SensorInterpreter _interpreter
     - System.Collections.Generic.List<ISensorDriver> _actives
     - System.Collections.Generic.List<ISensorDriver> _passives
   - operations
     - SensorController(SensorInterpreter interpreter)
     - void Register(ISensorDriver driver)
     - void Release(ISensorDriver driver)
+    - void Start()
 
 <!--- @context class SensorInterpreter --->
 ## SensorInterpreter
@@ -103,6 +103,12 @@
   - composition
     - temperature
     - pressure
+
+<!--- @type --->
+- enum SensorMode
+  - composition
+    - active
+    - passive
 
 ## Diagrams
 

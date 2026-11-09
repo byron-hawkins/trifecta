@@ -42,3 +42,19 @@ formatting conventions.
    }
    }
    ```
+7. Generated JSON parsing code MUST consult
+   `meta/generate/serialization-types.json` for JSON-property-to-C#-type
+   mappings. Mapping entries apply globally to JSON-serialized file inputs.
+   The `json_name` identifies the input property, `json_type` describes its
+   JSON value type, `csharp_member` identifies the destination member,
+   `csharp_type` names the corresponding C# type, and `converter` selects an
+   optional documented conversion. Generated code MUST implement the named
+   conversion rather than infer one from a C# member type.
+8. The `milliseconds-to-timespan` converter maps a JSON integer count of
+   milliseconds to `System.TimeSpan` using
+   `System.TimeSpan.FromMilliseconds(value)`. This mapping applies to both
+   `duration-ms` and `tick-interval`; both JSON values MUST be integers, and
+   consumers MUST preserve the hyphenated JSON names when reading input.
+9. The `case-insensitive-enum` converter maps a JSON string to the specified
+   C# enum, matching enum names without regard to case. It MUST reject strings
+   that do not name a value of that enum.

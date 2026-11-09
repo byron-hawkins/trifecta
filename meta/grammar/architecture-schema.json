@@ -504,6 +504,15 @@
         "return_type": {
           "$ref": "#/$defs/typeRef"
         },
+        "type_parameters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Generic method type parameter names in declaration order; distinct from the containing type's type_parameters."
+        },
         "modifiers": {
           "$ref": "#/$defs/memberModifiers"
         },
@@ -713,6 +722,7 @@
       "Enum constants map to enum_member entries.",
       "Constructors map to constructor members.",
       "Method declarations map to method members.",
+      "Generic method type parameters map to method.type_parameters in declaration order.",
       "A class base class maps to base_types with relation extends.",
       "An interface base interface maps to base_types with relation extends.",
       "Implemented interfaces map to base_types with relation implements.",

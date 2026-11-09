@@ -145,6 +145,16 @@
             }
           ],
           "source_text": "void Release(ISensorDriver driver)"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Start()"
         }
       ]
     },
@@ -858,6 +868,32 @@
         {
           "kind": "enum_member",
           "name": "pressure"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.environment.SensorMode",
+      "kind": "enum",
+      "name": "SensorMode",
+      "namespace": "trifecta.environment",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.environment",
+          "id": "context:namespace:trifecta.environment:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "enum_member",
+          "name": "active"
+        },
+        {
+          "kind": "enum_member",
+          "name": "passive"
         }
       ]
     }

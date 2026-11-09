@@ -71,6 +71,11 @@ The terms **MUST**, **MUST NOT**, and **MAY** are normative.
 5. An enum declaration has no class/struct composition fields or operations; its
    composition entries are the enum constants.
 6. `operations` records callable operations of the annotated type.
+   Generic method parameters MUST be recorded on that method's
+   `type_parameters`, independently of any type parameters declared by the
+   containing type. Type references to a method parameter resolve in the
+   method's generic scope; type references to a containing type parameter
+   resolve in the containing type's scope.
 7. `inherits` records base types or interfaces of the annotated type.
 8. `capabilities` records interfaces implemented by the annotated type. In the
    IR, each such entry MUST be represented in `base_types` with

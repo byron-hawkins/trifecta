@@ -31,7 +31,7 @@
 <nested-type-declaration> ::= <type-declaration-fragment>
 <enum-member> ::= <c#-identifier>
 <field-declaration> ::= <member-modifiers> <c#-type> " " <c#-identifier>
-<method-declaration> ::= <member-modifiers> <c#-type> " " <c#-identifier> "(" <parameter-list> ")"
+<method-declaration> ::= <member-modifiers> <c#-type> " " <c#-identifier> <optional-type-parameter-list> "(" <parameter-list> ")"
 <constructor-declaration> ::= <member-modifiers> <c#-identifier> "(" <parameter-list> ")"
 <parameter-list> ::= <parameter> | <parameter> ", " <parameter-list> | <empty>
 <parameter> ::= <parameter-modifiers> <c#-type> " " <c#-identifier> <optional-default-value>

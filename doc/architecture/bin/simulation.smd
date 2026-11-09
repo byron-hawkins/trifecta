@@ -1,0 +1,589 @@
+{
+  "author": "Copilot",
+  "format": "markdown-architecture-smd",
+  "version": 1,
+  "source": {
+    "kind": "markdown",
+    "path": "doc/architecture/simulation.md"
+  },
+  "contexts": [
+    {
+      "id": "context:namespace:trifecta.simulation:1",
+      "kind": "namespace",
+      "name": "trifecta.simulation"
+    },
+    {
+      "id": "context:class:ConfigurationFileLoader:1",
+      "kind": "class",
+      "name": "ConfigurationFileLoader"
+    },
+    {
+      "id": "context:class:SensorDriverFactory:1",
+      "kind": "class",
+      "name": "SensorDriverFactory"
+    },
+    {
+      "id": "context:class:SensorScript:1",
+      "kind": "class",
+      "name": "SensorScript"
+    },
+    {
+      "id": "context:class:ScriptedSensorDriver:1",
+      "kind": "class",
+      "name": "ScriptedSensorDriver"
+    },
+    {
+      "id": "context:class:ScriptedActiveSensorDriver:1",
+      "kind": "class",
+      "name": "ScriptedActiveSensorDriver"
+    },
+    {
+      "id": "context:class:ScriptedPassiveSensorDriver:1",
+      "kind": "class",
+      "name": "ScriptedPassiveSensorDriver"
+    }
+  ],
+  "types": [
+    {
+      "id": "type:trifecta.simulation.ConfigurationFileLoader",
+      "kind": "class",
+      "name": "ConfigurationFileLoader",
+      "namespace": "trifecta.simulation",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.simulation",
+          "id": "context:namespace:trifecta.simulation:1"
+        },
+        {
+          "kind": "class",
+          "name": "ConfigurationFileLoader",
+          "id": "context:class:ConfigurationFileLoader:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "parse",
+          "return_type": {
+            "name": "T"
+          },
+          "type_parameters": [
+            "T"
+          ],
+          "modifiers": [
+            "static"
+          ],
+          "parameters": [
+            {
+              "name": "filename",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "source_text": "static T parse<T>(string filename)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.simulation.SensorDriverFactory",
+      "kind": "class",
+      "name": "SensorDriverFactory",
+      "namespace": "trifecta.simulation",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.simulation",
+          "id": "context:namespace:trifecta.simulation:1"
+        },
+        {
+          "kind": "class",
+          "name": "SensorDriverFactory",
+          "id": "context:class:SensorDriverFactory:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "scripted",
+          "return_type": {
+            "name": "ISensorDriver",
+            "resolved_name": "trifecta.environment.ISensorDriver"
+          },
+          "modifiers": [
+            "static"
+          ],
+          "parameters": [
+            {
+              "name": "configurationPath",
+              "type": {
+                "name": "string"
+              }
+            },
+            {
+              "name": "scriptPath",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "source_text": "static ISensorDriver scripted(string configurationPath, string scriptPath)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.simulation.SensorConfiguration",
+      "kind": "class",
+      "name": "SensorConfiguration",
+      "namespace": "trifecta.simulation",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.simulation",
+          "id": "context:namespace:trifecta.simulation:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "_id",
+          "type": {
+            "name": "int"
+          },
+          "modifiers": [],
+          "source_text": "int _id"
+        },
+        {
+          "kind": "field",
+          "name": "_name",
+          "type": {
+            "name": "string"
+          },
+          "modifiers": [],
+          "source_text": "string _name"
+        },
+        {
+          "kind": "field",
+          "name": "_tickinterval",
+          "type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [],
+          "source_text": "TimeSpan _tickinterval"
+        },
+        {
+          "kind": "field",
+          "name": "_type",
+          "type": {
+            "name": "trifecta.environment.SensorType",
+            "resolved_name": "trifecta.environment.SensorType"
+          },
+          "modifiers": [],
+          "source_text": "trifecta.environment.SensorType _type"
+        },
+        {
+          "kind": "field",
+          "name": "_mode",
+          "type": {
+            "name": "trifecta.environment.SensorMode",
+            "resolved_name": "trifecta.environment.SensorMode"
+          },
+          "modifiers": [],
+          "source_text": "trifecta.environment.SensorMode _mode"
+        },
+        {
+          "kind": "method",
+          "name": "Load",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "source_text": "void Load(string path)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.simulation.SensorScript`1",
+      "kind": "class",
+      "name": "SensorScript",
+      "type_parameters": [
+        "T"
+      ],
+      "namespace": "trifecta.simulation",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.simulation",
+          "id": "context:namespace:trifecta.simulation:1"
+        },
+        {
+          "kind": "class",
+          "name": "SensorScript",
+          "id": "context:class:SensorScript:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "_events",
+          "type": {
+            "name": "List",
+            "type_arguments": [
+              {
+                "name": "Event",
+                "resolved_name": "trifecta.simulation.SensorScript`1+Event"
+              }
+            ]
+          },
+          "modifiers": [],
+          "source_text": "List<Event> _events"
+        },
+        {
+          "kind": "method",
+          "name": "Load",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "source_text": "void Load(string path)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.simulation.SensorScript`1+Event",
+      "kind": "struct",
+      "name": "Event",
+      "namespace": "trifecta.simulation",
+      "containing_type_id": "type:trifecta.simulation.SensorScript`1",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.simulation",
+          "id": "context:namespace:trifecta.simulation:1"
+        },
+        {
+          "kind": "class",
+          "name": "SensorScript",
+          "id": "context:class:SensorScript:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "duration",
+          "type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [],
+          "source_text": "TimeSpan duration"
+        },
+        {
+          "kind": "field",
+          "name": "value",
+          "type": {
+            "name": "T"
+          },
+          "modifiers": [],
+          "source_text": "T value"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.simulation.ScriptedSensorDriver`1",
+      "kind": "class",
+      "name": "ScriptedSensorDriver",
+      "type_parameters": [
+        "T"
+      ],
+      "namespace": "trifecta.simulation",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.simulation",
+          "id": "context:namespace:trifecta.simulation:1"
+        },
+        {
+          "kind": "class",
+          "name": "ScriptedSensorDriver",
+          "id": "context:class:ScriptedSensorDriver:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [
+        {
+          "name": "ISensorDriver",
+          "relation": "implements",
+          "resolved_name": "trifecta.environment.ISensorDriver"
+        }
+      ],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "_script",
+          "type": {
+            "name": "SensorScript",
+            "resolved_name": "trifecta.simulation.SensorScript`1",
+            "type_arguments": [
+              {
+                "name": "T"
+              }
+            ]
+          },
+          "modifiers": [
+            "protected"
+          ],
+          "source_text": "protected SensorScript<T> _script"
+        },
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "SensorConfiguration",
+            "resolved_name": "trifecta.simulation.SensorConfiguration"
+          },
+          "modifiers": [
+            "protected"
+          ],
+          "source_text": "protected SensorConfiguration _configuration"
+        },
+        {
+          "kind": "constructor",
+          "name": "ScriptedSensorDriver",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "_script",
+              "type": {
+                "name": "SensorScript",
+                "resolved_name": "trifecta.simulation.SensorScript`1",
+                "type_arguments": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "_configuration",
+              "type": {
+                "name": "SensorConfiguration",
+                "resolved_name": "trifecta.simulation.SensorConfiguration"
+              }
+            }
+          ],
+          "source_text": "ScriptedSensorDriver(SensorScript<T> _script, SensorConfiguration _configuration)"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Start()"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Stop()"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.simulation.ScriptedActiveSensorDriver`1",
+      "kind": "class",
+      "name": "ScriptedActiveSensorDriver",
+      "type_parameters": [
+        "T"
+      ],
+      "namespace": "trifecta.simulation",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.simulation",
+          "id": "context:namespace:trifecta.simulation:1"
+        },
+        {
+          "kind": "class",
+          "name": "ScriptedActiveSensorDriver",
+          "id": "context:class:ScriptedActiveSensorDriver:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [
+        {
+          "name": "ScriptedSensorDriver",
+          "relation": "extends",
+          "type_arguments": [
+            {
+              "name": "T"
+            }
+          ],
+          "resolved_name": "trifecta.simulation.ScriptedSensorDriver`1"
+        }
+      ],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "ScriptedActiveSensorDriver",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "_script",
+              "type": {
+                "name": "SensorScript",
+                "resolved_name": "trifecta.simulation.SensorScript`1",
+                "type_arguments": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "_configuration",
+              "type": {
+                "name": "SensorConfiguration",
+                "resolved_name": "trifecta.simulation.SensorConfiguration"
+              }
+            }
+          ],
+          "source_text": "ScriptedActiveSensorDriver(SensorScript<T> _script, SensorConfiguration _configuration)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.simulation.ScriptedPassiveSensorDriver`1",
+      "kind": "class",
+      "name": "ScriptedPassiveSensorDriver",
+      "type_parameters": [
+        "T"
+      ],
+      "namespace": "trifecta.simulation",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.simulation",
+          "id": "context:namespace:trifecta.simulation:1"
+        },
+        {
+          "kind": "class",
+          "name": "ScriptedPassiveSensorDriver",
+          "id": "context:class:ScriptedPassiveSensorDriver:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [
+        {
+          "name": "ScriptedSensorDriver",
+          "relation": "extends",
+          "type_arguments": [
+            {
+              "name": "T"
+            }
+          ],
+          "resolved_name": "trifecta.simulation.ScriptedSensorDriver`1"
+        }
+      ],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "ScriptedPassiveSensorDriver",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "_script",
+              "type": {
+                "name": "SensorScript",
+                "resolved_name": "trifecta.simulation.SensorScript`1",
+                "type_arguments": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "_configuration",
+              "type": {
+                "name": "SensorConfiguration",
+                "resolved_name": "trifecta.simulation.SensorConfiguration"
+              }
+            }
+          ],
+          "source_text": "ScriptedPassiveSensorDriver(SensorScript<T> _script, SensorConfiguration _configuration)"
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "cross-document-resolution",
+      "message": "ISensorDriver, SensorType, and SensorMode were resolved against doc/architecture/bin/environment.smd. Current semantics do not define cross-document resolution or its search order; fully qualified resolution is recorded where unambiguous.",
+      "source_location": {
+        "start_line": 14,
+        "end_line": 14
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "outer-generic-parameter-scope",
+      "message": "Nested type Event has no declared type parameters and uses T from SensorScript<T>. Its containing_type_id identifies the generic scope, but typeRef.name stores T without an explicit parameter-scope reference; consumers must resolve it through the containing type.",
+      "source_location": {
+        "start_line": 40,
+        "end_line": 40
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "generic-context-membership",
+      "message": "Current context IDs identify generic type contexts by name only, without type parameters. The `SensorScript` class context is associated with SensorScript<T> and nested Event, but that generic context identity is not explicit.",
+      "source_location": {
+        "start_line": 30,
+        "end_line": 30
+      }
+    }
+  ]
+}

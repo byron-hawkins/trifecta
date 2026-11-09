@@ -3,7 +3,8 @@ using SensorId = System.Int32;
 using Temperature = System.Single;
 using Pressure = System.Int32;
 
-namespace trifecta.environment;
+namespace trifecta {
+namespace environment {
 
 public interface IConditionTypes {}
 
@@ -21,4 +22,13 @@ public interface IConditionParanoid : IConditionAware, IConditionTypes {
 
 public interface ISensorAware<T> : IConditionTypes {
   void SensorUpdate(SensorId id, T reading);
+}
+
+public interface ISensorDriver {}
+
+public enum SensorType { temperature, pressure }
+
+public enum SensorMode { active, passive }
+
+}
 }
