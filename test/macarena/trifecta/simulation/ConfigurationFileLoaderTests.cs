@@ -4,6 +4,8 @@ using System.IO;
 using trifecta.environment;
 using trifecta.simulation;
 using Xunit;
+using SensorConfiguration =
+    trifecta.simulation.SensorDriverFactory.SensorConfiguration;
 
 namespace trifecta {
 namespace test {
@@ -23,16 +25,15 @@ public sealed class ConfigurationFileLoaderTests {
                                   "device", "temperature-passive.json");
     var scriptPath = Path.Combine(configurationDirectory, "test", "sensors",
                                   "script", "temperature-ascending.json");
-    var configuration = new SensorConfiguration();
-    configuration.Load(devicePath);
-    var script = new SensorScript<float>();
-    script.Load(scriptPath);
+    var configuration =
+        ConfigurationFileLoader.parse<SensorConfiguration>(devicePath);
+    var script = ConfigurationFileLoader.parse<SensorScript<float>>(scriptPath);
 
-    Assert.Equal(103, configuration._id);
-    Assert.Equal("temperature-passive", configuration._name);
-    Assert.Equal(TimeSpan.FromMilliseconds(50), configuration._tickinterval);
-    Assert.Equal(SensorType.temperature, configuration._type);
-    Assert.Equal(SensorMode.passive, configuration._mode);
+    Assert.Equal(103, configuration.id);
+    Assert.Equal("temperature-passive", configuration.name);
+    Assert.Equal(TimeSpan.FromMilliseconds(50), configuration.tickinterval);
+    Assert.Equal(SensorType.temperature, configuration.type);
+    Assert.Equal(SensorMode.passive, configuration.mode);
     Assert.Equal(2, script.Events.Count);
     Assert.Equal(TimeSpan.FromMilliseconds(3000), script.Events[0].duration);
     Assert.Equal(10.0f, script.Events[0].value);

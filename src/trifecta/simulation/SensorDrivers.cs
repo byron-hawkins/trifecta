@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using Temperature = System.Single;
+using Pressure = System.Int32;
 using trifecta.environment;
 
 namespace trifecta {
@@ -12,14 +14,14 @@ public class SensorDriverFactory {
   public static SensorDriverFactory singleton = new();
 
   public SensorDriverFactory() {
-    _rootpath = Environment.GetEnvironmentVariable("TRIFECTA_CONFIG_DIR");
-    if (_rootpath == null) { throw new InvalidOperationException("Missing TRIFECTA_CONFIG_DIR: set it to the desired top-level configuration/ directory."); }
+    _rootpath = Environment.GetEnvironmentVariable("TRIFECTA_CONFIG_DIR") ??
+                throw new InvalidOperationException("Missing TRIFECTA_CONFIG_DIR: set it to the desired top-level configuration/ directory.");
   }
 
   public static ISensorDriver scripted(string configurationPath, string scriptPath) {
-    SensorConfiguration c = ConfigurationFileLoader.parse<SensorConfiguration>(_rootpath + "/" + configurationPath);
+    SensorConfiguration c = ConfigurationFileLoader.parse<SensorConfiguration>(singleton._rootpath + "/" + configurationPath);
     if (c.type == SensorType.temperature) {
-      SensorScript<Temperature> s = ConfigurationFileLoader.parse<SensorScript<Temperature>>(_rootpath + "/" + scriptPath);
+      SensorScript<Temperature> s = ConfigurationFileLoader.parse<SensorScript<Temperature>>(singleton._rootpath + "/" + scriptPath);
       if (c.mode == SensorMode.passive) { return new ScriptedPassiveSensorDriver<Temperature>(s, c); }
     }
 

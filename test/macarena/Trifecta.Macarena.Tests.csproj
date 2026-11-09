@@ -12,6 +12,7 @@
     <Compile Include="../../src/trifecta/io/*.cs" Link="trifecta/io/%(Filename)%(Extension)" />
     <Compile Include="../../src/trifecta/environment/*.cs" Link="trifecta/environment/%(Filename)%(Extension)" />
     <Compile Include="../../src/trifecta/simulation/Configuration.cs" Link="trifecta/simulation/Configuration.cs" />
+    <Compile Include="../../src/trifecta/simulation/SensorDrivers.cs" Link="trifecta/simulation/SensorDrivers.cs" />
   </ItemGroup>
 
   <ItemGroup>

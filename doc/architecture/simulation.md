@@ -28,13 +28,11 @@
 <!--- @type --->
 - class SensorConfiguration
   - composition
-    - int _id
-    - string _name
-    - TimeSpan _tickinterval
-    - trifecta.environment.SensorType _type
-    - trifecta.environment.SensorMode _mode
-  - operations
-    - void Load(string path)
+    - public int id
+    - public string name
+    - public TimeSpan tickinterval
+    - public trifecta.environment.SensorType type
+    - public trifecta.environment.SensorMode mode
 
 <!--- @context class SensorScript --->
 ## SensorScript
@@ -42,15 +40,13 @@
 <!--- @type --->
 - class SensorScript<T>
   - composition
-    - List<Event> _events
-  - operations
-    - void Load(string path)
+    - public List<Event> events
 
 <!--- @type --->
 - struct Event
   - composition
-    - TimeSpan duration
-    - T value
+    - public TimeSpan duration
+    - public T value
 
 <!--- @context class ScriptedSensorDriver --->
 ## ScriptedSensorDriver

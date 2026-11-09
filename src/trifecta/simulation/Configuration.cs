@@ -40,17 +40,17 @@ static class ParserJsonOptions {
           property.Name = "duration-ms";
           property.CustomConverter = new MillisecondsTimeSpanConverter();
           break;
-        case "_id" when property.PropertyType == typeof(int): property.Name = "id"; break;
-        case "_name" when property.PropertyType == typeof(string): property.Name = "name"; break;
-        case "_tickinterval" when property.PropertyType == typeof(TimeSpan):
+        case "id" when property.PropertyType == typeof(int): property.Name = "id"; break;
+        case "name" when property.PropertyType == typeof(string): property.Name = "name"; break;
+        case "tickinterval" when property.PropertyType == typeof(TimeSpan):
           property.Name = "tick-interval";
           property.CustomConverter = new MillisecondsTimeSpanConverter();
           break;
-        case "_type" when property.PropertyType == typeof(SensorType):
+        case "type" when property.PropertyType == typeof(SensorType):
           property.Name = "type";
           property.CustomConverter = new NamedEnumConverter<SensorType>();
           break;
-        case "_mode" when property.PropertyType == typeof(SensorMode):
+        case "mode" when property.PropertyType == typeof(SensorMode):
           property.Name = "mode";
           property.CustomConverter = new NamedEnumConverter<SensorMode>();
           break;

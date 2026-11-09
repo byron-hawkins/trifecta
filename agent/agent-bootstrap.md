@@ -6,6 +6,8 @@ At the beginning of a session in this workspace, read:
 
 - `agent/collaboration.2026-11-08.md` — workspace collaboration history and
   decisions.
+- `agent/collaboration.2026-11-09.md` — simulation, serialization, and test
+  workflow continuation.
 - `meta/generate/csharp-code-generation-policy.md` — code-generation rules.
 - `meta/generate/serialization-types.json` — global JSON-to-C# type mappings
   for generated deserialization code.

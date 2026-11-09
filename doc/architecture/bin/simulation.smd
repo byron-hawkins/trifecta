@@ -156,50 +156,60 @@
       "members": [
         {
           "kind": "field",
-          "name": "_id",
+          "name": "id",
           "type": {
             "name": "int"
           },
-          "modifiers": [],
-          "source_text": "int _id"
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public int id"
         },
         {
           "kind": "field",
-          "name": "_name",
+          "name": "name",
           "type": {
             "name": "string"
           },
-          "modifiers": [],
-          "source_text": "string _name"
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public string name"
         },
         {
           "kind": "field",
-          "name": "_tickinterval",
+          "name": "tickinterval",
           "type": {
             "name": "TimeSpan"
           },
-          "modifiers": [],
-          "source_text": "TimeSpan _tickinterval"
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public TimeSpan tickinterval"
         },
         {
           "kind": "field",
-          "name": "_type",
+          "name": "type",
           "type": {
             "name": "trifecta.environment.SensorType",
             "resolved_name": "trifecta.environment.SensorType"
           },
-          "modifiers": [],
-          "source_text": "trifecta.environment.SensorType _type"
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public trifecta.environment.SensorType type"
         },
         {
           "kind": "field",
-          "name": "_mode",
+          "name": "mode",
           "type": {
             "name": "trifecta.environment.SensorMode",
             "resolved_name": "trifecta.environment.SensorMode"
           },
-          "modifiers": [],
-          "source_text": "trifecta.environment.SensorMode _mode"
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public trifecta.environment.SensorMode mode"
         },
         {
           "kind": "method",
@@ -306,8 +316,10 @@
           "type": {
             "name": "TimeSpan"
           },
-          "modifiers": [],
-          "source_text": "TimeSpan duration"
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public TimeSpan duration"
         },
         {
           "kind": "field",
@@ -315,8 +327,10 @@
           "type": {
             "name": "T"
           },
-          "modifiers": [],
-          "source_text": "T value"
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public T value"
         }
       ]
     },

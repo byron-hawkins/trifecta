@@ -13,33 +13,33 @@
     {
       "json_name": "id",
       "json_type": "integer",
-      "csharp_member": "_id",
+      "csharp_member": "id",
       "csharp_type": "System.Int32"
     },
     {
       "json_name": "name",
       "json_type": "string",
-      "csharp_member": "_name",
+      "csharp_member": "name",
       "csharp_type": "System.String"
     },
     {
       "json_name": "tick-interval",
       "json_type": "integer",
-      "csharp_member": "_tickinterval",
+      "csharp_member": "tickinterval",
       "csharp_type": "System.TimeSpan",
       "converter": "milliseconds-to-timespan"
     },
     {
       "json_name": "type",
       "json_type": "string",
-      "csharp_member": "_type",
+      "csharp_member": "type",
       "csharp_type": "trifecta.environment.SensorType",
       "converter": "case-insensitive-enum"
     },
     {
       "json_name": "mode",
       "json_type": "string",
-      "csharp_member": "_mode",
+      "csharp_member": "mode",
       "csharp_type": "trifecta.environment.SensorMode",
       "converter": "case-insensitive-enum"
     }
