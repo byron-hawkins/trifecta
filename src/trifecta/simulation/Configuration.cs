@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using trifecta.environment;
 
 namespace trifecta {
 namespace simulation {
@@ -26,7 +25,10 @@ static class ParserJsonOptions {
     var resolver = new DefaultJsonTypeInfoResolver();
     resolver.Modifiers.Add(ApplyMappings);
 
-    return new JsonSerializerOptions { IncludeFields = true, TypeInfoResolver = resolver };
+    var options = new JsonSerializerOptions { IncludeFields = true, TypeInfoResolver = resolver };
+    options.Converters.Add(new MillisecondsTimeSpanConverter());
+    options.Converters.Add(new NamedEnumConverterFactory());
+    return options;
   }
 
   private static void ApplyMappings(JsonTypeInfo typeInfo) {
@@ -38,21 +40,11 @@ static class ParserJsonOptions {
       switch (member.Name) {
         case "duration" when property.PropertyType == typeof(TimeSpan):
           property.Name = "duration-ms";
-          property.CustomConverter = new MillisecondsTimeSpanConverter();
           break;
         case "id" when property.PropertyType == typeof(int): property.Name = "id"; break;
         case "name" when property.PropertyType == typeof(string): property.Name = "name"; break;
         case "tickinterval" when property.PropertyType == typeof(TimeSpan):
           property.Name = "tick-interval";
-          property.CustomConverter = new MillisecondsTimeSpanConverter();
-          break;
-        case "type" when property.PropertyType == typeof(SensorType):
-          property.Name = "type";
-          property.CustomConverter = new NamedEnumConverter<SensorType>();
-          break;
-        case "mode" when property.PropertyType == typeof(SensorMode):
-          property.Name = "mode";
-          property.CustomConverter = new NamedEnumConverter<SensorMode>();
           break;
       }
     }
@@ -76,24 +68,43 @@ static class ParserJsonOptions {
     }
   }
 
+  private sealed class NamedEnumConverterFactory : JsonConverterFactory {
+    public override bool CanConvert(Type typeToConvert) => typeToConvert.IsEnum;
+
+    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options) {
+      var converterType = typeof(NamedEnumConverter<>).MakeGenericType(typeToConvert);
+      return (JsonConverter)Activator.CreateInstance(converterType)!;
+    }
+  }
+
   private sealed class NamedEnumConverter<T> : JsonConverter<T>
       where T : struct, Enum {
     public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
-      if (reader.TokenType == JsonTokenType.String) {
-        var value = reader.GetString();
-        foreach (var name in Enum.GetNames<T>()) {
-          if (string.Equals(name, value, StringComparison.OrdinalIgnoreCase)) { return Enum.Parse<T>(name); }
-        }
-      }
+      if (reader.TokenType == JsonTokenType.String) { return ParseName(reader.GetString()); }
+      throw new JsonException($"Expected a named {typeof(T).Name} value.");
+    }
 
+    public override T ReadAsPropertyName(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+      return ParseName(reader.GetString());
+    }
+
+    private static T ParseName(string? value) {
+      foreach (var name in Enum.GetNames<T>()) {
+        if (string.Equals(name, value, StringComparison.OrdinalIgnoreCase)) { return Enum.Parse<T>(name); }
+      }
       throw new JsonException($"Expected a named {typeof(T).Name} value.");
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options) {
-      var name = Enum.GetName(value);
-      if (name is null) { throw new JsonException($"Invalid {typeof(T).Name} value: {value}."); }
+      writer.WriteStringValue(GetName(value));
+    }
 
-      writer.WriteStringValue(name);
+    public override void WriteAsPropertyName(Utf8JsonWriter writer, T value, JsonSerializerOptions options) {
+      writer.WritePropertyName(GetName(value));
+    }
+
+    private static string GetName(T value) {
+      return Enum.GetName(value) ?? throw new JsonException($"Invalid {typeof(T).Name} value: {value}.");
     }
   }
 }
