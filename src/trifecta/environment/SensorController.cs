@@ -1,11 +1,14 @@
 /* author: Byron */
 /* stub: Copilot */
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Temperature = System.Single;
 using Pressure = System.Int32;
+using SensorId = System.Int32;
+using trifecta.io;
 
 namespace trifecta {
 namespace environment {
@@ -15,7 +18,7 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
 
   public void Register(ISensorDriver driver) {
     using (_lock.EnterScope()) {
-      if (driver.GetMode() == SensorMode.active) {
+      if (driver.GetSensorMode() == SensorMode.active) {
         _actives.Add(driver);
       } else {
         _passives.Add(driver);
@@ -25,7 +28,7 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
 
   public void Release(ISensorDriver driver) {
     using (_lock.EnterScope()) {
-      if (driver.GetMode() == SensorMode.active) {
+      if (driver.GetSensorMode() == SensorMode.active) {
         _actives.Remove(driver);
       } else {
         _passives.Remove(driver);
@@ -48,12 +51,15 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
   public void Stop() {
     ComponentLog.singleton.Log("SensorController stop requested");
 
+    Task task;
     using (_lock.EnterScope()) {
       if (!_started) throw new InvalidOperationException("Cannot stop a SensorController that has not been started");
       if (_stop) throw new InvalidOperationException("Cannot stop a SensorController that has been stopped");
 
-      _self.Join();
+      _stop = true;
+      task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop the SensorController");
     }
+    task.Wait();
   }
 
   public void SensorUpdate(SensorId id, Temperature reading) {}
@@ -66,7 +72,7 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
         if (_stop) return;
 
         foreach (ISensorDriver passive in _passives) {
-          ComponentLog.singleton.Log($"SensorController polls passive driver {passive.GetId()} for a {_passive.GetType()} value");
+          ComponentLog.singleton.Log($"SensorController polls passive driver {passive.GetId()} for a {passive.GetSensorType()} value");
         }
       }
     }
@@ -75,7 +81,6 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
   private bool _started = false;
   private bool _stop = false;
   private Task? _self = null;
-  private CancellationToken? _cancel = null;
 
   private Lock _lock = new();
   private readonly List<ISensorDriver> _actives = [];

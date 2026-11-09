@@ -18,6 +18,31 @@ namespace environment {
 [Collection("ComponentLog tests")]
 public sealed class SensorControllerTests : ComponentLogTestBase {
   [Fact]
+  public async Task StopsPromptlyAfterRegisteringBothSensors() {
+    var temperatureDriver = SensorDriverFactory.scripted(
+        "test/sensors/device/temperature-passive.json",
+        "test/sensors/script/temperature-ascending.json");
+    var pressureDriver = SensorDriverFactory.scripted(
+        "test/sensors/device/pressure-active.json",
+        "test/sensors/script/pressure-ascending.json");
+    Assert.NotNull(temperatureDriver);
+    Assert.NotNull(pressureDriver);
+
+    setup($"SensorControllerStopTests-{Guid.NewGuid():N}");
+    try {
+      var controller = SensorController.singleton;
+      controller.Register(temperatureDriver);
+      controller.Register(pressureDriver);
+      controller.Start();
+      await Task.Run(controller.Stop).WaitAsync(TimeSpan.FromSeconds(2));
+      controller.Release(temperatureDriver);
+      controller.Release(pressureDriver);
+    } finally {
+      finish();
+    }
+  }
+
+  [Fact]
   public async Task StartLogsScriptValuesAtTheConfiguredTickRate() {
     var configurationDirectory =
         Environment.GetEnvironmentVariable("TRIFECTA_CONFIG_DIR");
@@ -93,7 +118,7 @@ public sealed class SensorControllerTests : ComponentLogTestBase {
           pressureConfigurationPath, pressureScriptPath);
       Assert.NotNull(driver);
       Assert.NotNull(pressureDriver);
-      var controller = new SensorController(SensorInterpreter.singleton);
+      var controller = SensorController.singleton;
       controller.Register(driver);
       controller.Register(pressureDriver);
       controller.Start();

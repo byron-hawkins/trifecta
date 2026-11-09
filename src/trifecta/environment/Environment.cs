@@ -26,9 +26,9 @@ public interface ISensorAware<T> : IConditionTypes {
 }
 
 public interface ISensorDriver {
-  public SensorId GetId();
-  public SensorType GetType();
-  public SensorMode GetMode();
+  SensorId GetId();
+  SensorType GetSensorType();
+  SensorMode GetSensorMode();
 }
 
 public enum SensorType { temperature, pressure }

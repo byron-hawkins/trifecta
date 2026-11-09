@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Temperature = System.Single;
 using Pressure = System.Int32;
+using SensorId = System.Int32;
 using trifecta.environment;
 
 namespace trifecta {
@@ -22,10 +23,21 @@ public class SensorDriverFactory {
     SensorConfiguration c = ConfigurationFileLoader.parse<SensorConfiguration>(singleton._rootpath + "/" + configurationPath);
     if (c.type == SensorType.temperature) {
       SensorScript<Temperature> s = ConfigurationFileLoader.parse<SensorScript<Temperature>>(singleton._rootpath + "/" + scriptPath);
-      if (c.mode == SensorMode.passive) { return new ScriptedPassiveSensorDriver<Temperature>(s, c); }
+      if (c.mode == SensorMode.active) {
+        return new ScriptedActiveSensorDriver<Temperature>(s, c);
+      } else {
+        return new ScriptedPassiveSensorDriver<Temperature>(s, c);
+      }
+    } else {
+      SensorScript<Pressure> s = ConfigurationFileLoader.parse<SensorScript<Pressure>>(singleton._rootpath + "/" + scriptPath);
+      if (c.mode == SensorMode.active) {
+        return new ScriptedActiveSensorDriver<Pressure>(s, c);
+      } else {
+        return new ScriptedPassiveSensorDriver<Pressure>(s, c);
+      }
     }
 
-    return null!;
+    // return null!;
   }
 
   public class SensorConfiguration {
@@ -58,6 +70,10 @@ public class ScriptedSensorDriver<T> : ISensorDriver {
 
   public void Stop() {}
 
+  public SensorId GetId() { return _configuration.id; }
+  public SensorType GetSensorType() { return _configuration.type; }
+  public SensorMode GetSensorMode() { return _configuration.mode; }
+
   protected SensorScript<T> _script;
   protected SensorDriverFactory.SensorConfiguration _configuration;
 }
@@ -69,7 +85,5 @@ public class ScriptedActiveSensorDriver<T> : ScriptedSensorDriver<T> {
 public class ScriptedPassiveSensorDriver<T> : ScriptedSensorDriver<T> {
   public ScriptedPassiveSensorDriver(SensorScript<T> _script, SensorDriverFactory.SensorConfiguration _configuration) : base(_script, _configuration) {}
 }
-
 }
 }
-
