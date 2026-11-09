@@ -1,0 +1,6 @@
+{
+  "events": [
+    { "duration-ms": 3000, "value": 1000 },
+    { "duration-ms": 1000, "value": 1060 }
+  ]
+}

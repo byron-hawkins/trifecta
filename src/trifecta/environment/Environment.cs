@@ -1,4 +1,6 @@
-/* author: Copilot */
+/* author: Byron */
+/* stub: Copilot */
+
 using SensorId = System.Int32;
 using Temperature = System.Single;
 using Pressure = System.Int32;
@@ -22,3 +24,13 @@ public interface IConditionParanoid : IConditionAware, IConditionTypes {
 public interface ISensorAware<T> : IConditionTypes {
   void SensorUpdate(SensorId id, T reading);
 }
+
+public interface ISensorDriver {
+  public SensorId GetId();
+  public SensorType GetType();
+  public SensorMode GetMode();
+}
+
+public enum SensorType { temperature, pressure }
+
+public enum SensorMode { active, passive }
