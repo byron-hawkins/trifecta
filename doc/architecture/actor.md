@@ -72,8 +72,9 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
     - [singleton]
     - Dictionary<ActorTypeId, List<Actor>> _cast
     - CastOptimizer _optimizer
+    - DirectorConfiguration _configuration
   - operations
-    - Director(DirectorConfiguration configuration)
+    - void configure(DirectorConfiguration configuration)
     - void Start()
     - void Stop(bool nicely)
 

@@ -41,9 +41,12 @@ enqeueued with differing precedence on at least two queues of RQS.
     - readonly object _idle
     - System.Threading.Lock _multilock
     - Dictionary<ResourceName, ResourceQueue> _queues
+    - ResourceSet _resources
   - operations
+    - void configure(ResourceSet resources)
     - void Start()
     - void Stop()
+    - void Bump()
     - void MultiPush(IResourceConsumer consumer)
 
 <!--- @context class ResourceInstance --->
@@ -70,13 +73,13 @@ operations concurrently.
     - ResourceDriverStatus GetStatus()
 
 <!--- @type --->
-- interface IPassiveResourceDriver
+- interface IActiveResourceDriver : IResourceDriver
   - operations
     - ResourceDriverStatus Start()
     - ResourceDriverStatus Stop()
 
 <!--- @type --->
-- interface IActiveResourceDriver
+- interface IPassiveResourceDriver : IResourceDriver
   - operations
     - ResourceDriverStatus Work()
 
@@ -87,12 +90,6 @@ operations concurrently.
     - void Grant(ResourceInstance resource)
 
 ## Enumerations
-
-<!--- @type --->
-- enum ResourceMode
-  - composition
-    - active
-    - passive
 
 <!--- @type --->
 - enum ResourceDriverStatus

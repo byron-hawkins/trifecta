@@ -1,0 +1,398 @@
+{
+  "author": "Copilot",
+  "format": "markdown-architecture-smd",
+  "version": 1,
+  "source": {
+    "kind": "markdown",
+    "path": "doc/architecture/stage.md"
+  },
+  "contexts": [
+    {
+      "id": "context:namespace:trifecta.stage:1",
+      "kind": "namespace",
+      "name": "trifecta.stage"
+    },
+    {
+      "id": "context:class:ResourceType:1",
+      "kind": "class",
+      "name": "ResourceType"
+    },
+    {
+      "id": "context:class:ResourceSet:1",
+      "kind": "class",
+      "name": "ResourceSet"
+    },
+    {
+      "id": "context:class:DirectorConfiguration:1",
+      "kind": "class",
+      "name": "DirectorConfiguration"
+    },
+    {
+      "id": "context:class:RoleConfiguration:1",
+      "kind": "class",
+      "name": "RoleConfiguration"
+    },
+    {
+      "id": "context:class:SceneConfiguration:1",
+      "kind": "class",
+      "name": "SceneConfiguration"
+    }
+  ],
+  "types": [
+    {
+      "id": "type:trifecta.stage.ResourceType",
+      "kind": "class",
+      "name": "ResourceType",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "ResourceType",
+          "id": "context:class:ResourceType:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "name",
+          "type": {
+            "name": "ResourceName",
+            "resolved_name": "System.String"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public ResourceName name"
+        },
+        {
+          "kind": "field",
+          "name": "quantity",
+          "type": {
+            "name": "int"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public int quantity"
+        },
+        {
+          "kind": "field",
+          "name": "tickrate",
+          "type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public TimeSpan tickrate"
+        },
+        {
+          "kind": "field",
+          "name": "mode",
+          "type": {
+            "name": "ResourceMode",
+            "resolved_name": "trifecta.stage.ResourceMode"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public ResourceMode mode"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.ResourceSet",
+      "kind": "class",
+      "name": "ResourceSet",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "ResourceSet",
+          "id": "context:class:ResourceSet:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "elements",
+          "type": {
+            "name": "List",
+            "type_arguments": [
+              {
+                "name": "ResourceType",
+                "resolved_name": "trifecta.stage.ResourceType"
+              }
+            ]
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public List<ResourceType> elements"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.DirectorConfiguration",
+      "kind": "class",
+      "name": "DirectorConfiguration",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "DirectorConfiguration",
+          "id": "context:class:DirectorConfiguration:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "mode",
+          "type": {
+            "name": "TransitionMode",
+            "resolved_name": "trifecta.stage.TransitionMode"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public TransitionMode mode"
+        },
+        {
+          "kind": "field",
+          "name": "roles",
+          "type": {
+            "name": "List",
+            "type_arguments": [
+              {
+                "name": "RoleConfiguration",
+                "resolved_name": "trifecta.stage.RoleConfiguration"
+              }
+            ]
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public List<RoleConfiguration> roles"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.RoleConfiguration",
+      "kind": "class",
+      "name": "RoleConfiguration",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "RoleConfiguration",
+          "id": "context:class:RoleConfiguration:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "id",
+          "type": {
+            "name": "RoleId",
+            "resolved_name": "System.Int32"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public RoleId id"
+        },
+        {
+          "kind": "field",
+          "name": "tmin",
+          "type": {
+            "name": "Temperature",
+            "resolved_name": "System.Single"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public Temperature tmin"
+        },
+        {
+          "kind": "field",
+          "name": "pmax",
+          "type": {
+            "name": "Pressure",
+            "resolved_name": "System.Int32"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public Pressure pmax"
+        },
+        {
+          "kind": "field",
+          "name": "scenes",
+          "type": {
+            "name": "List",
+            "type_arguments": [
+              {
+                "name": "SceneConfiguration",
+                "resolved_name": "trifecta.stage.SceneConfiguration"
+              }
+            ]
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public List<SceneConfiguration> scenes"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.SceneConfiguration",
+      "kind": "class",
+      "name": "SceneConfiguration",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "SceneConfiguration",
+          "id": "context:class:SceneConfiguration:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "duration",
+          "type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public TimeSpan duration"
+        },
+        {
+          "kind": "field",
+          "name": "tickrate",
+          "type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public TimeSpan tickrate"
+        },
+        {
+          "kind": "field",
+          "name": "resources",
+          "type": {
+            "name": "List",
+            "type_arguments": [
+              {
+                "name": "ResourceName",
+                "resolved_name": "System.String"
+              }
+            ]
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public List<ResourceName> resources"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.ResourceMode",
+      "kind": "enum",
+      "name": "ResourceMode",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "enum_member",
+          "name": "active"
+        },
+        {
+          "kind": "enum_member",
+          "name": "passive"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.TransitionMode",
+      "kind": "enum",
+      "name": "TransitionMode",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "enum_member",
+          "name": "quickstop"
+        },
+        {
+          "kind": "enum_member",
+          "name": "finishup"
+        },
+        {
+          "kind": "enum_member",
+          "name": "costmodel"
+        }
+      ]
+    }
+  ]
+}

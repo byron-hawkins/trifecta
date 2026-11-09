@@ -2,6 +2,19 @@
   "$comment": "author: Copilot",
   "format": "trifecta.json-serialization-types",
   "version": 1,
+  "type_defaults": [
+    {
+      "csharp_type": "System.Enum",
+      "applies_to": "all-enum-types",
+      "json_type": "string",
+      "converter": "case-insensitive-enum"
+    },
+    {
+      "csharp_type": "System.TimeSpan",
+      "json_type": "integer",
+      "converter": "milliseconds-to-timespan"
+    }
+  ],
   "mappings": [
     {
       "json_name": "duration-ms",
@@ -26,6 +39,13 @@
       "json_name": "tick-interval",
       "json_type": "integer",
       "csharp_member": "tickinterval",
+      "csharp_type": "System.TimeSpan",
+      "converter": "milliseconds-to-timespan"
+    },
+    {
+      "json_name": "tickrate",
+      "json_type": "integer",
+      "csharp_member": "tickrate",
       "csharp_type": "System.TimeSpan",
       "converter": "milliseconds-to-timespan"
     },

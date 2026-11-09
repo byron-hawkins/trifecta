@@ -198,7 +198,8 @@
             "name": "Dictionary",
             "type_arguments": [
               {
-                "name": "ResourceName"
+                "name": "ResourceName",
+                "resolved_name": "System.String"
               },
               {
                 "name": "ResourceQueue",
@@ -424,7 +425,8 @@
             "name": "IEnumerable",
             "type_arguments": [
               {
-                "name": "ResourceName"
+                "name": "ResourceName",
+                "resolved_name": "System.String"
               }
             ]
           },

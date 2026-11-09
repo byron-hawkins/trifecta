@@ -48,13 +48,19 @@ formatting conventions.
    The `json_name` identifies the input property, `json_type` describes its
    JSON value type, `csharp_member` identifies the destination member,
    `csharp_type` names the corresponding C# type, and `converter` selects an
-   optional documented conversion. Generated code MUST implement the named
-   conversion rather than infer one from a C# member type.
+   optional documented conversion. `type_defaults` apply to all occurrences of
+   the specified type, including root values and nested collections; the
+   `System.Enum` default applies to every enum type. Member mappings specify
+   JSON names and MUST NOT override these type defaults with a conflicting
+   representation.
 8. The `milliseconds-to-timespan` converter maps a JSON integer count of
    milliseconds to `System.TimeSpan` using
-   `System.TimeSpan.FromMilliseconds(value)`. This mapping applies to both
-   `duration-ms` and `tick-interval`; both JSON values MUST be integers, and
-   consumers MUST preserve the hyphenated JSON names when reading input.
-9. The `case-insensitive-enum` converter maps a JSON string to the specified
-   C# enum, matching enum names without regard to case. It MUST reject strings
-   that do not name a value of that enum.
+   `System.TimeSpan.FromMilliseconds(value)`. Every `TimeSpan` value, including
+   `duration-ms`, `tick-interval`, and `tickrate`, MUST use integer
+   milliseconds, never a formatted time string. Consumers MUST preserve the
+   specified JSON names. Serialization MUST reject values that are not a whole
+   number of milliseconds.
+9. The `case-insensitive-enum` converter maps a JSON string to any C# enum,
+   matching enum names without regard to case. All enums MUST serialize as
+   strings and reject numeric JSON values and strings that do not name a value
+   of that enum. Serialization MUST reject unnamed enum values.
