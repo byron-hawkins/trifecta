@@ -1,11 +1,14 @@
 /* stub: Copilot */
 /* author: Byron */
 
+using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Threading;
 using SensorId = System.Int32;
 using Temperature = System.Single;
 using Pressure = System.Int32;
+using trifecta.io;
 
 namespace trifecta {
 namespace environment {
@@ -19,11 +22,11 @@ public class SensorInterpreter : IConditionTypes, ISensorAware<Temperature>, ISe
   // }
 
   public Temperature GetTemperature() {
-    using (_lock.EnterScope()) { return _stable.temperature; }
+    using (_lock.EnterScope()) { return _stable.t; }
   }
 
   public Pressure GetPressure() {
-    using (_lock.EnterScope()) { return _stable.pressure; }
+    using (_lock.EnterScope()) { return _stable.p; }
   }
 
   public void SetThresholds(Thresholds thresholds) {
@@ -53,10 +56,11 @@ public class SensorInterpreter : IConditionTypes, ISensorAware<Temperature>, ISe
   public void SensorUpdate(SensorId id, Temperature reading) {
     // TODO: buffer at some interval to avoid chatter
     using (_lock.EnterScope()) {  // TODO: incremental update scaled by sensor relative weight
-      Temperature t1 = Array.FindIndex(_thresholds.t, (f) => f < _stable.t);
+      int t1 = FindSlot(_thresholds.t, _stable.t);
       _stable.t = reading;
-      Temperature t2 = Array.FindIndex(_thresholds.t, (f) => f < _stable.t);
+      int t2 = FindSlot(_thresholds.t, _stable.t);
       if (t1 != t2) {  // TODO: also give threshold value?
+        ComponentLog.singleton.Log($"Temperature sensor {id} crosses {Math.Abs(t2-t1)} thresholds to {reading}");
         foreach (IConditionAware a in _registry) a.ThresholdCross(_stable.t);
       }
     }
@@ -64,10 +68,11 @@ public class SensorInterpreter : IConditionTypes, ISensorAware<Temperature>, ISe
 
   public void SensorUpdate(SensorId id, Pressure reading) {
     using (_lock.EnterScope()) {  // TODO: incremental update scaled by sensor relative weight
-      Pressure p1 = Array.FindIndex(_thresholds.p, (i) => i < _stable.p);
+      int p1 = FindSlot(_thresholds.p, _stable.p);
       _stable.p = reading;
-      Pressure p2 = Array.FindIndex(_thresholds.p, (i) => i < _stable.p);
+      int p2 = FindSlot(_thresholds.p, _stable.p);
       if (p1 != p2) {
+        ComponentLog.singleton.Log($"Pressure sensor {id} crosses {Math.Abs(p2-p1)} thresholds to {reading}");
         foreach (IConditionAware a in _registry) a.ThresholdCross(_stable.p);
       }
     }
@@ -84,8 +89,14 @@ public class SensorInterpreter : IConditionTypes, ISensorAware<Temperature>, ISe
   }
 
   private struct Stable {
-    Temperature t;
-    Pressure p;
+    public Temperature t;
+    public Pressure p;
+  }
+
+  private int FindSlot<T>(T[] set, T find)
+      where T : INumber<T> {
+    int i = Array.FindIndex(set, (e) => e > find);
+    return (i < 0) ? set.Length : i;
   }
 
   private Lock _lock = new();

@@ -112,3 +112,105 @@ CLI is not installed; no local offline rendering test was performed.
 - When Mermaid CLI is installed, validate generated diagrams locally and
   consider updating the workflow to support static rendering or fully offline
   HTML.
+
+---
+
+# Collaboration transcript — 2026-11-08 (continued)
+
+## Summary
+
+The architecture outline for `environment.md` was converted into SMD, Mermaid
+diagrams, and rendered Markdown/HTML. C# stubs and tests were added for
+`SensorInterpreter`. The test workflow was clarified: tests with matching
+toddler and macarena copies refer to the macarena copy, toddler tests are
+preserved unless specifically removed, and generated tests use the shared
+test framework. A bootstrap guide was added to identify session-essential
+workspace files.
+
+## Decisions and design
+
+- `SensorInterpreter` test coverage was split into two phases: toddler tests
+  validate the API and demonstrate expected behavior against stubs; macarena
+  tests compile against source implementations and exercise their behavior.
+- Once a test has a macarena copy, future requests for that test refer to the
+  macarena copy. Toddler tests must not be deleted without explicit instruction,
+  even when they become obsolete.
+- Tests use the shared test framework in the applicable suite's `common/`
+  directory.
+- C# generation attribution distinguishes stub-only files
+  (`/* stub: Copilot */`) from files authored or substantively changed by
+  Copilot (`/* author: Copilot */`).
+- Generated C# follows the braced namespace style used in `src/`, with one
+  `namespace` keyword and its own braces for each namespace segment.
+- C# `using` aliases are lexical and are not inherited from interfaces.
+  Interfaces may declare nested record structs, but those types are public
+  members qualified through the interface name, not aliases inherited by
+  implementers.
+
+## Issues encountered and resolutions
+
+- The first macarena `ComponentLog` test build exposed a missing separator in
+  the logger's release path. The source is in a read-only mount from this
+  workspace, so that edit could not be made here. After the source was fixed
+  externally, the macarena `ComponentLog` test passed.
+- Macarena SensorInterpreter tests initially failed to compile because the
+  real source had incorrect `Stable` member references, inaccessible fields,
+  and unresolved `Array` references. After the source was updated, the tests
+  compiled and ran.
+- The macarena threshold-crossing test failed because the recorded events
+  differed from the expected crossings. The update/readback/logging test also
+  failed: no matching update log entries were found for either sensor type.
+- The first macarena test invocation with `--no-restore` lacked the xUnit
+  execution runtime in the output directory. Running without `--no-restore`
+  restored the test dependencies and allowed test discovery and execution.
+- The toddler SensorInterpreter tests compile and fail as expected against the
+  stub: the threshold test records no events, while the readback/log test sees
+  default getter values and no log file.
+
+## Outputs and validation
+
+- `doc/architecture/bin/environment.smd` — SMD for the sensor architecture;
+  schema constraints and cross-references were checked.
+- `doc/architecture/figures/sensor-awareness.md` and
+  `doc/architecture/figures/sensor-control.md` — generated Mermaid diagrams.
+- `doc/architecture/render/sensor-awareness.md`,
+  `doc/architecture/render/sensor-control.md`, and their HTML siblings —
+  rendered documents preserving source annotations. The browser displayed both
+  Mermaid diagrams as SVGs without errors.
+- `test/toddler/trifecta/environment/Environment.cs` and
+  `test/toddler/trifecta/environment/SensorInterpreter.cs` — environment
+  interface and interpreter stubs.
+- `test/toddler/environment/SensorInterpreterTests.cs` — API/readback/logging
+  and threshold-crossing tests against the toddler stubs.
+- `test/macarena/trifecta/environment/SensorInterpreterTests.cs` — corresponding
+  macarena tests against the real environment sources.
+- `test/macarena/Trifecta.Macarena.Tests.csproj` — links
+  `src/trifecta/environment/*.cs` for macarena test builds.
+- `test/macarena/trifecta/io/ComponentLogTests.cs` — checks the component
+  release log message; the focused test passed after the logger source fix.
+- `meta/test/testing-rules.md` — test-copy precedence, test-preservation, and
+  shared-framework rules.
+- `meta/generate/csharp-code-generation-policy.md` — updated C# author/stub
+  attribution and namespace-style rules.
+- `agent/agent-bootstrap.md` — session startup reading list and maintenance
+  rule for newly created session-essential files.
+
+## Advantages achieved
+
+- The toddler/macarena distinction is explicit: bootstrap tests validate
+  signatures and expected cases, while macarena tests exercise actual source
+  behavior.
+- The `ComponentLog` release message now has a passing macarena regression
+  test.
+- SensorInterpreter's threshold and logging behavior has test coverage that
+  exposes differences between expected and actual implementation behavior.
+- Session startup expectations and the rule for maintaining the bootstrap list
+  are documented.
+
+## Follow-up notes
+
+- Resolve the macarena SensorInterpreter event mismatch and missing update log
+  entries, then rerun the focused macarena tests.
+- Preserve toddler tests unless explicitly instructed otherwise.
+- Keep `agent/agent-bootstrap.md` updated whenever a session-essential file is
+  created.

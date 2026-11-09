@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Include="../../src/trifecta/io/*.cs" Link="trifecta/io/%(Filename)%(Extension)" />
+    <Compile Include="../../src/trifecta/environment/*.cs" Link="trifecta/environment/%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>
