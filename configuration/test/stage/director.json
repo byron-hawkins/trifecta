@@ -22,6 +22,28 @@
           ]
         }
       ]
+    },
+    {
+      "id": 4,
+      "tmin": 15.0,
+      "pmax": 15,
+      "scenes": [
+        {
+          "duration-ms": 4000,
+          "tickrate": 5,
+          "resources": [
+            "B"
+          ]
+        },
+        {
+          "duration-ms": 1000,
+          "tickrate": 25,
+          "resources": [
+            "A",
+            "B"
+          ]
+        }
+      ]
     }
   ]
 }

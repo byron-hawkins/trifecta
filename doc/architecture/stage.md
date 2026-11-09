@@ -40,6 +40,7 @@
 - class RoleConfiguration
   - composition
     - public RoleId id
+    - public int quantity
     - public Temperature tmin
     - public Pressure pmax
     - public List<SceneConfiguration> scenes

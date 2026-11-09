@@ -235,6 +235,17 @@
         },
         {
           "kind": "field",
+          "name": "quantity",
+          "type": {
+            "name": "int"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public int quantity"
+        },
+        {
+          "kind": "field",
           "name": "tmin",
           "type": {
             "name": "Temperature",

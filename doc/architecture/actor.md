@@ -2,18 +2,10 @@
 
 *Subject: outline an event model for an autonomous stage executor*
 
-`namespace trifecta.actor`
+<!--- @context namespace trifecta.stage --->
+`namespace trifecta.stage`
 
-## StageSet
-
-### Data Structure
-
-- class StageSet
-  - contains
-    - <singleton>
-    - Dictionary<IStageConfiguration.IdType, IStageConfiguration> Members
-
-<!--- @context struct Actor --->
+<!--- @context class Actor --->
 ## Actor
 
 To perform a sequence of Scene comprising a stage for some duration 100ms <= tx <= 5s, while responding to
@@ -36,11 +28,12 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
 <!--- @type --->
 - class Actor : environment.IConditionAware, resource.IResourceConsumer
   - composition
-    - Actor(ActorConfiguration configuration)
-    - ActorConfiguration _configuration
-    - Scene _onstage
+    - RoleConfiguration _configuration
     - ActorPhase _phase
+    - Scene? _onstage
+    - List<Scene> _scenes
   - operations
+    - Actor(RoleConfiguration configuration)
     - void Start()
     - void Stop(ActorPhase mode, System.Action finalize)
 
@@ -53,24 +46,25 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
 - class Scene
   - composition
     - SceneConfiguration _configuration
-    - List<resource.ResourceInstance> _resources;
+    - List<resource.ResourceInstance> _resources
     - SceneStatus _status
   - operations
     - Scene(SceneConfiguration configuration)
     - SceneStatus GetStatus()
     - SceneStatus Execute()
 
-
+<!--- @context class Director --->
 ## Director
 
 Attempts to optimize productivity by regulating the number of concurrent actors.
 
 ### Data Structure
 
+<!--- @type --->
 - class Director : environment.IConditionAware, ICastManager
   - composition
     - [singleton]
-    - Dictionary<ActorTypeId, List<Actor>> _cast
+    - Dictionary<RoleId, List<Actor>> _cast
     - CastOptimizer _optimizer
     - DirectorConfiguration _configuration
   - operations
@@ -84,34 +78,38 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
 <!--- @type --->
 - class CastOptimizer
   - composition
-    - TransitionMode _mode
     - ICastManager _manager
+    - DirectorConfiguration _configuration
   - operations
-    - CastOptimizer(TransitionMode mode, ICastManager manager)
-
+    - CastOptimizer(DirectorConfiguration configuration, ICastManager manager)
+    - void Optimize()
 
 ## Interfaces
 
+<!--- @type --->
 - interface ICastManager
-  - void Interrupt(Actor, ActorPhase)
-  - void Initiate(IStageConfiguration.IdType)
-
-- interface ICastOptimizer
-
+  - operations
+    - void Interrupt(Actor actor, ActorPhase exitStrategy)
+    - void Initiate(RoleId role)
 
 ## Enumerations
 
-- SceneStatus
-  - pending
-  - running
-  - completed
-  - error
+<!--- @type --->
+- enum SceneStatus
+  - composition
+    - pending
+    - running
+    - completed
+    - error
 
-- ActorPhase
-  - ready
-  - queue
-  - work
-  - suspension
-  - exit_at_cost
-  - exit_at_completion
-  - exit_now
+<!--- @type --->
+- enum ActorPhase
+  - composition
+    - ready
+    - queue
+    - work
+    - suspension
+    - exit_at_cost
+    - exit_at_completion
+    - exit_now
+

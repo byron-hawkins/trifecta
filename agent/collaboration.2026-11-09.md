@@ -94,3 +94,77 @@ testing the loader, sensor driver factory, and controller.
   source implementations become available. Preserve the toddler tests.
 - Keep this summary and other session-essential documents listed in
   `agent/agent-bootstrap.md`.
+
+## Continuation: global aliases, resources, and stage
+
+### Decisions and design
+
+- `doc/architecture/globals.md` defines project-wide architecture aliases.
+  The Markdown BNF, semantics, and SMD schema support `@alias-list` and
+  qualified namespace contexts. Each C# project includes
+  `src/trifecta/common/globals.cs`; global aliases are compilation-scoped.
+  `string` is the C# keyword for `System.String` and needs no import.
+- Rendered architecture copies may be stale; do not regenerate `render/`
+  unless requested. The immediate architecture Markdown is the source.
+- All JSON enums must be named strings, case-insensitively read, never
+  numeric. All `TimeSpan` values must be integer milliseconds, never
+  formatted time strings. The rules and `tickrate` mapping are in
+  `meta/generate/serialization-types.json` and the C# generation policy.
+  Source `ConfigurationFileLoader` incorporates the corresponding global
+  converters. `duration` maps to JSON `duration-ms`, `tickinterval` to
+  `tick-interval`, and `tickrate` to `tickrate`.
+- A toddler test should focus on a single toddler; use completed source
+  components for dependencies when appropriate, rather than inventing
+  dependencies or complicated workarounds. Ask before adding missing pieces.
+  Preserve existing toddler tests. The user edits `src/`, which is read-only
+  from this workspace; a standard patch in `temp/` is an acceptable handoff.
+- The user has little time. Keep reports concise and focus on consequential
+  issues. When requested stubs need missing types or a nontrivial workaround,
+  stop and ask instead of generating extra dependency files.
+
+### Outputs and changes
+
+- The toddler, macarena, and ensemble projects link the shared global aliases;
+  duplicate test-local aliases were removed. All three builds passed after
+  the user corrected the global declarations.
+- `doc/architecture/bin/resource.smd`, `stage.smd`, and `actor.smd` were
+  generated or updated. `stage.smd` includes `RoleConfiguration.quantity`;
+  `actor.smd` includes `CastOptimizer.Optimize` and `Actor._scenes`.
+  The last two were validated against their source outlines and JSON schema.
+  Other existing SMDs and rendered outputs may need regeneration after
+  subsequent source changes.
+- `configuration/test/stage/director.json` and `resources.json` are editable
+  sample inputs. The user edited their contents after generation.
+  Stage configuration classes live in `src/trifecta/stage/StageConfiguration.cs`;
+  loading uses `ConfigurationFileLoader.parse<T>` rather than methods on
+  the data classes. The loader patch was prepared in
+  `temp/configuration-loader.patch` and subsequently applied to source.
+- `test/toddler/trifecta/resource/Resources.cs` contains queue stubs.
+  Macarena links the source resource and stage files. The focused
+  `ResourceQueueSetTests` passed after source fixes: it checks startup,
+  five bumps, empty/idle messages and prompt stop. The focused
+  `ResourceQueueSetConfigurationTests` passed after adjusting placeholder
+  matches to actual queue construction messages for each resource.
+- `test/toddler/trifecta/stage/Crew.cs` contains actor, scene, director and
+  optimizer stubs plus their interface and enums. Adjacent `Mock.cs` contains
+  minimal stage configuration placeholders. `SceneTests`, `ActorTests`, and
+  `DirectorTests` check construction/configuration log messages; the Director
+  test expects role messages and scene messages in order for each actor.
+
+### Validation and follow-up
+
+- The focused toddler Scene, Actor, and Director tests build but fail because
+  no log file is produced. Both the subjects and the toddler logger are
+  stubs, so these failures do not isolate the subjects' logging behavior.
+  The log-message matches are placeholders and may need alignment with the
+  eventual implementation.
+- `RoleConfiguration.quantity` is present in the architecture, SMD and toddler
+  placeholder, but was not yet present in the last inspected source
+  `StageConfiguration.cs`. Synchronize source and any relevant JSON fixture
+  before using the real configuration for quantity-dependent behavior.
+- `ResourceQueueSet` is a singleton. Its focused lifecycle and configuration
+  tests passed individually; do not assume they pass together in one process
+  or that their execution order is guaranteed.
+- For macarena runs use `TRIFECTA_CONFIG_DIR` and `TRIFECTA_LOG_DIR` as
+  appropriate. Isolated `--artifacts-path` directories have avoided test
+  discovery issues. Do not silently modify or delete existing tests.

@@ -1,0 +1,616 @@
+{
+  "author": "Copilot",
+  "format": "markdown-architecture-smd",
+  "version": 1,
+  "source": {
+    "kind": "markdown",
+    "path": "doc/architecture/actor.md"
+  },
+  "contexts": [
+    {
+      "id": "context:namespace:trifecta.stage:1",
+      "kind": "namespace",
+      "name": "trifecta.stage"
+    },
+    {
+      "id": "context:class:Actor:1",
+      "kind": "class",
+      "name": "Actor"
+    },
+    {
+      "id": "context:class:Scene:1",
+      "kind": "class",
+      "name": "Scene"
+    },
+    {
+      "id": "context:class:Director:1",
+      "kind": "class",
+      "name": "Director"
+    },
+    {
+      "id": "context:class:CastOptimizer:1",
+      "kind": "class",
+      "name": "CastOptimizer"
+    }
+  ],
+  "types": [
+    {
+      "id": "type:trifecta.stage.Actor",
+      "kind": "class",
+      "name": "Actor",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "Actor",
+          "id": "context:class:Actor:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [
+        {
+          "name": "environment.IConditionAware",
+          "relation": "implements",
+          "resolved_name": "trifecta.environment.IConditionAware"
+        },
+        {
+          "name": "resource.IResourceConsumer",
+          "relation": "implements",
+          "resolved_name": "trifecta.resource.IResourceConsumer"
+        }
+      ],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "RoleConfiguration",
+            "resolved_name": "trifecta.stage.RoleConfiguration"
+          },
+          "modifiers": [],
+          "source_text": "RoleConfiguration _configuration"
+        },
+        {
+          "kind": "field",
+          "name": "_phase",
+          "type": {
+            "name": "ActorPhase",
+            "resolved_name": "trifecta.stage.ActorPhase"
+          },
+          "modifiers": [],
+          "source_text": "ActorPhase _phase"
+        },
+        {
+          "kind": "field",
+          "name": "_onstage",
+          "type": {
+            "name": "Scene",
+            "resolved_name": "trifecta.stage.Scene",
+            "nullable": true
+          },
+          "modifiers": [],
+          "source_text": "Scene? _onstage"
+        },
+        {
+          "kind": "field",
+          "name": "_scenes",
+          "type": {
+            "name": "List",
+            "type_arguments": [
+              {
+                "name": "Scene",
+                "resolved_name": "trifecta.stage.Scene"
+              }
+            ]
+          },
+          "modifiers": [],
+          "source_text": "List<Scene> _scenes"
+        },
+        {
+          "kind": "constructor",
+          "name": "Actor",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "configuration",
+              "type": {
+                "name": "RoleConfiguration",
+                "resolved_name": "trifecta.stage.RoleConfiguration"
+              }
+            }
+          ],
+          "source_text": "Actor(RoleConfiguration configuration)"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Start()"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "mode",
+              "type": {
+                "name": "ActorPhase",
+                "resolved_name": "trifecta.stage.ActorPhase"
+              }
+            },
+            {
+              "name": "finalize",
+              "type": {
+                "name": "System.Action"
+              }
+            }
+          ],
+          "source_text": "void Stop(ActorPhase mode, System.Action finalize)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.Scene",
+      "kind": "class",
+      "name": "Scene",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "Scene",
+          "id": "context:class:Scene:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "SceneConfiguration",
+            "resolved_name": "trifecta.stage.SceneConfiguration"
+          },
+          "modifiers": [],
+          "source_text": "SceneConfiguration _configuration"
+        },
+        {
+          "kind": "field",
+          "name": "_resources",
+          "type": {
+            "name": "List",
+            "type_arguments": [
+              {
+                "name": "resource.ResourceInstance",
+                "resolved_name": "trifecta.resource.ResourceInstance"
+              }
+            ]
+          },
+          "modifiers": [],
+          "source_text": "List<resource.ResourceInstance> _resources"
+        },
+        {
+          "kind": "field",
+          "name": "_status",
+          "type": {
+            "name": "SceneStatus",
+            "resolved_name": "trifecta.stage.SceneStatus"
+          },
+          "modifiers": [],
+          "source_text": "SceneStatus _status"
+        },
+        {
+          "kind": "constructor",
+          "name": "Scene",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "configuration",
+              "type": {
+                "name": "SceneConfiguration",
+                "resolved_name": "trifecta.stage.SceneConfiguration"
+              }
+            }
+          ],
+          "source_text": "Scene(SceneConfiguration configuration)"
+        },
+        {
+          "kind": "method",
+          "name": "GetStatus",
+          "return_type": {
+            "name": "SceneStatus",
+            "resolved_name": "trifecta.stage.SceneStatus"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "SceneStatus GetStatus()"
+        },
+        {
+          "kind": "method",
+          "name": "Execute",
+          "return_type": {
+            "name": "SceneStatus",
+            "resolved_name": "trifecta.stage.SceneStatus"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "SceneStatus Execute()"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.Director",
+      "kind": "class",
+      "name": "Director",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "Director",
+          "id": "context:class:Director:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [
+        {
+          "name": "environment.IConditionAware",
+          "relation": "implements",
+          "resolved_name": "trifecta.environment.IConditionAware"
+        },
+        {
+          "name": "ICastManager",
+          "relation": "implements",
+          "resolved_name": "trifecta.stage.ICastManager"
+        }
+      ],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "singleton",
+          "type": {
+            "name": "Director",
+            "resolved_name": "trifecta.stage.Director"
+          },
+          "modifiers": [
+            "public",
+            "static"
+          ],
+          "annotations": [
+            "singleton"
+          ]
+        },
+        {
+          "kind": "field",
+          "name": "_cast",
+          "type": {
+            "name": "Dictionary",
+            "type_arguments": [
+              {
+                "name": "RoleId",
+                "resolved_name": "System.Int32"
+              },
+              {
+                "name": "List",
+                "type_arguments": [
+                  {
+                    "name": "Actor",
+                    "resolved_name": "trifecta.stage.Actor"
+                  }
+                ]
+              }
+            ]
+          },
+          "modifiers": [],
+          "source_text": "Dictionary<RoleId, List<Actor>> _cast"
+        },
+        {
+          "kind": "field",
+          "name": "_optimizer",
+          "type": {
+            "name": "CastOptimizer",
+            "resolved_name": "trifecta.stage.CastOptimizer"
+          },
+          "modifiers": [],
+          "source_text": "CastOptimizer _optimizer"
+        },
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "DirectorConfiguration",
+            "resolved_name": "trifecta.stage.DirectorConfiguration"
+          },
+          "modifiers": [],
+          "source_text": "DirectorConfiguration _configuration"
+        },
+        {
+          "kind": "method",
+          "name": "configure",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "configuration",
+              "type": {
+                "name": "DirectorConfiguration",
+                "resolved_name": "trifecta.stage.DirectorConfiguration"
+              }
+            }
+          ],
+          "source_text": "void configure(DirectorConfiguration configuration)"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Start()"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "nicely",
+              "type": {
+                "name": "bool"
+              }
+            }
+          ],
+          "source_text": "void Stop(bool nicely)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.CastOptimizer",
+      "kind": "class",
+      "name": "CastOptimizer",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "CastOptimizer",
+          "id": "context:class:CastOptimizer:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "_manager",
+          "type": {
+            "name": "ICastManager",
+            "resolved_name": "trifecta.stage.ICastManager"
+          },
+          "modifiers": [],
+          "source_text": "ICastManager _manager"
+        },
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "DirectorConfiguration",
+            "resolved_name": "trifecta.stage.DirectorConfiguration"
+          },
+          "modifiers": [],
+          "source_text": "DirectorConfiguration _configuration"
+        },
+        {
+          "kind": "constructor",
+          "name": "CastOptimizer",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "configuration",
+              "type": {
+                "name": "DirectorConfiguration",
+                "resolved_name": "trifecta.stage.DirectorConfiguration"
+              }
+            },
+            {
+              "name": "manager",
+              "type": {
+                "name": "ICastManager",
+                "resolved_name": "trifecta.stage.ICastManager"
+              }
+            }
+          ],
+          "source_text": "CastOptimizer(DirectorConfiguration configuration, ICastManager manager)"
+        },
+        {
+          "kind": "method",
+          "name": "Optimize",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Optimize()"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.ICastManager",
+      "kind": "interface",
+      "name": "ICastManager",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Interrupt",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "actor",
+              "type": {
+                "name": "Actor",
+                "resolved_name": "trifecta.stage.Actor"
+              }
+            },
+            {
+              "name": "exitStrategy",
+              "type": {
+                "name": "ActorPhase",
+                "resolved_name": "trifecta.stage.ActorPhase"
+              }
+            }
+          ],
+          "source_text": "void Interrupt(Actor actor, ActorPhase exitStrategy)"
+        },
+        {
+          "kind": "method",
+          "name": "Initiate",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "role",
+              "type": {
+                "name": "RoleId",
+                "resolved_name": "System.Int32"
+              }
+            }
+          ],
+          "source_text": "void Initiate(RoleId role)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.SceneStatus",
+      "kind": "enum",
+      "name": "SceneStatus",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "enum_member",
+          "name": "pending"
+        },
+        {
+          "kind": "enum_member",
+          "name": "running"
+        },
+        {
+          "kind": "enum_member",
+          "name": "completed"
+        },
+        {
+          "kind": "enum_member",
+          "name": "error"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.ActorPhase",
+      "kind": "enum",
+      "name": "ActorPhase",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "enum_member",
+          "name": "ready"
+        },
+        {
+          "kind": "enum_member",
+          "name": "queue"
+        },
+        {
+          "kind": "enum_member",
+          "name": "work"
+        },
+        {
+          "kind": "enum_member",
+          "name": "suspension"
+        },
+        {
+          "kind": "enum_member",
+          "name": "exit_at_cost"
+        },
+        {
+          "kind": "enum_member",
+          "name": "exit_at_completion"
+        },
+        {
+          "kind": "enum_member",
+          "name": "exit_now"
+        }
+      ]
+    }
+  ]
+}
