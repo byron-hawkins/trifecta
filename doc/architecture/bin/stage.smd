@@ -105,6 +105,28 @@
             "public"
           ],
           "source_text": "public ResourceMode mode"
+        },
+        {
+          "kind": "field",
+          "name": "minwork",
+          "type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public TimeSpan minwork"
+        },
+        {
+          "kind": "field",
+          "name": "maxwork",
+          "type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "source_text": "public TimeSpan maxwork"
         }
       ]
     },

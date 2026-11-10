@@ -60,6 +60,18 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
     using (_lock.EnterScope()) { _self = null; }
   }
 
+  public void Reset() {
+    ComponentLog.singleton.Log("SensorController reset requested");
+
+    using (_lock.EnterScope()) {
+      if (_started && (!_stop || _self != null)) throw new InvalidOperationException("Cannot reset a SensorController in flight");
+
+      _started = _stop = false;
+      _actives.Clear();
+      _passives.Clear();
+    }
+  }
+
   public void SensorUpdate(SensorId id, Temperature reading) {}
   public void SensorUpdate(SensorId id, Pressure reading) {}
 

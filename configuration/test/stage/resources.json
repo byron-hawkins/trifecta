@@ -4,13 +4,17 @@
       "name": "A",
       "quantity": 4,
       "tickrate": 10,
-      "mode": "passive"
+      "mode": "passive",
+      "min-work": 50,
+      "max-work": 1000
     },
     {
       "name": "B",
       "quantity": 6,
       "tickrate": 20,
-      "mode": "passive"
+      "mode": "passive",
+      "min-work": 50,
+      "max-work": 1000
     }
   ]
 }

@@ -18,9 +18,19 @@ public class ResourceQueue {
     _configuration = configuration;
   }
 
-  public void Push(IResourceConsumer consumer) {}
+  public void Push(IResourceConsumer consumer) {
+    using (_lock.EnterScope()) {
+      _consumers.Enqueue(consumer);
+    }
+  }
 
-  public void Push(ResourceInstance resource) {}
+  public void Push(ResourceInstance resource) {
+    using (_lock.EnterScope()) {
+      _resources.Enqueue(resource);
+
+      // now bump the first consumer?
+    }
+  }
 
   private ResourceType _configuration;
   private Lock _lock = new();

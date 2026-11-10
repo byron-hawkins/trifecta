@@ -15,6 +15,8 @@
     - public int quantity
     - public TimeSpan tickrate
     - public ResourceMode mode
+    - public TimeSpan minwork
+    - public TimeSpan maxwork
 
 <!--- @context class ResourceSet --->
 ## ResourceSet

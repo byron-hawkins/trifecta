@@ -17,6 +17,8 @@ public class ResourceType {
   public int quantity;
   public TimeSpan tickrate;
   public ResourceMode mode;
+  public TimeSpan minwork;
+  public TimeSpan maxwork;
 }
 
 public class ResourceSet {
@@ -30,6 +32,7 @@ public class DirectorConfiguration {
 
 public class RoleConfiguration {
   public RoleId id;
+  public int quantity;
   public Temperature tmin;
   public Pressure pmax;
   public List<SceneConfiguration> scenes = [];

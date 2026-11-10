@@ -14,6 +14,26 @@ namespace resource {
 [Collection("ComponentLog tests")]
 public sealed class ResourceQueueSetConfigurationTests : ComponentLogTestBase {
   [Fact]
+  public void ResourceWorkBoundsDeserializeAsMilliseconds() {
+    var configurationDirectory =
+        Environment.GetEnvironmentVariable("TRIFECTA_CONFIG_DIR");
+    if (string.IsNullOrWhiteSpace(configurationDirectory)) {
+      throw new InvalidOperationException(
+          "Set TRIFECTA_CONFIG_DIR to the top-level configuration directory.");
+    }
+
+    var path =
+        Path.Combine(configurationDirectory, "test", "stage", "resources.json");
+    var configuration = ConfigurationFileLoader.parse<ResourceSet>(path);
+
+    Assert.Equal(2, configuration.elements.Count);
+    Assert.All(configuration.elements, resource => {
+      Assert.Equal(TimeSpan.FromMilliseconds(50), resource.minwork);
+      Assert.Equal(TimeSpan.FromMilliseconds(1000), resource.maxwork);
+    });
+  }
+
+  [Fact]
   public void ConfigureLogsEachResourceType() {
     var configurationDirectory =
         Environment.GetEnvironmentVariable("TRIFECTA_CONFIG_DIR");

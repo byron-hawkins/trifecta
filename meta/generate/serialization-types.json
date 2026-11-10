@@ -50,6 +50,20 @@
       "converter": "milliseconds-to-timespan"
     },
     {
+      "json_name": "min-work",
+      "json_type": "integer",
+      "csharp_member": "minwork",
+      "csharp_type": "System.TimeSpan",
+      "converter": "milliseconds-to-timespan"
+    },
+    {
+      "json_name": "max-work",
+      "json_type": "integer",
+      "csharp_member": "maxwork",
+      "csharp_type": "System.TimeSpan",
+      "converter": "milliseconds-to-timespan"
+    },
+    {
       "json_name": "type",
       "json_type": "string",
       "csharp_member": "type",
