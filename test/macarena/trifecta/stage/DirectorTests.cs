@@ -43,15 +43,17 @@ public sealed class DirectorTests : ComponentLogTestBase {
     var lines = ReadLog().Split('\n', StringSplitOptions.RemoveEmptyEntries);
     Assert.Equal(
         configuration.roles.Sum(role => role.quantity),
-        lines.Count(line => line.Contains("Constructing an Actor in role",
+        lines.Count(line => line.Contains("Constructing an Actor #",
                                           StringComparison.OrdinalIgnoreCase)));
     var position = FindLine(lines, 0, "Director", "transition mode");
     Assert.True(position >= 0, "Missing Director configure log entry.");
 
+    var actorIndex = 0;
     foreach (var role in configuration.roles) {
       for (var actor = 0; actor < role.quantity; actor++) {
-        position = FindLine(lines, position + 1, "role", role.id.ToString(),
-                            role.tmin.ToString(), role.pmax.ToString());
+        position = FindLine(lines, position + 1, $"#{actorIndex++}", "role",
+                            role.id.ToString(), role.tmin.ToString(),
+                            role.pmax.ToString());
         Assert.True(
             position >= 0,
             $"Missing log entry for actor {actor + 1} of role {role.id}.");

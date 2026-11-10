@@ -98,7 +98,8 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
 - enum SceneStatus
   - composition
     - pending
-    - running
+    - working
+    - underflow
     - completed
     - error
 

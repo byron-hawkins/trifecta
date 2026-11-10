@@ -18,7 +18,7 @@ public sealed class SceneTests : ComponentLogTestBase {
 
     setup($"SceneTests-{Guid.NewGuid():N}");
     try {
-      _ = new Scene(configuration);
+      _ = new Scene(0, configuration);
     } finally {
       finish();
     }

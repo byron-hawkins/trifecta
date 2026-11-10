@@ -32,8 +32,7 @@ public class Actor : IConditionAware, IResourceConsumer {
       if (_phase != ActorPhase.ready) throw new InvalidOperationException($"Cannot start {_identity} from phase {_phase}");
       if (_onstage != null) throw new InvalidOperationException($"Cannot start {_identity} with a scene on stage (phase {_phase})");
 
-      _workflow = 0;
-      _onstage = _scenes[_workflow];
+      _workflow = 0;  // ...should be already
 
       _self = Task.Run(() => { run(); });
     } finally { Monitor.Exit(_idle); }
@@ -67,7 +66,11 @@ public class Actor : IConditionAware, IResourceConsumer {
               continue;
             }
             _phase = ActorPhase.queue_up;
-          case ActorPhase.queue_up: ResourceQueueSet.singleton.MultiPush(this); _phase = ActorPhase.on_queue;
+            goto case ActorPhase.queue_up;
+          case ActorPhase.queue_up:
+            ResourceQueueSet.singleton.MultiPush(this);
+            _phase = ActorPhase.on_queue;
+            goto case ActorPhase.on_queue;
           case ActorPhase.on_queue:
 
             // check if resources granted (or will Grant() always move to .work?)
@@ -107,20 +110,15 @@ public class Actor : IConditionAware, IResourceConsumer {
       SceneStatus status = _onstage.Execute(duration);
       // TODO: if this is an underflow step, log the work off
       switch (status) {
-      case SceneStatus.completed)
-        worklog("stop");
-        return;
-      case SceneStatus.underflow)
-        worklog("stop");
-        continue;
-      case SceneStatus.ready:
-        throw new InvalidOperationException($"Scene returned status {status} from Execute()");
-      case SceneStatus.error: throw new NotImplementedException("SceneStatus.error");
+        case SceneStatus.completed: worklog("stop"); return;
+        case SceneStatus.underflow: worklog("stop"); continue;
+        case SceneStatus.dark: throw new InvalidOperationException($"Scene returned status {status} from Execute()");
+        case SceneStatus.error: throw new NotImplementedException("SceneStatus.error");
       }
     }
   }
 
-  private void worklog(string mode) { ComponentLog.singleton.Log($"{_identity} [{_onstage..Identity()}] [work: {mode}]"); }
+  private void worklog(string mode) { ComponentLog.singleton.Log($"{_identity} [{_onstage.Identity()}] [work: {mode}]"); }
 
   private void reset() {
     _workflow = 0;
@@ -133,6 +131,7 @@ public class Actor : IConditionAware, IResourceConsumer {
   private RoleConfiguration _configuration;
 
   private object _idle = new();
+  private Task? _self = null;
   private int _workflow;
   private ActorPhase _phase = ActorPhase.ready;
   private Scene? _onstage;
@@ -173,15 +172,15 @@ public class Scene {
 
     Thread.Sleep(duration);
 
-    if (_period.remaining == 0) {
-      if (_period.underflow == 0) throw new InvalidOperationException("Scene cannot execute for 0ms");
-      _period.underflow = 0;
+    if (_period.remaining == TimeSpan.Zero) {
+      if (_period.underflow == TimeSpan.Zero) throw new InvalidOperationException("Scene cannot execute for 0ms");
+      _period.underflow = TimeSpan.Zero;
       return apply(SceneStatus.completed);
     }
 
     _period.remaining -= duration;
-    if (_period.remaining == 0) {
-      if (_period.underflow == 0) return apply(SceneStatus.completed);
+    if (_period.remaining == TimeSpan.Zero) {
+      if (_period.underflow == TimeSpan.Zero) return apply(SceneStatus.completed);
       else
         return apply(SceneStatus.underflow);
     }
@@ -217,11 +216,11 @@ public class Scene {
 
   public IEnumerable<ResourceName> Scope() { return _configuration.resources; }
 
-  public bool IsLocal() { return _configuration.resources.Length == 0; }
+  public bool IsLocal() { return _configuration.resources.Count == 0; }
 
   public TimeSpan GetStepDuration() {
-    if (_period.remaining == 0) {
-      if (_period.underflow == 0) throw new InvalidOperationException("Scene cannot execute for 0ms");
+    if (_period.remaining == TimeSpan.Zero) {
+      if (_period.underflow == TimeSpan.Zero) throw new InvalidOperationException("Scene cannot execute for 0ms");
       return _period.underflow;
     }
 
@@ -238,10 +237,11 @@ public class Scene {
     public TimeSpan underflow;
     public TimeSpan remaining;
 
-    public void Reset() { underflow = remaining = 0; }
+    public void Reset() { underflow = remaining = TimeSpan.Zero; }
   }
 
   private int _index;
+  private string _identity;
   private Period _period = new();
   private SceneConfiguration _configuration;
   private List<ResourceInstance> _resources = [];
@@ -365,7 +365,7 @@ public interface ICastManager {
 
 public enum SceneStatus {
   dark,
-  running,
+  working,
   underflow,
   completed,
   error,
