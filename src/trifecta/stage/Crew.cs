@@ -38,7 +38,28 @@ public class Actor : IConditionAware, IResourceConsumer {
     } finally { Monitor.Exit(_idle); }
   }
 
-  public void Stop(ActorPhase mode, Action finalize) {}
+  public void Stop(ActorPhase mode, Action finalize) {
+    ComponentLog.singleton.Log("{_identity} stop requested");
+
+    Task task;
+    Monitor.Enter(_idle);
+    try {
+      _phase = mode;
+      task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop the Director");
+      Monitor.Pulse(_idle);
+    } finally { Monitor.Exit(_idle); }
+    if (_phase == ActorPhase.stop_now) {
+      task.Wait();
+
+      Monitor.Enter(_idle);
+      try {
+        // TODO: stop all actors (now unless nice)
+
+        _self = null;
+      } finally { Monitor.Exit(_idle); }
+    }
+    finalize();
+  }
 
   public void ThresholdCross(Temperature t) {}
 
