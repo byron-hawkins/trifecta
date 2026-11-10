@@ -286,6 +286,227 @@ public sealed class ActorTests : ComponentLogTestBase {
   }
 
   [Fact]
+  public async Task RestartsAndRepeatsLocalSceneSequence() {
+    var sceneTick = TimeSpan.FromMilliseconds(50);
+    var configuration = new RoleConfiguration {
+      id = 47, quantity = 1,
+      scenes =
+          [
+            new SceneConfiguration { duration = TimeSpan.FromMilliseconds(200),
+                                     tickrate = sceneTick, resources = [] },
+            new SceneConfiguration { duration = TimeSpan.FromMilliseconds(200),
+                                     tickrate = sceneTick, resources = [] }
+          ]
+    };
+
+    setup($"ActorRestartTests-{Guid.NewGuid():N}");
+    try {
+      ResourceQueueSet.singleton.Reset();
+      await RunRestartSequence(configuration, ResourceQueueSet.singleton,
+                               sceneTick);
+    } finally {
+      finish();
+    }
+  }
+
+  [Fact]
+  public async Task RestartsAndRepeatsUnevenLocalAndResourceSceneSequence() {
+    // scene-tick 70 ms divides neither 200 ms nor 330 ms
+    var sceneTick = TimeSpan.FromMilliseconds(70);
+    var heater = new ResourceType { name = "heater", tickrate = sceneTick,
+                                    minwork = TimeSpan.FromMilliseconds(50),
+                                    maxwork = TimeSpan.FromSeconds(2) };
+    var queues = new AutoGrantQueueSet(heater);
+    var configuration = new RoleConfiguration {
+      id = 47, quantity = 1,
+      scenes =
+          [
+            new SceneConfiguration { duration = TimeSpan.FromMilliseconds(200),
+                                     tickrate = sceneTick, resources = [] },
+            new SceneConfiguration { duration = TimeSpan.FromMilliseconds(330),
+                                     tickrate = sceneTick,
+                                     resources = [heater.name] }
+          ]
+    };
+
+    setup($"ActorUnevenRestartTests-{Guid.NewGuid():N}");
+    try {
+      await RunRestartSequence(configuration, queues, sceneTick);
+
+      // every completed resource scene must have requested and released
+      var completed = CountLog("Actor 47/0 completes Scene: 1");
+      Assert.True(queues.Requests.Count(r => r.Length == 1) >= completed);
+      Assert.True(queues.Releases.Count(r => r.Length == 1) >= completed);
+    } finally {
+      finish();
+    }
+  }
+
+  [Fact]
+  public async
+      Task RequestsAndReleasesTwoAndThenThreeResourcesInSuccessiveScenes() {
+    var sceneTick = TimeSpan.FromMilliseconds(50);
+    ResourceType Type(string name) =>
+        new() { name = name, tickrate = sceneTick,
+                minwork = TimeSpan.FromMilliseconds(50),
+                maxwork = TimeSpan.FromSeconds(2) };
+    var types = new[] { Type("heater"), Type("pump"), Type("fan"),
+                        Type("valve"), Type("mixer") };
+    var queues = new AutoGrantQueueSet(types);
+    var configuration = new RoleConfiguration {
+      id = 48, quantity = 1,
+      scenes =
+          [
+            new SceneConfiguration { duration = TimeSpan.FromMilliseconds(200),
+                                     tickrate = sceneTick,
+                                     resources = ["heater", "pump"] },
+            new SceneConfiguration { duration = TimeSpan.FromMilliseconds(300),
+                                     tickrate = sceneTick,
+                                     resources = ["fan", "valve", "mixer"] }
+          ]
+    };
+
+    setup($"ActorTwoSceneResourceTests-{Guid.NewGuid():N}");
+    try {
+      var actor = new Actor(0, configuration, queues);
+      actor.Start();
+      try {
+        await WaitForLogEntry("Actor 48/0 completes Scene: 1",
+                              TimeSpan.FromSeconds(3));
+      } finally {
+        await StopActor(actor);
+      }
+
+      var requests = queues.Requests;
+      Assert.True(requests.Length >= 2);
+      Assert.Equal(new[] { "heater", "pump" }, requests[0]);
+      Assert.Equal(new[] { "fan", "valve", "mixer" }, requests[1]);
+      var releases = queues.Releases;
+      Assert.True(releases.Length >= 2);
+      Assert.Equal(new[] { "heater", "pump" }, releases[0]);
+      Assert.Equal(new[] { "fan", "valve", "mixer" }, releases[1]);
+    } finally {
+      finish();
+    }
+  }
+
+  [Theory]
+  [InlineData(1000, 300, 0, 4)]
+  [InlineData(500, 300, 700, 2)]
+  [InlineData(500, 700, 300, 2)]
+  [InlineData(800, 300, 700, 3)]
+  public async Task ReleasesAndRequeuesAtLowestMaxWork(int sceneMs, int maxA,
+                                                       int maxB,
+                                                       int expectedHolds) {
+    var sceneTick = TimeSpan.FromMilliseconds(50);
+    ResourceType Type(string name, int maxMs) =>
+        new() { name = name, tickrate = sceneTick,
+                minwork = TimeSpan.FromMilliseconds(50),
+                maxwork = TimeSpan.FromMilliseconds(maxMs) };
+    var types = new List<ResourceType> { Type("heater", maxA) };
+    if (maxB > 0)
+      types.Add(Type("pump", maxB));
+    var lowestMax =
+        TimeSpan.FromMilliseconds(types.Min(t => t.maxwork.TotalMilliseconds));
+    var scene = TimeSpan.FromMilliseconds(sceneMs);
+    var queues = new AutoGrantQueueSet(types.ToArray());
+    var configuration =
+        new RoleConfiguration { id = 49, quantity = 1,
+                                scenes = [new SceneConfiguration {
+                                  duration = scene, tickrate = sceneTick,
+                                  resources = types.Select(t => t.name).ToList()
+                                }] };
+
+    setup($"ActorMaxWorkTests-{Guid.NewGuid():N}");
+    try {
+      var actor = new Actor(0, configuration, queues);
+      actor.Start();
+      try {
+        var timer = Stopwatch.StartNew();
+        while (queues.Releases.Length < expectedHolds) {
+          Assert.True(timer.Elapsed < scene + TimeSpan.FromSeconds(3),
+                      $"Timed out; {queues.Releases.Length} of " +
+                          $"{expectedHolds} releases seen.");
+          await Task.Delay(10);
+        }
+      } finally {
+        await StopActor(actor);
+      }
+
+      finish();
+      var starts =
+          ReadLog()
+              .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+              .Where(l => l.Contains("Actor 49/0 [Scene: 0] [work: start]",
+                                     StringComparison.Ordinal))
+              .Select(LogTimestamp)
+              .ToArray();
+      Assert.True(starts.Length >= expectedHolds);
+
+      // each hold runs from [work: start] to MultiRelease, at most the lowest
+      // maxwork, and together the holds cover the scene duration
+      var tolerance = TimeSpan.FromTicks(2 * sceneTick.Ticks);
+      var remaining = scene;
+      for (var i = 0; i < expectedHolds; i++) {
+        var expected = remaining < lowestMax ? remaining : lowestMax;
+        var hold = queues.ReleaseTimes[i] - starts[i];
+        Assert.InRange(hold, expected - tolerance, expected + tolerance);
+        Assert.Equal(types.Select(t => t.name), queues.Releases[i]);
+        Assert.Equal(types.Select(t => t.name), queues.Requests[i]);
+        remaining -= expected;
+      }
+      Assert.Equal(TimeSpan.Zero, remaining);
+    } finally {
+      finish();
+    }
+  }
+
+  private async Task RunRestartSequence(RoleConfiguration configuration,
+                                        IResourceQueueSet queues,
+                                        TimeSpan sceneTick) {
+    var id = configuration.id;
+    var workStart = $"Actor {id}/0 [Scene: 0] [work: start]";
+    var completes0 = $"Actor {id}/0 completes Scene: 0";
+    var completes1 = $"Actor {id}/0 completes Scene: 1";
+    var wait = TimeSpan.FromSeconds(3);
+
+    // 1. instantiate and wait
+    var actor = new Actor(0, configuration, queues);
+    await Task.Delay(100);
+    Assert.Equal(0, CountLog("[work: start]"));
+
+    try {
+      // 2. start and allow work to complete; the sequence must repeat
+      actor.Start();
+      await WaitForLogCount(completes0, 2, wait);
+      await WaitForLogCount(completes1, 1, wait);
+      await StopActor(actor);
+
+      // 3. wait while stopped
+      await Task.Delay(200);
+      var completed0 = CountLog(completes0);
+      var completed1 = CountLog(completes1);
+      var started = CountLog(workStart);
+
+      // 4. start again and interrupt work with a stop
+      actor.Start();
+      await WaitForLogCount(workStart, started + 1, wait);
+      await Task.Delay(TimeSpan.FromTicks(sceneTick.Ticks));
+      await StopActor(actor);
+      await Task.Delay(200);
+      Assert.Equal(completed0, CountLog(completes0));
+      Assert.Equal(completed1, CountLog(completes1));
+
+      // 5. start again and allow work to complete; the sequence must repeat
+      actor.Start();
+      await WaitForLogCount(completes0, completed0 + 2, wait);
+      await WaitForLogCount(completes1, completed1 + 1, wait);
+    } finally {
+      await StopActor(actor);
+    }
+  }
+
+  [Fact]
   public void ConstructionLogsRoleAndEachScene() {
     var configuration = new RoleConfiguration {
       id = 17, quantity = 4, tmin = 15, pmax = 80,
@@ -326,6 +547,33 @@ public sealed class ActorTests : ComponentLogTestBase {
                 line.Contains("fan", StringComparison.OrdinalIgnoreCase));
   }
 
+  private static async Task StopActor(Actor actor) {
+    var finalized = new TaskCompletionSource<bool>(
+        TaskCreationOptions.RunContinuationsAsynchronously);
+    var stop = Task.Run(() => actor.Stop(ActorPhase.stop_now,
+                                         () => finalized.TrySetResult(true)));
+    await Task.WhenAll(stop, finalized.Task).WaitAsync(TimeSpan.FromSeconds(2));
+  }
+
+  private int CountLog(string entry) {
+    finish();
+    return ReadLog()
+        .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+        .Count(line => line.Contains(entry, StringComparison.Ordinal));
+  }
+
+  private async Task WaitForLogCount(string entry, int count,
+                                     TimeSpan timeout) {
+    var timer = Stopwatch.StartNew();
+    do {
+      if (CountLog(entry) >= count)
+        return;
+      await Task.Delay(10);
+    } while (timer.Elapsed < timeout);
+
+    Assert.Fail($"Timed out waiting for {count} log entries '{entry}'.");
+  }
+
   private async Task WaitForLogEntry(string entry, TimeSpan timeout) {
     var timer = Stopwatch.StartNew();
     do {
@@ -360,6 +608,58 @@ public sealed class ActorTests : ComponentLogTestBase {
 
   private sealed record ResourceRelease(ResourceInstance[] Resources,
                                         long Timestamp);
+
+  private sealed class AutoGrantQueueSet : IResourceQueueSet {
+    private readonly object _lock = new();
+    private readonly Dictionary<string, ResourceInstance> _pool;
+    private readonly List<string[]> _requests = [];
+    private readonly List<string[]> _releases = [];
+    private readonly List<DateTimeOffset> _releaseTimes = [];
+
+    public AutoGrantQueueSet(params ResourceType[] types) {
+      _pool = types.ToDictionary(
+          t => t.name, t => new ResourceInstance(t, new MockResourceDriver()));
+    }
+
+    public string[][] Requests {
+      get {
+        lock (_lock) { return _requests.ToArray(); }
+      }
+    }
+
+    public string[][] Releases {
+      get {
+        lock (_lock) { return _releases.ToArray(); }
+      }
+    }
+
+    public DateTimeOffset[] ReleaseTimes {
+      get {
+        lock (_lock) { return _releaseTimes.ToArray(); }
+      }
+    }
+
+    public void MultiPush(IResourceConsumer consumer) {
+      var names = consumer.Scope().Select(n => n.ToString()).ToArray();
+      lock (_lock) { _requests.Add(names); }
+      // grant asynchronously: the Actor holds its lock while requesting
+      Task.Run(() => {
+        foreach (var name in names)
+          consumer.Grant(_pool[name]);
+      });
+    }
+
+    public void MultiRelease(List<ResourceInstance> release) {
+      var names =
+          release.Select(r => _pool.First(p => ReferenceEquals(p.Value, r)).Key)
+              .ToArray();
+      lock (_lock) {
+        _releases.Add(names);
+        _releaseTimes.Add(DateTimeOffset.UtcNow);
+      }
+      release.Clear(); // like ResourceQueueSet: release and clear go together
+    }
+  }
 
   private sealed class MockResourceQueueSet : IResourceQueueSet {
     private readonly object _lock = new();
@@ -411,6 +711,7 @@ public sealed class ActorTests : ComponentLogTestBase {
 
     public void MultiRelease(List<ResourceInstance> release) {
       var snapshot = release.ToArray();
+      release.Clear(); // like ResourceQueueSet: release and clear go together
       var timestamp = Stopwatch.GetTimestamp();
       lock (_lock) { _releases.Add(snapshot); }
       _firstRelease.TrySetResult(new ResourceRelease(snapshot, timestamp));

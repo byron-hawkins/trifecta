@@ -111,3 +111,9 @@ for Actor scene execution and timestamped test logs.
   evaluations can be generated.
 - Keep this file listed in `agent/agent-bootstrap.md` as session-essential
   collaboration history.
+- Deferred: static lock-semantics / deadlock-safety audit of Actor, Scene,
+  Director, and SensorController (lock-order table, call-outs made while a
+  lock is held, Enter/Exit pairing, Wait/Pulse use). Wait until the pending
+  implementation work lands. Known candidate: Actor holds `_idle` across
+  `ResourceQueueSet.MultiPush`/`MultiRelease`, while the queue set will call
+  back into `Actor.Grant()`.

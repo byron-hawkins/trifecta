@@ -26,12 +26,21 @@ public class Actor : IConditionAware, IResourceConsumer {
     _identity = $"Actor {_configuration.id}/{_index}";
   }
 
+  public bool IsRunning() {
+    Monitor.Enter(_idle);
+    try {
+      return _phase != ActorPhase.exit;
+    } finally { Monitor.Exit(_idle); }
+  }
+
   public void Start() {
     ComponentLog.singleton.Log($"{_identity} start requested");
 
     Monitor.Enter(_idle);
     try {
-      if (_phase != ActorPhase.ready) throw new InvalidOperationException($"Cannot start {_identity} from phase {_phase}");
+      if (_phase == ActorPhase.exit) _phase = ActorPhase.ready;
+      else if (_phase != ActorPhase.ready)
+        throw new InvalidOperationException($"Cannot start {_identity} from phase {_phase}");
       if (_onstage != null) throw new InvalidOperationException($"Cannot start {_identity} with a scene on stage (phase {_phase})");
 
       _workflow = 0;  // ...should be already
@@ -40,25 +49,31 @@ public class Actor : IConditionAware, IResourceConsumer {
     } finally { Monitor.Exit(_idle); }
   }
 
-  public void Stop(ActorPhase mode, Action finalize) {
+  public void Stop(ActorPhase mode, Action? finalize = null, bool required = false) {
     ComponentLog.singleton.Log($"{_identity} stop requested");
 
-    Task task;
-    Monitor.Enter(_idle);
     try {
-      _phase = mode;
-      task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop the Director");
-      Monitor.Pulse(_idle);
-    } finally { Monitor.Exit(_idle); }
-    if (_phase == ActorPhase.stop_now) {  // not nice reading this out of the lock guard
-      task.Wait();
-
+      bool stop_now = (mode == ActorPhase.stop_now);
+      Task task;
       Monitor.Enter(_idle);
       try {
-        _self = null;
+        if (!required && _phase == ActorPhase.exit) return;
+
+        _phase = mode;
+        task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop the Director");
+        Monitor.Pulse(_idle);
       } finally { Monitor.Exit(_idle); }
+      if (stop_now) {
+        task.Wait();
+
+        Monitor.Enter(_idle);
+        try {
+          _self = null;
+        } finally { Monitor.Exit(_idle); }
+      }
+    } finally {
+      if (finalize is Action finalizer) finalizer();
     }
-    finalize();
   }
 
   public void ThresholdCross(Temperature t) {}
@@ -66,15 +81,20 @@ public class Actor : IConditionAware, IResourceConsumer {
   public void ThresholdCross(Pressure p) {}
 
   public IEnumerable<ResourceName> Scope() {
-    if (_onstage is Scene s) return s.Scope();
-    else
-      return [];
+    Monitor.Enter(_idle);
+    try {
+      if (_onstage is Scene s) return s.Scope();
+      else
+        return [];
+    } finally { Monitor.Exit(_idle); }
   }
 
   public void Grant(ResourceInstance resource) {
     Monitor.Enter(_idle);
     try {
       if (_onstage == null) throw new InvalidOperationException($"Resource granted on {_identity} with no scene on stage (phase {_phase})");
+
+      ComponentLog.singleton.Log($"{_identity} receives resource {resource.GetName()}");
 
       if (_onstage.Grant(resource)) {
         _phase = ActorPhase.work;
@@ -83,7 +103,6 @@ public class Actor : IConditionAware, IResourceConsumer {
     } finally { Monitor.Exit(_idle); }
   }
 
-  // TODO: when to remit resources?
   private void run() {
     ComponentLog.singleton.Log($"{_identity} starts run() in phase {_phase}");
 
@@ -103,7 +122,10 @@ public class Actor : IConditionAware, IResourceConsumer {
             _phase = ActorPhase.queue_up;
             goto case ActorPhase.queue_up;
           case ActorPhase.queue_up:
-            _qs.MultiPush(this);
+            Monitor.Exit(_idle); /* allow for potential immediate Grant() */
+            try {
+              _qs.MultiPush(this);
+            } finally { Monitor.Enter(_idle); } /* resume lockout for routing */
             _phase = ActorPhase.on_queue;
             goto case ActorPhase.on_queue;
           case ActorPhase.on_queue:
@@ -115,12 +137,18 @@ public class Actor : IConditionAware, IResourceConsumer {
             work();
 
             if (_onstage.GetStatus() == SceneStatus.completed) {
-              // remit: here?
-              _onstage.Reset();
-              if (++_workflow == _scenes.Count) {
-                reset();
+              if (_onstage.IsContinuation()) {
+                if (_onstage.IsLocal()) throw new InvalidOperationException($"{_identity} local work on {_onstage.Identity()} was truncated");
+                _onstage.Remit(_identity);
+                _phase = ActorPhase.queue_up;
               } else {
-                _onstage = _scenes[_workflow];
+                _onstage.Reset(_identity);
+                if (++_workflow == _scenes.Count) {
+                  reset();
+                } else {
+                  _onstage = _scenes[_workflow];
+                  if (!_onstage.IsLocal()) _phase = ActorPhase.queue_up;
+                }
               }
             }
             continue;
@@ -128,8 +156,8 @@ public class Actor : IConditionAware, IResourceConsumer {
           case ActorPhase.stop_at_cost: throw new NotImplementedException($"ActorPhase.{_phase}");
           case ActorPhase.stop_now:
           case ActorPhase.exit:
-            if (_onstage is Scene abort) { abort.Reset(); }
-            reset();
+            if (_onstage is Scene abort) { abort.Reset(_identity); }
+            reset(ActorPhase.exit);  // TODO: high-risk strategy for MultiRelease, but can it be done cleanly under iterative control?
             return;
         }
 
@@ -181,9 +209,9 @@ public class Actor : IConditionAware, IResourceConsumer {
 
   private void worklog(string mode) { ComponentLog.singleton.Log($"{_identity} [{_onstage.Identity()}] [work: {mode}]"); }
 
-  private void reset() {
+  private void reset(ActorPhase phase = ActorPhase.ready) {
     _workflow = 0;
-    _phase = ActorPhase.ready;
+    _phase = phase;
     _onstage = null;
   }
 
@@ -195,7 +223,7 @@ public class Actor : IConditionAware, IResourceConsumer {
   private object _idle = new();
   private Task? _self = null;
   private int _workflow;
-  private ActorPhase _phase = ActorPhase.ready;
+  private ActorPhase _phase = ActorPhase.exit;
   private Scene? _onstage;
   private List<Scene> _scenes = [];
 }
@@ -227,29 +255,7 @@ public class Scene {
 
   public SceneStatus GetStatus() { return _status; }
 
-  public SceneStatus Execute(TimeSpan duration) {
-    switch (_status) {
-      case SceneStatus.working:
-      case SceneStatus.underflow: break;
-      default: throw new InvalidOperationException($"Cannot perform work on a scene with status {_status}");
-    }
-
-    Thread.Sleep(duration);
-
-    if (_period.remaining == TimeSpan.Zero) {
-      if (_period.underflow == TimeSpan.Zero) throw new InvalidOperationException("Scene cannot execute for 0ms");
-      _period.underflow = TimeSpan.Zero;
-      return apply(SceneStatus.completed);
-    }
-
-    _period.remaining -= duration;
-    if (_period.remaining == TimeSpan.Zero) {
-      if (_period.underflow == TimeSpan.Zero) return apply(SceneStatus.completed);
-      else
-        return apply(SceneStatus.underflow);
-    }
-    return apply(SceneStatus.working);
-  }
+  public bool IsContinuation() { return _period.total > TimeSpan.Zero; }
 
   public void Begin() {
     switch (_status) {
@@ -260,12 +266,14 @@ public class Scene {
 
     apply(SceneStatus.working);
 
-    _period.Reset();
-    _period.remaining = _configuration.duration;
+    if (_period.total > TimeSpan.Zero) {
+      _period.remaining = _period.total;
+    } else {
+      _period.remaining = _period.total = _configuration.duration;
+    }
     foreach (ResourceInstance resource in _resources) {
       if (resource.GetMinWork() > _period.remaining) {
         _period.underflow += (resource.GetMinWork() - _period.remaining);
-        _period.remaining = resource.GetMinWork();
       } else if (_period.remaining > resource.GetMaxWork()) {
         _period.remaining = resource.GetMaxWork();
       }
@@ -275,15 +283,47 @@ public class Scene {
         $"{Identity()} exits Begin() with _period.remaining {_period.remaining.TotalMilliseconds} and _period.underflow {_period.underflow.TotalMilliseconds}");
   }
 
+  public SceneStatus Execute(TimeSpan duration) {
+    switch (_status) {
+      case SceneStatus.working:
+      case SceneStatus.underflow: break;
+      default: throw new InvalidOperationException($"Cannot perform work on a scene with status {_status}");
+    }
+
+    Thread.Sleep(duration); /* fake work */
+
+    if (_period.remaining == TimeSpan.Zero) {
+      if (_period.underflow == TimeSpan.Zero) throw new InvalidOperationException("Scene cannot execute for 0ms");
+      _period.underflow = TimeSpan.Zero;
+      return apply(SceneStatus.completed);
+    }
+
+    _period.remaining -= duration;
+    _period.total -= duration;
+    if (_period.remaining == TimeSpan.Zero) {
+      if (_period.underflow == TimeSpan.Zero) return apply(SceneStatus.completed);
+      else
+        return apply(SceneStatus.underflow);
+    }
+    return apply(SceneStatus.working);
+  }
+
   public bool Grant(ResourceInstance resource) {
     _resources.Add(resource);  // TODO: validate unique, validate this resource is required
     return (_resources.Count == _configuration.resources.Count);
   }
 
-  public void Reset() {
+  public void Reset(string actorid) {
     _status = SceneStatus.dark;
     _period.Reset();
-    _qs.MultiRelease(_resources);
+    Remit(actorid);
+  }
+
+  public void Remit(string actorid) {
+    if (_resources.Count > 0) {
+      ComponentLog.singleton.Log($"{actorid} {Identity()} releases {_resources.Count} resources");
+      _qs.MultiRelease(_resources);
+    }
   }
 
   public IEnumerable<ResourceName> Scope() { return _configuration.resources; }
@@ -308,8 +348,9 @@ public class Scene {
   private struct Period {
     public TimeSpan underflow;
     public TimeSpan remaining;
+    public TimeSpan total;
 
-    public void Reset() { underflow = remaining = TimeSpan.Zero; }
+    public void Reset() { underflow = remaining = total = TimeSpan.Zero; }
   }
 
   private IResourceQueueSet _qs;
@@ -369,7 +410,9 @@ public class Director : IConditionAware, ICastManager {
 
     Monitor.Enter(_idle);
     try {
-      // TODO: stop all actors (now unless nice)
+      foreach (List<Actor> role in _cast.Values) {
+        foreach (Actor a in role) { a.Stop(ActorPhase.exit, null, false); }
+      }
 
       _self = null;
     } finally { Monitor.Exit(_idle); }

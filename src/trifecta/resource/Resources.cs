@@ -16,6 +16,9 @@ public class ResourceQueue {
     ComponentLog.singleton.Log($"Constructing a ResourceQueue for resource {configuration.name}");
 
     _configuration = configuration;
+    for (int i = 0; i < configuration.quantity; i++) {
+      _resources.Enqueue(new ResourceInstance(configuration, null));
+    }
   }
 
   public void Push(IResourceConsumer consumer) {
@@ -153,6 +156,8 @@ public class ResourceInstance {
     _type = type;
     _driver = driver;
   }
+
+  public string GetName() { return _type.name; }
 
   public ResourceDriverStatus GetStatus() { return _driver.GetStatus(); }
 
