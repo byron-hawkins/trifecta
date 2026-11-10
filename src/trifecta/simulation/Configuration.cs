@@ -46,6 +46,12 @@ static class ParserJsonOptions {
         case "tickinterval" when property.PropertyType == typeof(TimeSpan):
           property.Name = "tick-interval";
           break;
+        case "minwork" when property.PropertyType == typeof(TimeSpan):
+          property.Name = "min-work";
+          break;
+        case "maxwork" when property.PropertyType == typeof(TimeSpan):
+          property.Name = "max-work";
+          break;
       }
     }
   }

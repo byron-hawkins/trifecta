@@ -19,9 +19,7 @@ public class ResourceQueue {
   }
 
   public void Push(IResourceConsumer consumer) {
-    using (_lock.EnterScope()) {
-      _consumers.Enqueue(consumer);
-    }
+    using (_lock.EnterScope()) { _consumers.Enqueue(consumer); }
   }
 
   public void Push(ResourceInstance resource) {
@@ -95,7 +93,27 @@ public class ResourceQueueSet {
     } finally { Monitor.Exit(_idle); }
   }
 
-  public void MultiPush(IResourceConsumer consumer) {}
+  public void Reset() {
+    ComponentLog.singleton.Log("ResourceQueueSet reset requested");
+
+    Monitor.Enter(_idle);
+    try {
+      if (_started && (!_stop || _self != null)) throw new InvalidOperationException("Cannot reset a ResourceQueueSet during showtime");
+
+      _started = _stop = false;
+      _resources = null;
+      _queues.Clear();
+    } finally { Monitor.Exit(_idle); }
+  }
+
+  public void MultiPush(IResourceConsumer consumer) {
+    // _multilock
+    // foreach is consumer.Scope(): lock q, push
+  }
+
+  public void MultiRelease(List<ResourceInstance> release) {
+    // foreach, lock q, push
+  }
 
   private void run() {
     Monitor.Enter(_idle);
@@ -126,10 +144,17 @@ public class ResourceQueueSet {
 }
 
 public class ResourceInstance {
-  ResourceInstance(IResourceDriver driver) { _driver = driver; }
+  ResourceInstance(ResourceType type, IResourceDriver driver) {
+    _type = type;
+    _driver = driver;
+  }
 
   public ResourceDriverStatus GetStatus() { return _driver.GetStatus(); }
 
+  public TimeSpan GetMinWork() { return _type.minwork; }
+  public TimeSpan GetMaxWork() { return _type.maxwork; }
+
+  private ResourceType _type;
   private IResourceDriver _driver;
 }
 

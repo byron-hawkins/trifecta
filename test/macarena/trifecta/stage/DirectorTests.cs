@@ -1,7 +1,9 @@
 /* author: Copilot */
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using trifecta.stage;
 using trifecta.test.common;
 using Xunit;
@@ -29,6 +31,7 @@ public sealed class DirectorTests : ComponentLogTestBase {
 
     setup($"DirectorTests-{Guid.NewGuid():N}");
     try {
+      Director.singleton.Reset();
       Director.singleton.configure(configuration);
     } finally {
       finish();
@@ -62,6 +65,42 @@ public sealed class DirectorTests : ComponentLogTestBase {
               $"Missing scene log for actor {actor + 1} of role {role.id}.");
         }
       }
+    }
+  }
+
+  [Theory]
+  [InlineData(true)]
+  [InlineData(false)]
+  public async Task StartsGoesIdleAndStopsPromptly(bool nicely) {
+    setup($"DirectorLifecycleTests-{Guid.NewGuid():N}");
+    var director = Director.singleton;
+    try {
+      director.Reset();
+      director.Start();
+      try {
+        var timer = Stopwatch.StartNew();
+        var idle = false;
+        do {
+          finish();
+          idle = FindLogFiles().Length == 1 &&
+                 ReadLog().Contains("Director goes idle",
+                                    StringComparison.OrdinalIgnoreCase);
+          if (!idle)
+            await Task.Delay(20);
+        } while (!idle && timer.Elapsed < TimeSpan.FromSeconds(2));
+        Assert.True(idle, "Timed out waiting for the Director to go idle.");
+      } finally {
+        await Task.Run(() => director.Stop(nicely))
+            .WaitAsync(TimeSpan.FromSeconds(2));
+      }
+
+      finish();
+      var log = ReadLog();
+      Assert.Contains("Director start requested", log);
+      Assert.Contains("Director goes idle", log);
+      Assert.Contains("Director stop requested", log);
+    } finally {
+      finish();
     }
   }
 

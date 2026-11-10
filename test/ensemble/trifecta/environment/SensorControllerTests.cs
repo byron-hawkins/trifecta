@@ -94,18 +94,24 @@ public sealed class SensorControllerTests : ComponentLogTestBase {
       Assert.NotNull(driver);
       Assert.NotNull(pressureDriver);
       var controller = SensorController.singleton;
+      controller.Reset();
       controller.Register(driver);
       controller.Register(pressureDriver);
       controller.Start();
-      var temperatureTask = WaitForReadings(
-          "Temperature", configuration.id, expectedReadings.Length,
-          firstEvent.duration + TimeSpan.FromSeconds(2), ParseFloat);
-      var pressureTask = WaitForReadings(
-          "Pressure", pressureConfiguration.id, expectedPressureReadings.Length,
-          firstPressureEvent.duration + TimeSpan.FromSeconds(2), ParseInt);
-      await Task.WhenAll(temperatureTask, pressureTask);
-      actualReadings = await temperatureTask;
-      actualPressureReadings = await pressureTask;
+      try {
+        var temperatureTask = WaitForReadings(
+            "Temperature", configuration.id, expectedReadings.Length,
+            firstEvent.duration + TimeSpan.FromSeconds(2), ParseFloat);
+        var pressureTask = WaitForReadings(
+            "Pressure", pressureConfiguration.id,
+            expectedPressureReadings.Length,
+            firstPressureEvent.duration + TimeSpan.FromSeconds(2), ParseInt);
+        await Task.WhenAll(temperatureTask, pressureTask);
+        actualReadings = await temperatureTask;
+        actualPressureReadings = await pressureTask;
+      } finally {
+        await Task.Run(controller.Stop).WaitAsync(TimeSpan.FromSeconds(2));
+      }
     } finally {
       finish();
     }

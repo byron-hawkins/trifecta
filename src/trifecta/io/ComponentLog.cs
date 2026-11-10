@@ -23,7 +23,8 @@ public class ComponentLog : ITextLog {
   public void Log(string message, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0, [CallerMemberName] string member = "") {
     string filename = Path.GetFileName(path);
     string component = _componentNames.GetValueOrDefault(Thread.CurrentThread.ManagedThreadId, "<unknown-component-id>");
-    using (_lock.EnterScope()) { _sink.Log($"[{component}.{member} {filename}.{line}]: {message}"); }
+    string timestamp = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
+    using (_lock.EnterScope()) { _sink.Log($"[{component}.{member} {filename}.{line} {timestamp}]: {message}"); }
   }
 
   public void Flush() {

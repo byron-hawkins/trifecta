@@ -23,6 +23,8 @@ public class ResourceQueueSet {
 
   public void Stop() {}
 
+  public void Reset() {}
+
   public void Bump() {}
 
   public void MultiPush(IResourceConsumer consumer) {}

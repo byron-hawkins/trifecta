@@ -53,6 +53,8 @@ public class Director : IConditionAware, ICastManager {
 
   public void Stop(bool nicely) {}
 
+  public void Reset() {}
+
   public void ThresholdCross(Temperature t) {}
 
   public void ThresholdCross(Pressure p) {}

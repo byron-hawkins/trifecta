@@ -19,6 +19,7 @@ public sealed class ResourceQueueSetTests : ComponentLogTestBase {
     setup($"ResourceQueueSetTests-{Guid.NewGuid():N}");
     var queueSet = ResourceQueueSet.singleton;
     try {
+      queueSet.Reset();
       queueSet.Start();
       try {
         await WaitForMessages(0, 1);

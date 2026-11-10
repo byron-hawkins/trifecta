@@ -28,6 +28,7 @@ public sealed class DirectorTests : ComponentLogTestBase {
 
     setup($"DirectorTests-{Guid.NewGuid():N}");
     try {
+      Director.singleton.Reset();
       Director.singleton.configure(configuration);
     } finally {
       finish();

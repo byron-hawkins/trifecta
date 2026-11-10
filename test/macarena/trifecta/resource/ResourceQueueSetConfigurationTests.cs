@@ -49,6 +49,7 @@ public sealed class ResourceQueueSetConfigurationTests : ComponentLogTestBase {
 
     setup($"ResourceQueueSetConfigurationTests-{Guid.NewGuid():N}");
     try {
+      ResourceQueueSet.singleton.Reset();
       ResourceQueueSet.singleton.configure(configuration);
     } finally {
       finish();

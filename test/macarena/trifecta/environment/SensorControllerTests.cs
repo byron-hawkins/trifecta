@@ -12,8 +12,10 @@ namespace environment {
 
 [Collection("ComponentLog tests")]
 public sealed class SensorControllerTests : ComponentLogTestBase {
-  [Fact]
-  public async Task StopsPromptlyAfterRegisteringBothSensors() {
+  [Theory]
+  [InlineData(1)]
+  [InlineData(2)]
+  public async Task StopsPromptlyAfterRegisteringBothSensors(int cycle) {
     var temperatureDriver = SensorDriverFactory.scripted(
         "test/sensors/device/temperature-passive.json",
         "test/sensors/script/temperature-ascending.json");
@@ -23,9 +25,10 @@ public sealed class SensorControllerTests : ComponentLogTestBase {
     Assert.NotNull(temperatureDriver);
     Assert.NotNull(pressureDriver);
 
-    setup($"SensorControllerStopTests-{Guid.NewGuid():N}");
+    setup($"SensorControllerStopTests-{cycle}-{Guid.NewGuid():N}");
     try {
       var controller = SensorController.singleton;
+      controller.Reset();
       controller.Register(temperatureDriver);
       controller.Register(pressureDriver);
       controller.Start();

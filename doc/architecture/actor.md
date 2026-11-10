@@ -109,7 +109,8 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
     - queue
     - work
     - suspension
-    - exit_at_cost
-    - exit_at_completion
-    - exit_now
+    - stop_at_cost
+    - stop_at_completion
+    - stop_now
+    - exit
 
