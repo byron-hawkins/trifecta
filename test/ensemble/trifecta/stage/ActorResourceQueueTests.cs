@@ -153,7 +153,12 @@ public sealed class ActorResourceQueueTests : ComponentLogTestBase {
 
     // FIFO: with every actor needing every type, `instances` slots exist
     var free = Enumerable.Repeat(DateTimeOffset.MinValue, instances).ToList();
-    foreach (var h in holds.OrderBy(x => x.Requested)) {
+    // requests within 10 ms are indistinguishable in the log: order those by
+    // start
+    foreach (var h in holds
+                 .OrderBy(x => x.Requested.Ticks /
+                               TimeSpan.TicksPerMillisecond / 10)
+                 .ThenBy(x => x.Start)) {
       free.Sort();
       var expected = free[0] > h.Requested ? free[0] : h.Requested;
       free[0] = expected + TimeSpan.FromMilliseconds(ResourceMs);

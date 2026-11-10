@@ -2,7 +2,11 @@
 /* stub: Copilot */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
 using trifecta.environment;
 
 namespace trifecta {
@@ -75,18 +79,84 @@ public abstract class ScriptedSensorDriver<T> : ISensorDriver {
   protected SensorDriverFactory.SensorConfiguration _configuration;
 }
 
-public class ScriptedActiveSensorDriver<T> : ScriptedSensorDriver<T>, IActiveSensorDriver<T> {
+public class ScriptedActiveSensorDriver<T> : ScriptedSensorDriver<T>, IActiveSensorDriver<T>
+    where T : INumber<T> {
   public ScriptedActiveSensorDriver(SensorScript<T> _script, SensorDriverFactory.SensorConfiguration _configuration) : base(_script, _configuration) {}
 
-  public override void Start() {}
+  public override void Start() {
+    if (_script.events.Count == 0) return;
 
-  public override void Stop() {}
+    using (_lock.EnterScope()) {
+      _started = true;
+      _self = Task.Run(() => { run(); });
+    }
+  }
 
-  public void Attach(ISensorAware<T> aware) { _aware.Add(aware); }
+  public override void Stop() {
+    Task task;
+    using (_lock.EnterScope()) {
+      if (!_started) return;
+      _stop = true;
+      task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop a sensor driver");
+    }
+    task.Wait();
+    using (_lock.EnterScope()) {
+      _self = null;
+      _started = false;
+      _stop = false;
+    }
+  }
 
-  public void Detach(ISensorAware<T> unaware) { _aware.Remove(unaware); }
+  public void Attach(ISensorAware<T> aware) {
+    using (_lock.EnterScope()) { _aware = [.._aware, aware]; }
+  }
 
-  private List<ISensorAware<T>> _aware = new();
+  public void Detach(ISensorAware<T> unaware) {
+    using (_lock.EnterScope()) { _aware = _aware.Where(x => x != unaware).ToArray(); }
+  }
+
+  private void run() {
+    int point = 0;
+    T reading = default;
+    ISensorAware<T>[] safe_aware = [];
+    TimeSpan countdown = _script.events[point].duration, duration = countdown;
+    while (true) {
+      Thread.Sleep(_configuration.tickinterval);
+      using (_lock.EnterScope()) {
+        if (_stop) return;
+
+        TimeSpan elapsed = _configuration.tickinterval;
+        while (elapsed >= countdown) {
+          elapsed -= countdown;
+          point = next(point);
+          duration = countdown = _script.events[point].duration;
+        }
+        countdown -= elapsed;
+        reading = at(point);
+        if (elapsed > TimeSpan.Zero) {
+          T delta = (at(next(point)) - at(point));
+          double ratio = ((((double)duration.TotalMilliseconds) - ((double)countdown.TotalMilliseconds)) / ((double)duration.TotalMilliseconds));
+          double slide = (double.CreateChecked(delta) * ratio);
+          reading += T.CreateChecked(slide);
+        }
+        safe_aware = _aware;
+      }
+      foreach (ISensorAware<T> aware in safe_aware) { aware.SensorUpdate(_configuration.id, reading); }
+    }
+  }
+
+  private T at(int point) { return _script.events[point].value; }
+
+  private int next(int point) {
+    point++;
+    return (point >= _script.events.Count) ? 0 : point;
+  }
+
+  private bool _started = false;
+  private bool _stop = false;
+  private Lock _lock = new();
+  private Task? _self = null;
+  private ISensorAware<T>[] _aware = [];
 }
 
 public class ScriptedPassiveSensorDriver<T> : ScriptedSensorDriver<T> {

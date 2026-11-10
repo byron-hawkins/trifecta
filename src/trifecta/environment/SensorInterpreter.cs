@@ -50,6 +50,7 @@ public class SensorInterpreter : ISensorAware<Temperature>, ISensorAware<Pressur
     using (_lock.EnterScope()) { _paranoid.Remove(relax); }
   }
 
+  // TODO: for multiple sensors of the same type, need the controller to activate/deactivate by sensor id
   public void SensorUpdate(SensorId id, Temperature reading) {
     // TODO: buffer at some interval to avoid chatter
     using (_lock.EnterScope()) {  // TODO: incremental update scaled by sensor relative weight
