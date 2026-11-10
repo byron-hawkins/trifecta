@@ -239,6 +239,34 @@ public sealed class ScriptedActiveSensorDriverTests {
     Assert.True(stable.Readings.Count >= 5);
   }
 
+  [Fact]
+  public async Task StopFromInsideACallbackDoesNotDeadlockAndAllowsRestart() {
+    var script = Script<Temperature>((200, 10f), (200, 20f));
+    var driver = new ScriptedActiveSensorDriver<Temperature>(script, Config(8));
+    var aware = new MockAware<Temperature>();
+    aware.OnUpdate = () => {
+      if (aware.Readings.Count == 3)
+        driver.Stop();
+    };
+    driver.Attach(aware);
+
+    driver.Start();
+    // Stop() inside the callback must return; the loop then ends by itself
+    await Task.Delay(Tick * 12);
+    Assert.Equal(3, aware.Readings.Count);
+
+    // a clean restart reports again; and an external Stop() joins normally
+    aware.OnUpdate = null;
+    driver.Start();
+    try {
+      await aware.WaitFor(5, TimeSpan.FromSeconds(3));
+    } finally {
+      var stopped = Task.Run(driver.Stop);
+      await stopped.WaitAsync(TimeSpan.FromSeconds(3));
+    }
+    Assert.True(aware.Readings.Count >= 5);
+  }
+
   private sealed class MockAware<T> : ISensorAware<T> {
     private readonly object _lock = new();
     private readonly List<(int, T, DateTimeOffset)> _readings = [];

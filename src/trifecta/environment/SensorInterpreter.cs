@@ -13,11 +13,6 @@ namespace environment {
 public class SensorInterpreter : ISensorAware<Temperature>, ISensorAware<Pressure> {
   public static SensorInterpreter singleton = new();
 
-  // public SensorInterpreter() {
-  //   _thresholds = new();
-  //   _stable = new();
-  // }
-
   public Temperature GetTemperature() {
     using (_lock.EnterScope()) { return _stable.t; }
   }

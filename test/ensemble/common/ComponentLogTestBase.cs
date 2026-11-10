@@ -27,6 +27,7 @@ public abstract class ComponentLogTestBase {
     OutputDirectory =
         Path.Combine(logDirectory, LogContext.ensemble.ToString());
     ComponentLog.singleton.Configure(new FileLog(LogContext.ensemble, logbase));
+    ComponentLog.singleton.EnableTrace(true);
   }
 
   public void finish() { ComponentLog.singleton.Flush(); }

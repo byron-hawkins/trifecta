@@ -82,17 +82,28 @@ public class SensorController : ISensorAware<Temperature>, ISensorAware<Pressure
     }
   }
 
-  public void SensorUpdate(SensorId id, Temperature reading) {}
-  public void SensorUpdate(SensorId id, Pressure reading) {}
+  public void SensorUpdate(SensorId id, Temperature reading) {
+    ComponentLog.singleton.Log($"Temperature sensor {id} reports {reading}");
+
+    SensorInterpreter.singleton.SensorUpdate(id, reading);
+  }
+
+  public void SensorUpdate(SensorId id, Pressure reading) {
+    ComponentLog.singleton.Log($"Pressure sensor {id} reports {reading}");
+
+    SensorInterpreter.singleton.SensorUpdate(id, reading);
+  }
 
   private void run() {
-    while (true) {
-      Thread.Sleep(10);  // TODO: nicer to make this tickrate configurable
-      using (_lock.EnterScope()) {
-        if (_stop) return;
+    using (ComponentLog.singleton.Register("SensorController")) {
+      while (true) {
+        Thread.Sleep(10);  // TODO: nicer to make this tickrate configurable
+        using (_lock.EnterScope()) {
+          if (_stop) return;
 
-        foreach (ISensorDriver passive in _passives) {
-          ComponentLog.singleton.Log($"SensorController polls passive driver {passive.GetId()} for a {passive.GetSensorType()} value");
+          foreach (ISensorDriver passive in _passives) {
+            ComponentLog.singleton.Log($"SensorController polls passive driver {passive.GetId()} for a {passive.GetSensorType()} value");
+          }
         }
       }
     }

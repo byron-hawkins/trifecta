@@ -181,18 +181,20 @@ public class ResourceQueueSet : IResourceQueueSet {
   }
 
   private void run() {
-    Monitor.Enter(_idle);
-    try {
-      while (true) {
-        if (_stop) return;
+    using (ComponentLog.singleton.Register("ResourceQueueSet")) {
+      Monitor.Enter(_idle);
+      try {
+        while (true) {
+          if (_stop) return;
 
-        ComponentLog.singleton.Log($"ResourceQueueSet dispatches {_queues.Count} resource queues");
-        foreach (ResourceQueue q in _queues.Values) q.Dispatch();
+          ComponentLog.singleton.Log($"ResourceQueueSet dispatches {_queues.Count} resource queues");
+          foreach (ResourceQueue q in _queues.Values) q.Dispatch();
 
-        ComponentLog.singleton.Log("ResourceQueueSet goes idle");
-        Monitor.Wait(_idle);
-      }
-    } finally { Monitor.Exit(_idle); }
+          ComponentLog.singleton.Log("ResourceQueueSet goes idle");
+          Monitor.Wait(_idle);
+        }
+      } finally { Monitor.Exit(_idle); }
+    }
   }
 
   private bool _started = false;

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using trifecta.io;
 using trifecta.environment;
 
 namespace trifecta {
@@ -98,13 +99,10 @@ public class ScriptedActiveSensorDriver<T> : ScriptedSensorDriver<T>, IActiveSen
       if (!_started) return;
       _stop = true;
       task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop a sensor driver");
+      if (Task.CurrentId == task.Id) return; /* loopback */
     }
     task.Wait();
-    using (_lock.EnterScope()) {
-      _self = null;
-      _started = false;
-      _stop = false;
-    }
+    using (_lock.EnterScope()) { reset(); }
   }
 
   public void Attach(ISensorAware<T> aware) {
@@ -116,32 +114,37 @@ public class ScriptedActiveSensorDriver<T> : ScriptedSensorDriver<T>, IActiveSen
   }
 
   private void run() {
-    int point = 0;
-    T reading = default;
-    ISensorAware<T>[] safe_aware = [];
-    TimeSpan countdown = _script.events[point].duration, duration = countdown;
-    while (true) {
-      Thread.Sleep(_configuration.tickinterval);
-      using (_lock.EnterScope()) {
-        if (_stop) return;
+    using (ComponentLog.singleton.Register($"Active {_configuration.type} sensor driver #{_configuration.id}")) {
+      int point = 0;
+      T reading = default;
+      ISensorAware<T>[] safe_aware = [];
+      TimeSpan countdown = _script.events[point].duration, duration = countdown;
+      while (true) {
+        Thread.Sleep(_configuration.tickinterval);
+        using (_lock.EnterScope()) {
+          if (_stop) {
+            reset();
+            return;
+          }
 
-        TimeSpan elapsed = _configuration.tickinterval;
-        while (elapsed >= countdown) {
-          elapsed -= countdown;
-          point = next(point);
-          duration = countdown = _script.events[point].duration;
+          TimeSpan elapsed = _configuration.tickinterval;
+          while (elapsed >= countdown) {
+            elapsed -= countdown;
+            point = next(point);
+            duration = countdown = _script.events[point].duration;
+          }
+          countdown -= elapsed;
+          reading = at(point);
+          if (elapsed > TimeSpan.Zero) {
+            T delta = (at(next(point)) - at(point));
+            double ratio = ((((double)duration.TotalMilliseconds) - ((double)countdown.TotalMilliseconds)) / ((double)duration.TotalMilliseconds));
+            double slide = (double.CreateChecked(delta) * ratio);
+            reading += T.CreateChecked(slide);
+          }
+          safe_aware = _aware;
         }
-        countdown -= elapsed;
-        reading = at(point);
-        if (elapsed > TimeSpan.Zero) {
-          T delta = (at(next(point)) - at(point));
-          double ratio = ((((double)duration.TotalMilliseconds) - ((double)countdown.TotalMilliseconds)) / ((double)duration.TotalMilliseconds));
-          double slide = (double.CreateChecked(delta) * ratio);
-          reading += T.CreateChecked(slide);
-        }
-        safe_aware = _aware;
+        foreach (ISensorAware<T> aware in safe_aware) { aware.SensorUpdate(_configuration.id, reading); }
       }
-      foreach (ISensorAware<T> aware in safe_aware) { aware.SensorUpdate(_configuration.id, reading); }
     }
   }
 
@@ -150,6 +153,12 @@ public class ScriptedActiveSensorDriver<T> : ScriptedSensorDriver<T>, IActiveSen
   private int next(int point) {
     point++;
     return (point >= _script.events.Count) ? 0 : point;
+  }
+
+  private void reset() {
+    _self = null;
+    _started = false;
+    _stop = false;
   }
 
   private bool _started = false;

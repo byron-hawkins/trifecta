@@ -33,14 +33,17 @@ public class Actor : IConditionAware {
     } finally { Monitor.Exit(_idle); }
   }
 
-  public void Start() {
+  public virtual void Start(bool ignorable = false) {
     ComponentLog.singleton.Log($"{_identity} start requested");
 
     Monitor.Enter(_idle);
     try {
-      if (_phase == ActorPhase.exit) _phase = ActorPhase.ready;
-      else if (_phase != ActorPhase.ready)
+      if (_phase == ActorPhase.exit) {
+        _phase = ActorPhase.ready;
+      } else if (_phase != ActorPhase.ready) {
+        if (ignorable) return;
         throw new InvalidOperationException($"Cannot start {_identity} from phase {_phase}");
+      }
       if (_onstage != null) throw new InvalidOperationException($"Cannot start {_identity} with a scene on stage (phase {_phase})");
 
       _appearance = new(this);
@@ -50,8 +53,7 @@ public class Actor : IConditionAware {
     } finally { Monitor.Exit(_idle); }
   }
 
-  // TODO: if queue_up or on_queue, somehow dequeue
-  public void Stop(ActorPhase mode, Action? finalize = null, bool required = false) {
+  public virtual void Stop(ActorPhase mode, Action? finalize = null, bool ignorable = false) {
     ComponentLog.singleton.Log($"{_identity} stop requested");
 
     try {
@@ -59,10 +61,10 @@ public class Actor : IConditionAware {
       Task task;
       Monitor.Enter(_idle);
       try {
-        if (!required && _phase == ActorPhase.exit) return;
+        if (ignorable && _phase == ActorPhase.exit) return;
 
+        task = _self ?? throw new InvalidOperationException($"Missing background task when attempting to stop {_identity} in phase {_phase}");
         _phase = mode;
-        task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop the Director");
         Monitor.Pulse(_idle);
       } finally { Monitor.Exit(_idle); }
       if (stop_now) {
@@ -78,8 +80,10 @@ public class Actor : IConditionAware {
     }
   }
 
+  /* reserved for stop_at_cost */
   public void ThresholdCross(Temperature t) {}
 
+  /* reserved for stop_at_cost */
   public void ThresholdCross(Pressure p) {}
 
   public IEnumerable<ResourceName> Scope() {
@@ -111,65 +115,67 @@ public class Actor : IConditionAware {
   }
 
   private void run() {
-    ComponentLog.singleton.Log($"{_identity} starts run() in phase {_phase}");
+    using (ComponentLog.singleton.Register(_identity)) {
+      ComponentLog.singleton.Log($"{_identity} starts run() in phase {_phase}");
 
-    Monitor.Enter(_idle);
-    try {
-      while (true) {
-        ComponentLog.singleton.Log($"{_identity} loops run() in phase {_phase}");
+      Monitor.Enter(_idle);
+      try {
+        while (true) {
+          ComponentLog.singleton.Log($"{_identity} loops run() in phase {_phase}");
 
-        switch (_phase) {
-          case ActorPhase.ready:
-            if (_onstage != null || _workflow != 0) throw new InvalidOperationException($"{_identity} cannot be in phase {_phase} while a scene is on stage");
-            _onstage = _scenes[_workflow];
-            if (_onstage.IsLocal()) {
-              _phase = ActorPhase.work;
+          switch (_phase) {
+            case ActorPhase.ready:
+              if (_onstage != null || _workflow != 0) throw new InvalidOperationException($"{_identity} cannot be in phase {_phase} while a scene is on stage");
+              _onstage = _scenes[_workflow];
+              if (_onstage.IsLocal()) {
+                _phase = ActorPhase.work;
+                continue;
+              }
+              _phase = ActorPhase.queue_up;
               continue;
-            }
-            _phase = ActorPhase.queue_up;
-            continue;
-          case ActorPhase.queue_up:
-            Monitor.Exit(_idle); /* allow for potential immediate Grant() */
-            try {
-              _qs.MultiPush(_appearance);
-            } finally { Monitor.Enter(_idle); }                              /* resume lockout for routing */
-            if (_phase == ActorPhase.queue_up) _phase = ActorPhase.on_queue; /* not granted yet */
-            continue;
-          case ActorPhase.on_queue: break;
-          case ActorPhase.work:
-          case ActorPhase.stop_at_completion:
-            work();
+            case ActorPhase.queue_up:
+              Monitor.Exit(_idle); /* allow for potential immediate Grant() */
+              try {
+                _qs.MultiPush(_appearance);
+              } finally { Monitor.Enter(_idle); }                              /* resume lockout for routing */
+              if (_phase == ActorPhase.queue_up) _phase = ActorPhase.on_queue; /* not granted yet */
+              continue;
+            case ActorPhase.on_queue: break;
+            case ActorPhase.work:
+            case ActorPhase.stop_at_completion:
+              work();
 
-            if (_onstage.GetStatus() == SceneStatus.completed) {
-              if (_onstage.IsContinuation()) {
-                if (_onstage.IsLocal()) throw new InvalidOperationException($"{_identity} local work on {_onstage.Identity()} was truncated");
-                _onstage.Remit(this);
-                _phase = ActorPhase.queue_up;
-              } else {
-                _onstage.Reset(this);
-                if (++_workflow == _scenes.Count) {
-                  reset();
+              if (_onstage.GetStatus() == SceneStatus.completed) {
+                if (_onstage.IsContinuation()) {
+                  if (_onstage.IsLocal()) throw new InvalidOperationException($"{_identity} local work on {_onstage.Identity()} was truncated");
+                  _onstage.Remit(this);
+                  _phase = ActorPhase.queue_up;
                 } else {
-                  _onstage = _scenes[_workflow];
-                  if (!_onstage.IsLocal()) _phase = ActorPhase.queue_up;
+                  _onstage.Reset(this);
+                  if (++_workflow == _scenes.Count) {
+                    reset();
+                  } else {
+                    _onstage = _scenes[_workflow];
+                    if (!_onstage.IsLocal()) _phase = ActorPhase.queue_up;
+                  }
                 }
               }
-            }
-            continue;
-          case ActorPhase.suspension:
-          case ActorPhase.stop_at_cost: throw new NotImplementedException($"ActorPhase.{_phase}");
-          case ActorPhase.stop_now:
-          case ActorPhase.exit:
-            _appearance = null;
-            if (_onstage is Scene abort) { abort.Reset(this); }
-            reset(ActorPhase.exit);  // TODO: high-risk strategy for MultiRelease, but can it be done cleanly under iterative control?
-            return;
-        }
+              continue;
+            case ActorPhase.suspension:
+            case ActorPhase.stop_at_cost: throw new NotImplementedException($"ActorPhase.{_phase}");
+            case ActorPhase.stop_now:
+            case ActorPhase.exit:
+              _appearance = null;
+              if (_onstage is Scene abort) { abort.Reset(this); }
+              reset(ActorPhase.exit);  // TODO: high-risk strategy for MultiRelease, but can it be done cleanly under iterative control?
+              return;
+          }
 
-        ComponentLog.singleton.Log($"Director goes idle");
-        Monitor.Wait(_idle);
-      }
-    } finally { Monitor.Exit(_idle); }
+          ComponentLog.singleton.Log($"Director goes idle");
+          Monitor.Wait(_idle);
+        }
+      } finally { Monitor.Exit(_idle); }
+    }
   }
 
   private void work() {
@@ -391,19 +397,25 @@ public class Scene {
 public class Director : IConditionAware, ICastManager {
   public static Director singleton = new();
 
-  public void configure(DirectorConfiguration configuration) {
+  public void configure(DirectorConfiguration configuration, Dictionary<RoleId, List<Actor>>? precast = null) {
     ComponentLog.singleton.Log($"Configuring the Director with transition mode {configuration.mode} and {configuration.roles.Count} Actor roles");
 
     if (_started) throw new InvalidOperationException("Cannot configure the Director after it has been started");
 
-    int index = 0;
-    foreach (RoleConfiguration role in configuration.roles) {
-      List<Actor> members = new();
-      for (int i = 0; i < role.quantity; i++) members.Add(new Actor(index++, role));
-      _cast[role.id] = members;
+    if (precast is Dictionary<RoleId, List<Actor>> pre) {
+      _cast = pre;
+    } else {
+      int index = 0;
+      foreach (RoleConfiguration role in configuration.roles) {
+        List<Actor> members = new();
+        for (int i = 0; i < role.quantity; i++) members.Add(new Actor(index++, role));
+        _cast[role.id] = members;
+      }
     }
 
     _configuration = configuration;
+    _optimizer = new(configuration, this);
+    SensorInterpreter.singleton.Register(this);
   }
 
   public void Start() {
@@ -415,6 +427,7 @@ public class Director : IConditionAware, ICastManager {
       if (_stop) throw new InvalidOperationException("Cannot start a Director that has been stopped");
 
       _started = true;
+      _optimize = true;
       _self = Task.Run(() => { run(); });
     } finally { Monitor.Exit(_idle); }
   }
@@ -437,7 +450,7 @@ public class Director : IConditionAware, ICastManager {
     Monitor.Enter(_idle);
     try {
       foreach (List<Actor> role in _cast.Values) {
-        foreach (Actor a in role) { a.Stop(ActorPhase.exit, null, false); }
+        foreach (Actor a in role) { a.Stop(ActorPhase.exit, null, true); }
       }
 
       _self = null;
@@ -456,35 +469,70 @@ public class Director : IConditionAware, ICastManager {
     } finally { Monitor.Exit(_idle); }
   }
 
-  public void ThresholdCross(Temperature t) {}
+  public void ThresholdCross(Temperature t) {
+    ComponentLog.singleton.Log($"Temperature has crossed a threshold to {t}: delegating to the cast optimizer");
 
-  public void ThresholdCross(Pressure p) {}
-
-  public void Interrupt(Actor actor, ActorPhase exitStrategy) {}
-
-  public void Initiate(RoleId role) {}
-
-  private void run() {
     Monitor.Enter(_idle);
     try {
-      while (true) {
-        if (_stop) return;
-
-        // TODO: whatever Director has to do
-
-        ComponentLog.singleton.Log("Director goes idle");
-        Monitor.Wait(_idle);
-      }
+      _optimize = true;
+      Monitor.Pulse(_idle);
     } finally { Monitor.Exit(_idle); }
+  }
+
+  public void ThresholdCross(Pressure p) {
+    ComponentLog.singleton.Log($"Pressure has crossed a threshold to {p}: delegating to the cast optimizer");
+
+    Monitor.Enter(_idle);
+    try {
+      _optimize = true;
+      Monitor.Pulse(_idle);
+    } finally { Monitor.Exit(_idle); }
+  }
+
+  public void Interrupt(RoleId role, ActorPhase exitStrategy) {
+    foreach (Actor interrupt in _cast[role]) interrupt.Stop(exitStrategy, null, true);
+  }
+
+  public void Initiate(RoleId role) {
+    foreach (Actor initiate in _cast[role]) initiate.Start(true);
+  }
+
+  private void run() {
+    using (ComponentLog.singleton.Register("Director")) {
+      Monitor.Enter(_idle);
+      try {
+        while (true) {
+          if (_stop) return;
+
+          if (_optimize) {
+            Temperature t;
+            Pressure p;
+
+            Monitor.Exit(_idle);
+            try {
+              t = SensorInterpreter.singleton.GetTemperature();
+              p = SensorInterpreter.singleton.GetPressure();
+            } finally { Monitor.Enter(_idle); }
+
+            _optimizer.Optimize(t, p);
+            _optimize = false;
+          }
+
+          ComponentLog.singleton.Log("Director goes idle");
+          Monitor.Wait(_idle);
+        }
+      } finally { Monitor.Exit(_idle); }
+    }
   }
 
   private bool _started = false;
   private bool _stop = false;
+  private bool _optimize = false;
   private Task? _self = null;
   private object _idle = new();
 
   private Dictionary<RoleId, List<Actor>> _cast = [];
-  private CastOptimizer _optimizer = null!;
+  private CastOptimizer? _optimizer = null;
   private DirectorConfiguration _configuration = null!;
 }
 
@@ -494,14 +542,26 @@ public class CastOptimizer {
     _manager = manager;
   }
 
-  public void Optimize() {}
+  public void Optimize(Temperature t, Pressure p) {
+    ComponentLog.singleton.Log($"Now optimizing the cast for temperature {t} and pressure {p}");
+
+    foreach (RoleConfiguration role in _configuration.roles) {
+      if (t > role.tmin && p < role.pmax) {
+        _manager.Initiate(role.id);
+      } else {
+        if (_configuration.mode != TransitionMode.quickstop) throw new NotImplementedException($"TransitionMode {_configuration.mode}");
+
+        _manager.Interrupt(role.id, ActorPhase.stop_now);
+      }
+    }
+  }
 
   private ICastManager _manager;
   private DirectorConfiguration _configuration;
 }
 
 public interface ICastManager {
-  void Interrupt(Actor actor, ActorPhase exitStrategy);
+  void Interrupt(RoleId role, ActorPhase exitStrategy);
   void Initiate(RoleId role);
 }
 

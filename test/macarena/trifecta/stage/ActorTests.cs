@@ -839,8 +839,9 @@ public sealed class ActorTests : ComponentLogTestBase {
   private static async Task StopActor(Actor actor) {
     var finalized = new TaskCompletionSource<bool>(
         TaskCreationOptions.RunContinuationsAsynchronously);
-    var stop = Task.Run(() => actor.Stop(ActorPhase.stop_now,
-                                         () => finalized.TrySetResult(true)));
+    var stop =
+        Task.Run(() => actor.Stop(ActorPhase.stop_now,
+                                  () => finalized.TrySetResult(true), true));
     await Task.WhenAll(stop, finalized.Task).WaitAsync(TimeSpan.FromSeconds(2));
   }
 
