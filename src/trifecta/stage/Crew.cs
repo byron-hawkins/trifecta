@@ -12,7 +12,7 @@ using trifecta.io;
 namespace trifecta {
 namespace stage {
 
-public class Actor : IConditionAware, IResourceConsumer {
+public class Actor : IConditionAware {
   public Actor(int index, RoleConfiguration configuration) : this(index, configuration, ResourceQueueSet.singleton) {}
   public Actor(int index, RoleConfiguration configuration, IResourceQueueSet qs) {
     ComponentLog.singleton.Log($"Constructing an Actor #{index} in role {configuration.id} with bounds T > {configuration.tmin} and P < {configuration.pmax}");
@@ -43,6 +43,7 @@ public class Actor : IConditionAware, IResourceConsumer {
         throw new InvalidOperationException($"Cannot start {_identity} from phase {_phase}");
       if (_onstage != null) throw new InvalidOperationException($"Cannot start {_identity} with a scene on stage (phase {_phase})");
 
+      _appearance = new(this);
       _workflow = 0;  // ...should be already
 
       _self = Task.Run(() => { run(); });
@@ -130,7 +131,7 @@ public class Actor : IConditionAware, IResourceConsumer {
           case ActorPhase.queue_up:
             Monitor.Exit(_idle); /* allow for potential immediate Grant() */
             try {
-              _qs.MultiPush(this);
+              _qs.MultiPush(_appearance);
             } finally { Monitor.Enter(_idle); }                              /* resume lockout for routing */
             if (_phase == ActorPhase.queue_up) _phase = ActorPhase.on_queue; /* not granted yet */
             continue;
@@ -159,6 +160,7 @@ public class Actor : IConditionAware, IResourceConsumer {
           case ActorPhase.stop_at_cost: throw new NotImplementedException($"ActorPhase.{_phase}");
           case ActorPhase.stop_now:
           case ActorPhase.exit:
+            _appearance = null;
             if (_onstage is Scene abort) { abort.Reset(this); }
             reset(ActorPhase.exit);  // TODO: high-risk strategy for MultiRelease, but can it be done cleanly under iterative control?
             return;
@@ -213,8 +215,16 @@ public class Actor : IConditionAware, IResourceConsumer {
   public void Remit(List<ResourceInstance> free) {
     Monitor.Exit(_idle); /* allow interruption */
     try {
+      _appearance = new(this);
       _qs.MultiRelease(free);
     } finally { Monitor.Enter(_idle); } /* resume lockout for routing */
+  }
+
+  public bool IsGhost(Appearance appearance) {
+    Monitor.Enter(_idle);
+    try {
+      return appearance != _appearance;
+    } finally { Monitor.Exit(_idle); }
   }
 
   public string Identity() { return _identity; }
@@ -237,20 +247,21 @@ public class Actor : IConditionAware, IResourceConsumer {
   private int _workflow;
   private ActorPhase _phase = ActorPhase.exit;
   private Scene? _onstage;
+  private Appearance? _appearance = null;
   private List<Scene> _scenes = [];
 }
 
-/*
-  ready,
-  queue_up,
-  on_queue,
-  work,
-  suspension,
-  stop_at_cost,
-  stop_at_completion,
-  stop_now,
-  exit,
-*/
+public class Appearance : IResourceConsumer {
+  public Appearance(Actor actor) { _actor = actor; }
+
+  public bool IsGhost() { return _actor.IsGhost(this); }
+
+  public IEnumerable<ResourceName> Scope() { return _actor.Scope(); }
+
+  public void Grant(ResourceInstance resource) { _actor.Grant(resource); }
+
+  private Actor _actor;
+}
 
 public class Scene {
   public Scene(int index, SceneConfiguration configuration) : this(index, configuration, ResourceQueueSet.singleton) {}

@@ -736,13 +736,15 @@ public sealed class ActorTests : ComponentLogTestBase {
         await StopActor(actor);
       }
 
-      // 3. a Grant() arrives after the Actor has exited
-      var late = Record.Exception(() => queues.GrantOne(0));
+      // 3. the queue offers a resource after the Actor has exited: it must see
+      // a ghost
+      bool granted = true;
+      var late = Record.Exception(() => granted = queues.GrantOne(0));
       Assert.Null(late);
+      Assert.False(granted);
 
-      // 4. the resource is neither held by a dead Actor nor lost
+      // 4. the dead Actor holds nothing and never started work
       Assert.Equal(0, CountLog("[work: start]"));
-      Assert.Equal(1, queues.Releases.Sum(r => r.Length));
     } finally {
       finish();
     }
@@ -928,7 +930,14 @@ public sealed class ActorTests : ComponentLogTestBase {
       }
     }
 
-    public void GrantOne(int index) { _consumer!.Grant(_pool[index]); }
+    // mimics ResourceQueue: a ghost consumer is skipped and the resource stays
+    // queued
+    public bool GrantOne(int index) {
+      if (_consumer!.IsGhost())
+        return false;
+      _consumer.Grant(_pool[index]);
+      return true;
+    }
 
     public void Open() { _gate.Set(); }
 

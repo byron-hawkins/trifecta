@@ -23,6 +23,8 @@ public class ResourceQueue {
   public void Push(IResourceConsumer consumer) {
     ComponentLog.singleton.Log($"{_identity} receives one consumer");
 
+    if (consumer.IsGhost()) return;
+
     using (_lock.EnterScope()) {
       if (_resources.Count > 0) {
         ComponentLog.singleton.Log($"{_identity} grants quick");
@@ -41,17 +43,25 @@ public class ResourceQueue {
   public void Push(ResourceInstance resource) {
     ComponentLog.singleton.Log($"{_identity} receives one resource {resource.GetName}");
 
+    bool retry;
     using (_lock.EnterScope()) {
-      if (_consumers.Count > 0) {
-        ComponentLog.singleton.Log($"{_identity} ricochet-grant on resource {resource.GetName}");
+      do {
+        retry = false;
+        if (_consumers.Count > 0) {
+          ComponentLog.singleton.Log($"{_identity} ricochet-grant on resource {resource.GetName}");
 
-        IResourceConsumer consumer = _consumers.Dequeue();
-        consumer.Grant(resource);
-      } else {
-        ComponentLog.singleton.Log($"{_identity} enqueues resource {resource.GetName}");
+          IResourceConsumer consumer = _consumers.Dequeue();
+          if (consumer.IsGhost()) {
+            retry = true;
+            continue;
+          }
+          consumer.Grant(resource);
+        } else {
+          ComponentLog.singleton.Log($"{_identity} enqueues resource {resource.GetName}");
 
-        _resources.Enqueue(resource);
-      }
+          _resources.Enqueue(resource);
+        }
+      } while (retry);
       Dispatch(); /* check for more */
     }
   }
@@ -59,8 +69,10 @@ public class ResourceQueue {
   public void Dispatch() {
     using (_lock.EnterScope()) {
       while (_resources.Count > 0 && _consumers.Count > 0) {
-        ResourceInstance resource = _resources.Dequeue();
         IResourceConsumer consumer = _consumers.Dequeue();
+        if (consumer.IsGhost()) { continue; }
+
+        ResourceInstance resource = _resources.Dequeue();
 
         ComponentLog.singleton.Log($"{_identity} dispatch-grant on resource {resource.GetName}");
 
@@ -153,7 +165,7 @@ public class ResourceQueueSet : IResourceQueueSet {
     } finally { Monitor.Exit(_idle); }
   }
 
-  public void MultiPush(IResourceConsumer consumer) {  // TODO: eventually a sync-safe cancellable token
+  public void MultiPush(IResourceConsumer consumer) {
     ComponentLog.singleton.Log($"ResourceQueueSet pushes multiple resource requests");
 
     using (_multilock.EnterScope()) {
@@ -211,6 +223,7 @@ public class ResourceInstance {
 }
 
 public interface IResourceConsumer {
+  bool IsGhost();
   IEnumerable<ResourceName> Scope();
   void Grant(ResourceInstance resource);
 }

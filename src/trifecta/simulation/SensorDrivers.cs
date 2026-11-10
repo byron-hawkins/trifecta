@@ -57,15 +57,15 @@ public class SensorScript<T> {
   }
 }
 
-public class ScriptedSensorDriver<T> : ISensorDriver {
+public abstract class ScriptedSensorDriver<T> : ISensorDriver {
   public ScriptedSensorDriver(SensorScript<T> _script, SensorDriverFactory.SensorConfiguration _configuration) {
     this._script = _script;
     this._configuration = _configuration;
   }
 
-  public void Start() {}
+  public abstract void Start();
 
-  public void Stop() {}
+  public abstract void Stop();
 
   public SensorId GetId() { return _configuration.id; }
   public SensorType GetSensorType() { return _configuration.type; }
@@ -75,12 +75,25 @@ public class ScriptedSensorDriver<T> : ISensorDriver {
   protected SensorDriverFactory.SensorConfiguration _configuration;
 }
 
-public class ScriptedActiveSensorDriver<T> : ScriptedSensorDriver<T> {
+public class ScriptedActiveSensorDriver<T> : ScriptedSensorDriver<T>, IActiveSensorDriver<T> {
   public ScriptedActiveSensorDriver(SensorScript<T> _script, SensorDriverFactory.SensorConfiguration _configuration) : base(_script, _configuration) {}
+
+  public override void Start() {}
+
+  public override void Stop() {}
+
+  public void Attach(ISensorAware<T> aware) { _aware.Add(aware); }
+
+  public void Detach(ISensorAware<T> unaware) { _aware.Remove(unaware); }
+
+  private List<ISensorAware<T>> _aware = new();
 }
 
 public class ScriptedPassiveSensorDriver<T> : ScriptedSensorDriver<T> {
   public ScriptedPassiveSensorDriver(SensorScript<T> _script, SensorDriverFactory.SensorConfiguration _configuration) : base(_script, _configuration) {}
+  public override void Start() {}
+
+  public override void Stop() {}
 }
 }
 }

@@ -10,7 +10,7 @@ using trifecta.io;
 namespace trifecta {
 namespace environment {
 
-public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISensorAware<Pressure> {
+public class SensorController : ISensorAware<Temperature>, ISensorAware<Pressure> {
   public static SensorController singleton = new();
 
   public void Register(ISensorDriver driver) {
@@ -20,6 +20,8 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
       } else {
         _passives.Add(driver);
       }
+      if (driver is IActiveSensorDriver<Temperature> ta) ta.Attach(this);
+      if (driver is IActiveSensorDriver<Pressure> pa) pa.Attach(this);
     }
   }
 
@@ -30,6 +32,8 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
       } else {
         _passives.Remove(driver);
       }
+      if (driver is IActiveSensorDriver<Temperature> ta) ta.Detach(this);
+      if (driver is IActiveSensorDriver<Pressure> pa) pa.Detach(this);
     }
   }
 
@@ -42,6 +46,9 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
 
       _started = true;
       _self = Task.Run(() => { run(); });
+
+      foreach (ISensorDriver driver in _actives) { driver.Start(); }
+      foreach (ISensorDriver driver in _passives) { driver.Start(); }
     }
   }
 
@@ -55,6 +62,9 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
 
       _stop = true;
       task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop the SensorController");
+
+      foreach (ISensorDriver driver in _actives) { driver.Stop(); }
+      foreach (ISensorDriver driver in _passives) { driver.Stop(); }
     }
     task.Wait();
     using (_lock.EnterScope()) { _self = null; }
@@ -77,7 +87,7 @@ public class SensorController : IConditionTypes, ISensorAware<Temperature>, ISen
 
   private void run() {
     while (true) {
-      Thread.SpinWait(10);
+      Thread.Sleep(10);  // TODO: nicer to make this tickrate configurable
       using (_lock.EnterScope()) {
         if (_stop) return;
 

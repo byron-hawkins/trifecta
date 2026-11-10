@@ -10,7 +10,7 @@ using trifecta.io;
 namespace trifecta {
 namespace environment {
 
-public class SensorInterpreter : IConditionTypes, ISensorAware<Temperature>, ISensorAware<Pressure> {
+public class SensorInterpreter : ISensorAware<Temperature>, ISensorAware<Pressure> {
   public static SensorInterpreter singleton = new();
 
   // public SensorInterpreter() {
@@ -75,12 +75,12 @@ public class SensorInterpreter : IConditionTypes, ISensorAware<Temperature>, ISe
     }
   }
 
-  public struct Thresholds : IConditionTypes {
+  public struct Thresholds {
     public Temperature[] t;
     public Pressure[] p;
   }
 
-  public struct Granularity : IConditionTypes {
+  public struct Granularity {
     public Temperature t;
     public Pressure p;
   }
