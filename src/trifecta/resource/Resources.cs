@@ -15,24 +15,63 @@ public class ResourceQueue {
   public ResourceQueue(ResourceType configuration) {
     ComponentLog.singleton.Log($"Constructing a ResourceQueue for resource {configuration.name}");
 
+    _identity = $"ResourceQueue<{configuration.name}>";
     _configuration = configuration;
-    for (int i = 0; i < configuration.quantity; i++) {
-      _resources.Enqueue(new ResourceInstance(configuration, null));
-    }
+    for (int i = 0; i < configuration.quantity; i++) { _resources.Enqueue(new ResourceInstance(configuration)); }
   }
 
   public void Push(IResourceConsumer consumer) {
-    using (_lock.EnterScope()) { _consumers.Enqueue(consumer); }
-  }
+    ComponentLog.singleton.Log($"{_identity} receives one consumer");
 
-  public void Push(ResourceInstance resource) {
     using (_lock.EnterScope()) {
-      _resources.Enqueue(resource);
+      if (_resources.Count > 0) {
+        ComponentLog.singleton.Log($"{_identity} grants quick");
 
-      // now bump the first consumer?
+        ResourceInstance resource = _resources.Dequeue();
+        consumer.Grant(resource);
+      } else {
+        ComponentLog.singleton.Log($"{_identity} enqueues the consumer");
+
+        _consumers.Enqueue(consumer);
+      }
+      Dispatch(); /* check for more */
     }
   }
 
+  public void Push(ResourceInstance resource) {
+    ComponentLog.singleton.Log($"{_identity} receives one resource {resource.GetName}");
+
+    using (_lock.EnterScope()) {
+      if (_consumers.Count > 0) {
+        ComponentLog.singleton.Log($"{_identity} ricochet-grant on resource {resource.GetName}");
+
+        IResourceConsumer consumer = _consumers.Dequeue();
+        consumer.Grant(resource);
+      } else {
+        ComponentLog.singleton.Log($"{_identity} enqueues resource {resource.GetName}");
+
+        _resources.Enqueue(resource);
+      }
+      Dispatch(); /* check for more */
+    }
+  }
+
+  public void Dispatch() {
+    using (_lock.EnterScope()) {
+      while (_resources.Count > 0 && _consumers.Count > 0) {
+        ResourceInstance resource = _resources.Dequeue();
+        IResourceConsumer consumer = _consumers.Dequeue();
+
+        ComponentLog.singleton.Log($"{_identity} dispatch-grant on resource {resource.GetName}");
+
+        consumer.Grant(resource);  // TODO: possible option to allow on-thread refusal, in case of race on consumer state
+      }
+    }
+  }
+
+  public string Identity() { return _identity; }
+
+  private string _identity;
   private ResourceType _configuration;
   private Lock _lock = new();
   private Queue<ResourceInstance> _resources = new();
@@ -41,7 +80,7 @@ public class ResourceQueue {
 
 public interface IResourceQueueSet {
   public void MultiPush(IResourceConsumer consumer);
-  public void MultiRelease(List<ResourceInstance> release);
+  public void MultiRelease(IEnumerable<ResourceInstance> release);
 };
 
 public class ResourceQueueSet : IResourceQueueSet {
@@ -114,13 +153,19 @@ public class ResourceQueueSet : IResourceQueueSet {
     } finally { Monitor.Exit(_idle); }
   }
 
-  public void MultiPush(IResourceConsumer consumer) {
-    // _multilock
-    // foreach is consumer.Scope(): lock q, push
+  public void MultiPush(IResourceConsumer consumer) {  // TODO: eventually a sync-safe cancellable token
+    ComponentLog.singleton.Log($"ResourceQueueSet pushes multiple resource requests");
+
+    using (_multilock.EnterScope()) {
+      foreach (string resource in consumer.Scope()) { _queues[resource].Push(consumer); }
+    }
+    Bump();
   }
 
-  public void MultiRelease(List<ResourceInstance> release) {
-    // foreach, lock q, push
+  public void MultiRelease(IEnumerable<ResourceInstance> release) {
+    ComponentLog.singleton.Log($"ResourceQueueSet releases multiple resources");
+
+    foreach (ResourceInstance resource in release) { _queues[resource.GetName()].Push(resource); }
   }
 
   private void run() {
@@ -129,11 +174,8 @@ public class ResourceQueueSet : IResourceQueueSet {
       while (true) {
         if (_stop) return;
 
-        if (_queues.Count == 0) {
-          ComponentLog.singleton.Log("ResourceQueueSet finds the queues empty");
-        } else {
-          ComponentLog.singleton.Log("ResourceQueueSet tries to allocate some resources on the queues");
-        }
+        ComponentLog.singleton.Log($"ResourceQueueSet dispatches {_queues.Count} resource queues");
+        foreach (ResourceQueue q in _queues.Values) q.Dispatch();
 
         ComponentLog.singleton.Log("ResourceQueueSet goes idle");
         Monitor.Wait(_idle);
@@ -152,7 +194,7 @@ public class ResourceQueueSet : IResourceQueueSet {
 }
 
 public class ResourceInstance {
-  public ResourceInstance(ResourceType type, IResourceDriver driver) {
+  public ResourceInstance(ResourceType type, IResourceDriver driver = null) {
     _type = type;
     _driver = driver;
   }

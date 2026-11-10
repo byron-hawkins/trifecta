@@ -49,6 +49,7 @@ public class Actor : IConditionAware, IResourceConsumer {
     } finally { Monitor.Exit(_idle); }
   }
 
+  // TODO: if queue_up or on_queue, somehow dequeue
   public void Stop(ActorPhase mode, Action? finalize = null, bool required = false) {
     ComponentLog.singleton.Log($"{_identity} stop requested");
 
@@ -97,8 +98,13 @@ public class Actor : IConditionAware, IResourceConsumer {
       ComponentLog.singleton.Log($"{_identity} receives resource {resource.GetName()}");
 
       if (_onstage.Grant(resource)) {
-        _phase = ActorPhase.work;
-        Monitor.Pulse(_idle);
+        switch (_phase) {
+          case ActorPhase.queue_up:
+          case ActorPhase.on_queue:
+            _phase = ActorPhase.work;
+            Monitor.Pulse(_idle);
+            break;
+        }
       }
     } finally { Monitor.Exit(_idle); }
   }
@@ -120,18 +126,15 @@ public class Actor : IConditionAware, IResourceConsumer {
               continue;
             }
             _phase = ActorPhase.queue_up;
-            goto case ActorPhase.queue_up;
+            continue;
           case ActorPhase.queue_up:
             Monitor.Exit(_idle); /* allow for potential immediate Grant() */
             try {
               _qs.MultiPush(this);
-            } finally { Monitor.Enter(_idle); } /* resume lockout for routing */
-            _phase = ActorPhase.on_queue;
-            goto case ActorPhase.on_queue;
-          case ActorPhase.on_queue:
-
-            // check if resources granted (or will Grant() always move to .work?)
-            break;
+            } finally { Monitor.Enter(_idle); }                              /* resume lockout for routing */
+            if (_phase == ActorPhase.queue_up) _phase = ActorPhase.on_queue; /* not granted yet */
+            continue;
+          case ActorPhase.on_queue: break;
           case ActorPhase.work:
           case ActorPhase.stop_at_completion:
             work();
@@ -139,10 +142,10 @@ public class Actor : IConditionAware, IResourceConsumer {
             if (_onstage.GetStatus() == SceneStatus.completed) {
               if (_onstage.IsContinuation()) {
                 if (_onstage.IsLocal()) throw new InvalidOperationException($"{_identity} local work on {_onstage.Identity()} was truncated");
-                _onstage.Remit(_identity);
+                _onstage.Remit(this);
                 _phase = ActorPhase.queue_up;
               } else {
-                _onstage.Reset(_identity);
+                _onstage.Reset(this);
                 if (++_workflow == _scenes.Count) {
                   reset();
                 } else {
@@ -156,7 +159,7 @@ public class Actor : IConditionAware, IResourceConsumer {
           case ActorPhase.stop_at_cost: throw new NotImplementedException($"ActorPhase.{_phase}");
           case ActorPhase.stop_now:
           case ActorPhase.exit:
-            if (_onstage is Scene abort) { abort.Reset(_identity); }
+            if (_onstage is Scene abort) { abort.Reset(this); }
             reset(ActorPhase.exit);  // TODO: high-risk strategy for MultiRelease, but can it be done cleanly under iterative control?
             return;
         }
@@ -206,6 +209,15 @@ public class Actor : IConditionAware, IResourceConsumer {
       if (!loggedOff) worklog("stop");
     }
   }
+
+  public void Remit(List<ResourceInstance> free) {
+    Monitor.Exit(_idle); /* allow interruption */
+    try {
+      _qs.MultiRelease(free);
+    } finally { Monitor.Enter(_idle); } /* resume lockout for routing */
+  }
+
+  public string Identity() { return _identity; }
 
   private void worklog(string mode) { ComponentLog.singleton.Log($"{_identity} [{_onstage.Identity()}] [work: {mode}]"); }
 
@@ -313,16 +325,19 @@ public class Scene {
     return (_resources.Count == _configuration.resources.Count);
   }
 
-  public void Reset(string actorid) {
+  public void Reset(Actor actor) {
     _status = SceneStatus.dark;
     _period.Reset();
-    Remit(actorid);
+    Remit(actor);
   }
 
-  public void Remit(string actorid) {
+  public void Remit(Actor actor) {
     if (_resources.Count > 0) {
-      ComponentLog.singleton.Log($"{actorid} {Identity()} releases {_resources.Count} resources");
-      _qs.MultiRelease(_resources);
+      ComponentLog.singleton.Log($"{actor.Identity()} {Identity()} releases {_resources.Count} resources");
+
+      List<ResourceInstance> swap = _resources;
+      _resources = new();
+      actor.Remit(swap);
     }
   }
 

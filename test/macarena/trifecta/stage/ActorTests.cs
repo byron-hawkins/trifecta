@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using trifecta.resource;
 using trifecta.stage;
@@ -379,12 +380,16 @@ public sealed class ActorTests : ComponentLogTestBase {
 
       var requests = queues.Requests;
       Assert.True(requests.Length >= 2);
-      Assert.Equal(new[] { "heater", "pump" }, requests[0]);
-      Assert.Equal(new[] { "fan", "valve", "mixer" }, requests[1]);
+      Assert.Equal(new[] { "heater", "pump" }.OrderBy(n => n),
+                   requests[0].OrderBy(n => n));
+      Assert.Equal(new[] { "fan", "valve", "mixer" }.OrderBy(n => n),
+                   requests[1].OrderBy(n => n));
       var releases = queues.Releases;
       Assert.True(releases.Length >= 2);
-      Assert.Equal(new[] { "heater", "pump" }, releases[0]);
-      Assert.Equal(new[] { "fan", "valve", "mixer" }, releases[1]);
+      Assert.Equal(new[] { "heater", "pump" }.OrderBy(n => n),
+                   releases[0].OrderBy(n => n));
+      Assert.Equal(new[] { "fan", "valve", "mixer" }.OrderBy(n => n),
+                   releases[1].OrderBy(n => n));
     } finally {
       finish();
     }
@@ -451,11 +456,293 @@ public sealed class ActorTests : ComponentLogTestBase {
         var expected = remaining < lowestMax ? remaining : lowestMax;
         var hold = queues.ReleaseTimes[i] - starts[i];
         Assert.InRange(hold, expected - tolerance, expected + tolerance);
-        Assert.Equal(types.Select(t => t.name), queues.Releases[i]);
-        Assert.Equal(types.Select(t => t.name), queues.Requests[i]);
+        Assert.Equal(types.Select(t => t.name).OrderBy(n => n),
+                     queues.Releases[i].OrderBy(n => n));
+        Assert.Equal(types.Select(t => t.name).OrderBy(n => n),
+                     queues.Requests[i].OrderBy(n => n));
         remaining -= expected;
       }
       Assert.Equal(TimeSpan.Zero, remaining);
+    } finally {
+      finish();
+    }
+  }
+
+  private sealed record DelayCase((int DurationMs, string[] Resources)[] Scenes,
+                                  Dictionary<string, int> MaxWorkMs,
+                                  Dictionary<string, int> DelaysMs);
+
+  private static readonly Dictionary<string, DelayCase> DelayCases =
+      BuildDelayCases();
+
+  private static Dictionary<string, DelayCase> BuildDelayCases() {
+    var cases = new Dictionary<string, DelayCase>();
+    void Add(string name, (int, string[])[] scenes,
+             Dictionary<string, int> maxWork, Dictionary<string, int> delays) =>
+        cases[name] = new DelayCase(scenes, maxWork, delays);
+    string[] R(params string[] r) => r;
+    var roomy = new Dictionary<string, int> { ["heater"] = 2000,
+                                              ["pump"] = 2000, ["fan"] = 2000 };
+
+    Add("one-delayed", [(300, R("heater"))], roomy, new() { ["heater"] = 150 });
+    Add("two-first-delayed", [(300, R("heater", "pump"))], roomy,
+        new() { ["heater"] = 150 });
+    Add("two-second-delayed", [(300, R("heater", "pump"))], roomy,
+        new() { ["pump"] = 150 });
+    Add("two-both-delayed-ascending", [(300, R("heater", "pump"))], roomy,
+        new() { ["heater"] = 100, ["pump"] = 250 });
+    Add("two-both-delayed-descending", [(300, R("heater", "pump"))], roomy,
+        new() { ["heater"] = 250, ["pump"] = 100 });
+    Add("three-middle-delayed", [(300, R("heater", "pump", "fan"))], roomy,
+        new() { ["pump"] = 200 });
+    Add("three-all-delayed", [(300, R("heater", "pump", "fan"))], roomy,
+        new() { ["heater"] = 100, ["pump"] = 150, ["fan"] = 200 });
+    Add("segmented-delayed-each-segment", [(600, R("heater"))],
+        new() { ["heater"] = 300 }, new() { ["heater"] = 150 });
+    Add("segmented-two-resources-lowest-max", [(700, R("heater", "pump"))],
+        new() { ["heater"] = 300, ["pump"] = 700 }, new() { ["pump"] = 200 });
+    Add("segmented-delayed-resource-has-higher-max",
+        [(900, R("heater", "pump"))],
+        new() { ["heater"] = 400, ["pump"] = 500 }, new() { ["pump"] = 120 });
+    Add("local-then-delayed-resource", [(200, R()), (300, R("heater"))], roomy,
+        new() { ["heater"] = 150 });
+    Add("delayed-resource-then-local", [(300, R("heater")), (200, R())], roomy,
+        new() { ["heater"] = 150 });
+    Add("local-between-delayed-resources",
+        [(300, R("heater", "pump")), (200, R()), (300, R("fan"))], roomy,
+        new() { ["pump"] = 150, ["fan"] = 100 });
+    Add("two-then-three-delayed",
+        [(200, R("heater", "pump")), (300, R("fan", "heater", "pump"))], roomy,
+        new() { ["heater"] = 120, ["fan"] = 180 });
+    Add("segmented-delayed-then-local",
+        [(500, R("heater", "pump")), (200, R())],
+        new() { ["heater"] = 250, ["pump"] = 2000, ["fan"] = 2000 },
+        new() { ["heater"] = 100, ["pump"] = 200 });
+    return cases;
+  }
+
+  public static IEnumerable<object[]>
+  DelayedGrantCaseNames() => DelayCases.Keys.Select(k => new object[] { k });
+
+  [Theory]
+  [MemberData(nameof(DelayedGrantCaseNames))]
+  public async Task StartsWorkOnlyAfterDelayedGrantsArrive(string caseName) {
+    var spec = DelayCases[caseName];
+    var sceneTick = TimeSpan.FromMilliseconds(50);
+    var tolerance = TimeSpan.FromTicks(2 * sceneTick.Ticks);
+    var slack =
+        TimeSpan.FromMilliseconds(5); // log timestamps are truncated to ms
+    var types = spec.MaxWorkMs
+                    .Select(m => new ResourceType {
+                      name = m.Key, tickrate = sceneTick,
+                      minwork = TimeSpan.FromMilliseconds(50),
+                      maxwork = TimeSpan.FromMilliseconds(m.Value)
+                    })
+                    .ToArray();
+    var queues = new AutoGrantQueueSet(spec.DelaysMs, types);
+    var configuration = new RoleConfiguration {
+      id = 50, quantity = 1,
+      scenes = spec.Scenes
+                   .Select(sc => new SceneConfiguration {
+                     duration = TimeSpan.FromMilliseconds(sc.DurationMs),
+                     tickrate = sceneTick, resources = sc.Resources.ToList()
+                   })
+                   .ToList()
+    };
+
+    // expected work segments of one pass: (length, resource names)
+    var segments = new List<(TimeSpan Length, string[] Resources)>();
+    foreach (var sc in spec.Scenes) {
+      var remaining = sc.DurationMs;
+      var lowestMax = sc.Resources.Length == 0
+                          ? int.MaxValue
+                          : sc.Resources.Min(r => spec.MaxWorkMs[r]);
+      while (remaining > 0) {
+        var length = Math.Min(remaining, lowestMax);
+        segments.Add((TimeSpan.FromMilliseconds(length), sc.Resources));
+        remaining -= length;
+      }
+    }
+    var resourceSegments = segments.Count(g => g.Resources.Length > 0);
+    var passTime =
+        segments.Sum(g => g.Length.TotalMilliseconds) +
+        segments.Where(g => g.Resources.Length > 0)
+            .Sum(g => g.Resources.Max(r => spec.DelaysMs.GetValueOrDefault(r)));
+
+    setup($"ActorDelayedGrantTests-{Guid.NewGuid():N}");
+    try {
+      var actor = new Actor(0, configuration, queues);
+      actor.Start();
+      try {
+        var timer = Stopwatch.StartNew();
+        var limit =
+            TimeSpan.FromMilliseconds(passTime) + TimeSpan.FromSeconds(3);
+        while (queues.Releases.Length < resourceSegments ||
+               CountLog("[work: stop]") < segments.Count) {
+          Assert.True(
+              timer.Elapsed < limit,
+              $"Timed out: {queues.Releases.Length}/{resourceSegments} " +
+                  $"releases, {CountLog("[work: stop]")}/" +
+                  $"{segments.Count} work stops.");
+          await Task.Delay(10);
+        }
+      } finally {
+        await StopActor(actor);
+      }
+
+      finish();
+      var lines = ReadLog().Split('\n', StringSplitOptions.RemoveEmptyEntries);
+      var starts = lines.Where(l => l.Contains("[work: start]"))
+                       .Select(LogTimestamp)
+                       .ToArray();
+      var stops = lines.Where(l => l.Contains("[work: stop]"))
+                      .Select(LogTimestamp)
+                      .ToArray();
+      Assert.True(starts.Length >= segments.Count);
+      Assert.True(stops.Length >= segments.Count);
+
+      var pushes = queues.PushTimes;
+      var grants = queues.LastGrantTimes;
+      var releases = queues.ReleaseTimes;
+      var request = 0;
+      for (var i = 0; i < segments.Count; i++) {
+        var (length, resources) = segments[i];
+        if (resources.Length == 0) {
+          Assert.InRange(stops[i] - starts[i], length - tolerance,
+                         length + tolerance);
+          continue;
+        }
+
+        // waiting is not work: work begins only after the last grant, and
+        // immediately after it
+        var delay = TimeSpan.FromMilliseconds(
+            resources.Max(r => spec.DelaysMs.GetValueOrDefault(r)));
+        Assert.True(starts[i] >= grants[request] - slack,
+                    $"Segment {i} started work before its last grant.");
+        Assert.InRange(starts[i] - grants[request], TimeSpan.Zero - slack,
+                       tolerance);
+        Assert.True(grants[request] - pushes[request] >= delay - slack);
+
+        // the hold runs from [work: start] to MultiRelease
+        Assert.InRange(releases[request] - starts[i], length - tolerance,
+                       length + tolerance);
+        Assert.Equal(resources.OrderBy(r => r),
+                     queues.Requests[request].OrderBy(r => r));
+        Assert.Equal(resources.OrderBy(r => r),
+                     queues.Releases[request].OrderBy(r => r));
+        request++;
+      }
+    } finally {
+      finish();
+    }
+  }
+
+  // Sequence-controlled: stop_now arrives while the Actor is inside
+  // MultiPush(), and the last Grant() arrives after it. The stop must win.
+  [Theory]
+  [InlineData(0)]
+  [InlineData(1)]
+  [InlineData(2)]
+  public async Task
+  StopDuringMultiPushIsNotOverriddenByLaterGrant(int grantsBeforeStop) {
+    var sceneTick = TimeSpan.FromMilliseconds(50);
+    ResourceType Type(string name) =>
+        new() { name = name, tickrate = sceneTick,
+                minwork = TimeSpan.FromMilliseconds(50),
+                maxwork = TimeSpan.FromSeconds(2) };
+    var types = new[] { Type("heater"), Type("pump"), Type("fan") };
+    var queues = new GatedQueueSet(types);
+    var configuration = new RoleConfiguration {
+      id = 51, quantity = 1,
+      scenes = [new SceneConfiguration {
+        duration = TimeSpan.FromSeconds(1), tickrate = sceneTick,
+        resources = types.Select(t => t.name).ToList()
+      }]
+    };
+
+    setup($"ActorStopDuringPushTests-{Guid.NewGuid():N}");
+    try {
+      var actor = new Actor(0, configuration, queues);
+      actor.Start();
+      try {
+        // 1. the Actor is inside MultiPush() with its lock released
+        await queues.Entered.WaitAsync(TimeSpan.FromSeconds(2));
+        for (var i = 0; i < grantsBeforeStop; i++)
+          queues.GrantOne(i);
+
+        // 2. stop_now is requested; Stop() waits for the Actor to exit
+        var finalized = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        var stop =
+            Task.Run(() => actor.Stop(ActorPhase.stop_now,
+                                      () => finalized.TrySetResult(true)));
+        await WaitForLogEntry("Actor 51/0 stop requested",
+                              TimeSpan.FromSeconds(2));
+        await Task.Delay(100); // let Stop() take the lock and set the phase
+        Assert.False(stop.IsCompleted);
+
+        // 3. the remaining grants arrive after the stop request
+        for (var i = grantsBeforeStop; i < types.Length; i++)
+          queues.GrantOne(i);
+
+        // 4. MultiPush() returns
+        queues.Open();
+        await Task.WhenAll(stop, finalized.Task)
+            .WaitAsync(TimeSpan.FromSeconds(2));
+      } finally {
+        queues.Open();
+        await StopActor(actor);
+      }
+
+      Assert.Equal(0, CountLog("[work: start]"));
+      Assert.Equal(1, queues.RequestCount);
+      var release = Assert.Single(queues.Releases);
+      Assert.Equal(types.Length, release.Length);
+    } finally {
+      finish();
+    }
+  }
+
+  // Sequence-controlled: MultiPush() returns with nothing granted, the Actor is
+  // stopped and exits run(), and only then does a Grant() arrive. The queue set
+  // calls Grant() on its own thread, so a late grant must not throw there, and
+  // the resource must not be lost.
+  [Fact]
+  public async Task GrantAfterActorExitsDoesNotThrowOrLoseResource() {
+    var sceneTick = TimeSpan.FromMilliseconds(50);
+    var type = new ResourceType { name = "heater", tickrate = sceneTick,
+                                  minwork = TimeSpan.FromMilliseconds(50),
+                                  maxwork = TimeSpan.FromSeconds(2) };
+    var queues = new GatedQueueSet(type);
+    var configuration = new RoleConfiguration {
+      id = 52, quantity = 1,
+      scenes = [new SceneConfiguration { duration = TimeSpan.FromSeconds(1),
+                                         tickrate = sceneTick,
+                                         resources = [type.name] }]
+    };
+
+    setup($"ActorGrantAfterExitTests-{Guid.NewGuid():N}");
+    try {
+      var actor = new Actor(0, configuration, queues);
+      actor.Start();
+      try {
+        // 1. MultiPush() returns without a grant; the Actor goes on_queue
+        await queues.Entered.WaitAsync(TimeSpan.FromSeconds(2));
+        queues.Open();
+        await WaitForLogEntry("Actor 52/0 loops run() in phase on_queue",
+                              TimeSpan.FromSeconds(2));
+      } finally {
+        // 2. stop and wait for run() to exit
+        await StopActor(actor);
+      }
+
+      // 3. a Grant() arrives after the Actor has exited
+      var late = Record.Exception(() => queues.GrantOne(0));
+      Assert.Null(late);
+
+      // 4. the resource is neither held by a dead Actor nor lost
+      Assert.Equal(0, CountLog("[work: start]"));
+      Assert.Equal(1, queues.Releases.Sum(r => r.Length));
     } finally {
       finish();
     }
@@ -609,6 +896,57 @@ public sealed class ActorTests : ComponentLogTestBase {
   private sealed record ResourceRelease(ResourceInstance[] Resources,
                                         long Timestamp);
 
+  // Holds MultiPush() open until the test lets it return, and grants only
+  // when told to.
+  private sealed class GatedQueueSet : IResourceQueueSet {
+    private readonly object _lock = new();
+    private readonly ResourceInstance[] _pool;
+    private readonly TaskCompletionSource _entered =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly ManualResetEventSlim _gate = new(false);
+    private IResourceConsumer? _consumer;
+    private int _requestCount;
+    private readonly List<ResourceInstance[]> _releases = [];
+
+    public GatedQueueSet(params ResourceType[] types) {
+      _pool =
+          types.Select(t => new ResourceInstance(t, new MockResourceDriver()))
+              .ToArray();
+    }
+
+    public Task Entered => _entered.Task;
+
+    public int RequestCount {
+      get {
+        lock (_lock) { return _requestCount; }
+      }
+    }
+
+    public ResourceInstance[][] Releases {
+      get {
+        lock (_lock) { return _releases.ToArray(); }
+      }
+    }
+
+    public void GrantOne(int index) { _consumer!.Grant(_pool[index]); }
+
+    public void Open() { _gate.Set(); }
+
+    public void MultiPush(IResourceConsumer consumer) {
+      lock (_lock) {
+        _requestCount++;
+        _consumer = consumer;
+      }
+      _entered.TrySetResult();
+      _gate.Wait();
+    }
+
+    public void MultiRelease(IEnumerable<ResourceInstance> release) {
+      var snapshot = release.ToArray();
+      lock (_lock) { _releases.Add(snapshot); }
+    }
+  }
+
   private sealed class AutoGrantQueueSet : IResourceQueueSet {
     private readonly object _lock = new();
     private readonly Dictionary<string, ResourceInstance> _pool;
@@ -616,9 +954,32 @@ public sealed class ActorTests : ComponentLogTestBase {
     private readonly List<string[]> _releases = [];
     private readonly List<DateTimeOffset> _releaseTimes = [];
 
-    public AutoGrantQueueSet(params ResourceType[] types) {
+    private readonly Dictionary<string, int> _delays;
+    private readonly List<DateTimeOffset> _pushTimes = [];
+    private readonly List<DateTimeOffset> _lastGrantTimes = [];
+
+    public AutoGrantQueueSet(params ResourceType[] types)
+        : this(new Dictionary<string, int>(), types) {}
+
+    // delays: milliseconds to hold back the Grant() of a named resource on
+    // every request
+    public AutoGrantQueueSet(Dictionary<string, int> delays,
+                             params ResourceType[] types) {
+      _delays = delays;
       _pool = types.ToDictionary(
           t => t.name, t => new ResourceInstance(t, new MockResourceDriver()));
+    }
+
+    public DateTimeOffset[] PushTimes {
+      get {
+        lock (_lock) { return _pushTimes.ToArray(); }
+      }
+    }
+
+    public DateTimeOffset[] LastGrantTimes {
+      get {
+        lock (_lock) { return _lastGrantTimes.ToArray(); }
+      }
     }
 
     public string[][] Requests {
@@ -641,23 +1002,38 @@ public sealed class ActorTests : ComponentLogTestBase {
 
     public void MultiPush(IResourceConsumer consumer) {
       var names = consumer.Scope().Select(n => n.ToString()).ToArray();
-      lock (_lock) { _requests.Add(names); }
-      // grant asynchronously: the Actor holds its lock while requesting
-      Task.Run(() => {
-        foreach (var name in names)
+      int index;
+      lock (_lock) {
+        index = _requests.Count;
+        _requests.Add(names);
+        _pushTimes.Add(DateTimeOffset.UtcNow);
+        _lastGrantTimes.Add(DateTimeOffset.UtcNow);
+      }
+      // grant asynchronously: the Actor must be free to receive Grant()
+      foreach (var name in names) {
+        var delay = _delays.GetValueOrDefault(name);
+        Task.Run(async () => {
+          if (delay > 0)
+            await Task.Delay(delay);
+          lock (_lock) {
+            var now = DateTimeOffset.UtcNow;
+            if (now > _lastGrantTimes[index])
+              _lastGrantTimes[index] = now;
+          }
           consumer.Grant(_pool[name]);
-      });
+        });
+      }
     }
 
-    public void MultiRelease(List<ResourceInstance> release) {
+    public void MultiRelease(IEnumerable<ResourceInstance> release) {
+      var held = release.ToArray();
       var names =
-          release.Select(r => _pool.First(p => ReferenceEquals(p.Value, r)).Key)
+          held.Select(r => _pool.First(p => ReferenceEquals(p.Value, r)).Key)
               .ToArray();
       lock (_lock) {
         _releases.Add(names);
         _releaseTimes.Add(DateTimeOffset.UtcNow);
       }
-      release.Clear(); // like ResourceQueueSet: release and clear go together
     }
   }
 
@@ -709,9 +1085,8 @@ public sealed class ActorTests : ComponentLogTestBase {
       });
     }
 
-    public void MultiRelease(List<ResourceInstance> release) {
+    public void MultiRelease(IEnumerable<ResourceInstance> release) {
       var snapshot = release.ToArray();
-      release.Clear(); // like ResourceQueueSet: release and clear go together
       var timestamp = Stopwatch.GetTimestamp();
       lock (_lock) { _releases.Add(snapshot); }
       _firstRelease.TrySetResult(new ResourceRelease(snapshot, timestamp));
