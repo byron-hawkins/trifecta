@@ -13,12 +13,14 @@ namespace trifecta {
 namespace stage {
 
 public class Actor : IConditionAware, IResourceConsumer {
-  public Actor(int index, RoleConfiguration configuration) {
+  public Actor(int index, RoleConfiguration configuration) : this(index, configuration, ResourceQueueSet.singleton) {}
+  public Actor(int index, RoleConfiguration configuration, IResourceQueueSet qs) {
     ComponentLog.singleton.Log($"Constructing an Actor #{index} in role {configuration.id} with bounds T > {configuration.tmin} and P < {configuration.pmax}");
 
     int sequence = 0;
-    foreach (SceneConfiguration scene in configuration.scenes) { _scenes.Add(new Scene(sequence++, scene)); }
+    foreach (SceneConfiguration scene in configuration.scenes) { _scenes.Add(new Scene(sequence++, scene, qs)); }
 
+    _qs = qs;
     _index = index;
     _configuration = configuration;
     _identity = $"Actor {_configuration.id}/{_index}";
@@ -48,13 +50,11 @@ public class Actor : IConditionAware, IResourceConsumer {
       task = _self ?? throw new InvalidOperationException("Missing background task when attempting to stop the Director");
       Monitor.Pulse(_idle);
     } finally { Monitor.Exit(_idle); }
-    if (_phase == ActorPhase.stop_now) {
+    if (_phase == ActorPhase.stop_now) {  // not nice reading this out of the lock guard
       task.Wait();
 
       Monitor.Enter(_idle);
       try {
-        // TODO: stop all actors (now unless nice)
-
         _self = null;
       } finally { Monitor.Exit(_idle); }
     }
@@ -75,9 +75,13 @@ public class Actor : IConditionAware, IResourceConsumer {
 
   // TODO: when to remit resources?
   private void run() {
+    ComponentLog.singleton.Log($"{_identity} starts run() in phase {_phase}");
+
     Monitor.Enter(_idle);
     try {
       while (true) {
+        ComponentLog.singleton.Log($"{_identity} loops run() in phase {_phase}");
+
         switch (_phase) {
           case ActorPhase.ready:
             if (_onstage != null || _workflow != 0) throw new InvalidOperationException($"{_identity} cannot be in phase {_phase} while a scene is on stage");
@@ -89,7 +93,7 @@ public class Actor : IConditionAware, IResourceConsumer {
             _phase = ActorPhase.queue_up;
             goto case ActorPhase.queue_up;
           case ActorPhase.queue_up:
-            ResourceQueueSet.singleton.MultiPush(this);
+            _qs.MultiPush(this);
             _phase = ActorPhase.on_queue;
             goto case ActorPhase.on_queue;
           case ActorPhase.on_queue:
@@ -116,7 +120,7 @@ public class Actor : IConditionAware, IResourceConsumer {
           case ActorPhase.exit: return;
         }
 
-        ComponentLog.singleton.Log("Director goes idle");
+        ComponentLog.singleton.Log($"Director goes idle");
         Monitor.Wait(_idle);
       }
     } finally { Monitor.Exit(_idle); }
@@ -124,18 +128,41 @@ public class Actor : IConditionAware, IResourceConsumer {
 
   private void work() {
     worklog("start");
-    _onstage.Begin();
+    bool loggedOff = false;
 
-    while (true) {
-      TimeSpan duration = _onstage.GetStepDuration();
-      SceneStatus status = _onstage.Execute(duration);
-      // TODO: if this is an underflow step, log the work off
-      switch (status) {
-        case SceneStatus.completed: worklog("stop"); return;
-        case SceneStatus.underflow: worklog("stop"); continue;
-        case SceneStatus.dark: throw new InvalidOperationException($"Scene returned status {status} from Execute()");
-        case SceneStatus.error: throw new NotImplementedException("SceneStatus.error");
-      }
+    try {
+      _onstage.Begin();
+
+      Monitor.Exit(_idle); /* allow interruption */
+      try {
+        while (true) {
+          TimeSpan duration = _onstage.GetStepDuration();
+
+          ComponentLog.singleton.Log($"{_identity} loops work() with scene step duration {duration.Milliseconds}");
+
+          SceneStatus status = _onstage.Execute(duration);
+          // TODO: if this is an underflow step, log the work off
+          switch (status) {
+            case SceneStatus.completed: ComponentLog.singleton.Log($"{_identity} completes {_onstage.Identity()}"); return;
+            case SceneStatus.underflow:
+              loggedOff = true;
+              worklog("stop");
+              continue;
+            case SceneStatus.dark: throw new InvalidOperationException($"Scene returned status {status} from Execute()");
+            case SceneStatus.error: throw new NotImplementedException("SceneStatus.error");
+          }
+          Monitor.Enter(_idle); /* check phase safely */
+          try {
+            switch (_phase) {
+              case ActorPhase.work:
+              case ActorPhase.stop_at_completion: break;
+              default: return;
+            }
+          } finally { Monitor.Exit(_idle); } /* allow interruption */
+        }
+      } finally { Monitor.Enter(_idle); } /* resume lockout for routing */
+    } finally {
+      if (!loggedOff) worklog("stop");
     }
   }
 
@@ -147,6 +174,7 @@ public class Actor : IConditionAware, IResourceConsumer {
     _onstage = null;
   }
 
+  private IResourceQueueSet _qs;
   private int _index;
   private string _identity;
   private RoleConfiguration _configuration;
@@ -172,10 +200,12 @@ public class Actor : IConditionAware, IResourceConsumer {
 */
 
 public class Scene {
-  public Scene(int index, SceneConfiguration configuration) {
+  public Scene(int index, SceneConfiguration configuration) : this(index, configuration, ResourceQueueSet.singleton) {}
+  public Scene(int index, SceneConfiguration configuration, IResourceQueueSet qs) {
     ComponentLog.singleton.Log(
         $"Constructing a Scene at index {index} with duration {configuration.duration} and tick-rate {configuration.tickrate} requiring resources {string.Join(",", configuration.resources)}");
 
+    _qs = qs;
     _index = index;
     _configuration = configuration;
     _status = SceneStatus.dark;
@@ -227,12 +257,15 @@ public class Scene {
         _period.remaining = resource.GetMaxWork();
       }
     }
+
+    ComponentLog.singleton.Log(
+        $"{Identity()} exits Begin() with _period.remaining {_period.remaining.TotalMilliseconds} and _period.underflow {_period.underflow.TotalMilliseconds}");
   }
 
   public void Reset() {
     _status = SceneStatus.dark;
     _period.Reset();
-    ResourceQueueSet.singleton.MultiRelease(_resources);
+    _qs.MultiRelease(_resources);
   }
 
   public IEnumerable<ResourceName> Scope() { return _configuration.resources; }
@@ -261,6 +294,7 @@ public class Scene {
     public void Reset() { underflow = remaining = TimeSpan.Zero; }
   }
 
+  private IResourceQueueSet _qs;
   private int _index;
   private string _identity;
   private Period _period = new();
@@ -301,7 +335,7 @@ public class Director : IConditionAware, ICastManager {
   }
 
   public void Stop(bool nicely) {
-    ComponentLog.singleton.Log("Director stop requested");
+    ComponentLog.singleton.Log($"Director stop requested");
 
     Task task;
     Monitor.Enter(_idle);

@@ -8,3 +8,6 @@
    tests accumulate in `test/toddler/`, they are required for project
    submission.
 3. Always generate tests to use the framework in `test/common/`.
+4. Macarena tests may mock components to exercise specific test semantics.
+   Do not add mocks merely to compensate for missing dependencies or other
+   problems that need to be resolved in `src/`.

@@ -36,7 +36,12 @@ public class ResourceQueue {
   private Queue<IResourceConsumer> _consumers = new();
 }
 
-public class ResourceQueueSet {
+public interface IResourceQueueSet {
+  public void MultiPush(IResourceConsumer consumer);
+  public void MultiRelease(List<ResourceInstance> release);
+};
+
+public class ResourceQueueSet : IResourceQueueSet {
   public static ResourceQueueSet singleton = new();
 
   public void configure(ResourceSet resources) {
@@ -144,7 +149,7 @@ public class ResourceQueueSet {
 }
 
 public class ResourceInstance {
-  ResourceInstance(ResourceType type, IResourceDriver driver) {
+  public ResourceInstance(ResourceType type, IResourceDriver driver) {
     _type = type;
     _driver = driver;
   }
