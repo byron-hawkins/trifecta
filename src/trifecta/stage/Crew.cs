@@ -41,7 +41,7 @@ public class Actor : IConditionAware, IResourceConsumer {
   }
 
   public void Stop(ActorPhase mode, Action finalize) {
-    ComponentLog.singleton.Log("{_identity} stop requested");
+    ComponentLog.singleton.Log($"{_identity} stop requested");
 
     Task task;
     Monitor.Enter(_idle);
@@ -71,7 +71,17 @@ public class Actor : IConditionAware, IResourceConsumer {
       return [];
   }
 
-  public void Grant(ResourceInstance resource) {}
+  public void Grant(ResourceInstance resource) {
+    Monitor.Enter(_idle);
+    try {
+      if (_onstage == null) throw new InvalidOperationException($"Resource granted on {_identity} with no scene on stage (phase {_phase})");
+
+      if (_onstage.Grant(resource)) {
+        _phase = ActorPhase.work;
+        Monitor.Pulse(_idle);
+      }
+    } finally { Monitor.Exit(_idle); }
+  }
 
   // TODO: when to remit resources?
   private void run() {
@@ -117,7 +127,10 @@ public class Actor : IConditionAware, IResourceConsumer {
           case ActorPhase.suspension:
           case ActorPhase.stop_at_cost: throw new NotImplementedException($"ActorPhase.{_phase}");
           case ActorPhase.stop_now:
-          case ActorPhase.exit: return;
+          case ActorPhase.exit:
+            if (_onstage is Scene abort) { abort.Reset(); }
+            reset();
+            return;
         }
 
         ComponentLog.singleton.Log($"Director goes idle");
@@ -141,7 +154,7 @@ public class Actor : IConditionAware, IResourceConsumer {
           ComponentLog.singleton.Log($"{_identity} loops work() with scene step duration {duration.Milliseconds}");
 
           SceneStatus status = _onstage.Execute(duration);
-          // TODO: if this is an underflow step, log the work off
+
           switch (status) {
             case SceneStatus.completed: ComponentLog.singleton.Log($"{_identity} completes {_onstage.Identity()}"); return;
             case SceneStatus.underflow:
@@ -156,7 +169,7 @@ public class Actor : IConditionAware, IResourceConsumer {
             switch (_phase) {
               case ActorPhase.work:
               case ActorPhase.stop_at_completion: break;
-              default: return;
+              default: return;  // remit
             }
           } finally { Monitor.Exit(_idle); } /* allow interruption */
         }
@@ -260,6 +273,11 @@ public class Scene {
 
     ComponentLog.singleton.Log(
         $"{Identity()} exits Begin() with _period.remaining {_period.remaining.TotalMilliseconds} and _period.underflow {_period.underflow.TotalMilliseconds}");
+  }
+
+  public bool Grant(ResourceInstance resource) {
+    _resources.Add(resource);  // TODO: validate unique, validate this resource is required
+    return (_resources.Count == _configuration.resources.Count);
   }
 
   public void Reset() {

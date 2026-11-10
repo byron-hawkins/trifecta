@@ -61,6 +61,73 @@ public sealed class ActorTests : ComponentLogTestBase {
   }
 
   [Fact]
+  public async Task CompletesResourceSceneForItsFullDuration() {
+    var sceneTick = TimeSpan.FromMilliseconds(50);
+    var resourceTick = TimeSpan.FromMilliseconds(50);
+    var duration = TimeSpan.FromSeconds(1);
+    var resourceType =
+        new ResourceType { name = "heater", tickrate = resourceTick,
+                           minwork = TimeSpan.FromMilliseconds(50),
+                           maxwork = TimeSpan.FromSeconds(2) };
+    var resource = new ResourceInstance(resourceType, new MockResourceDriver());
+    var queues = new MockResourceQueueSet();
+    var configuration = new RoleConfiguration {
+      id = 46, quantity = 1,
+      scenes =
+          [new SceneConfiguration { duration = duration, tickrate = sceneTick,
+                                    resources = [resourceType.name] }]
+    };
+
+    setup($"ActorResourceCompletionTests-{Guid.NewGuid():N}");
+    try {
+      var actor = new Actor(0, configuration, queues);
+      actor.Start();
+      ResourceRelease firstRelease;
+      try {
+        var consumer =
+            await queues.Requested.WaitAsync(TimeSpan.FromSeconds(2));
+        Assert.Equal(new[] { resourceType.name }, queues.RequestedNames);
+        await queues.Grant(consumer, resource)
+            .WaitAsync(TimeSpan.FromSeconds(2));
+        firstRelease = await queues.FirstRelease.WaitAsync(
+            duration + TimeSpan.FromSeconds(2));
+      } finally {
+        var finalized = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        var stop =
+            Task.Run(() => actor.Stop(ActorPhase.stop_now,
+                                      () => finalized.TrySetResult(true)));
+        await Task.WhenAll(stop, finalized.Task)
+            .WaitAsync(TimeSpan.FromSeconds(2));
+      }
+
+      Assert.Same(resource, Assert.Single(firstRelease.Resources));
+      finish();
+      var lines = ReadLog().Split('\n', StringSplitOptions.RemoveEmptyEntries);
+      var start = Array.FindIndex(
+          lines, line => line.Contains("Actor 46/0 [Scene: 0] [work: start]",
+                                       StringComparison.Ordinal));
+      Assert.True(start >= 0, "Missing resource scene work-start log.");
+      var completion =
+          Array.FindIndex(lines, start + 1,
+                          line => line.Contains("Actor 46/0 completes Scene: 0",
+                                                StringComparison.Ordinal));
+      Assert.True(completion > start, "Missing resource scene completion log.");
+      var workStop = Array.FindIndex(
+          lines, completion + 1,
+          line => line.Contains("Actor 46/0 [Scene: 0] [work: stop]",
+                                StringComparison.Ordinal));
+      Assert.True(workStop > completion,
+                  "Missing resource scene work-stop log.");
+      var elapsed = LogTimestamp(lines[workStop]) - LogTimestamp(lines[start]);
+      var tolerance = TimeSpan.FromTicks(2 * sceneTick.Ticks);
+      Assert.InRange(elapsed, duration - tolerance, duration + tolerance);
+    } finally {
+      finish();
+    }
+  }
+
+  [Fact]
   public async Task ResourceWorkUnderflowHoldsResourceUntilMinimumWork() {
     var sceneTick = TimeSpan.FromMilliseconds(50);
     var resourceTick = TimeSpan.FromMilliseconds(50);
