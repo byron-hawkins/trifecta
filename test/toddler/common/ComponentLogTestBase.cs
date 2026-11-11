@@ -36,6 +36,6 @@ public abstract class ComponentLogTestBase
 
     protected string ReadLog()
     {
-        return File.ReadAllText(FindLogFiles().Single());
+        return trifecta.test.common.SharedFile.ReadAllText(FindLogFiles().Single());
     }
 }

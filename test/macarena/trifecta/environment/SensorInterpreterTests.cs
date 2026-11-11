@@ -98,7 +98,7 @@ public sealed class SensorInterpreterTests : ComponentLogTestBase {
       failures.Add(
           $"Expected a log file for '{basename}' in '{OutputDirectory}'.");
     } else {
-      var log = await File.ReadAllTextAsync(logFiles[0]);
+      var log = await trifecta.test.common.SharedFile.ReadAllTextAsync(logFiles[0]);
       AddMissingEntry(log, "Temperature", temperatureId, temperature.ToString(),
                       failures);
       AddMissingEntry(log, "Pressure", pressureId, pressure.ToString(),

@@ -236,7 +236,7 @@ public sealed class SensorControllerTests : ComponentLogTestBase {
       if (files.Length == 0)
         return 0;
       ComponentLog.singleton.Flush();
-      return File.ReadAllText(files.Single())
+      return trifecta.test.common.SharedFile.ReadAllText(files.Single())
           .Split('\n')
           .Count(l => l.Contains(text));
     }
@@ -356,7 +356,7 @@ public sealed class SensorControllerTests : ComponentLogTestBase {
       if (files.Length == 0)
         return 0;
       ComponentLog.singleton.Flush();
-      return File.ReadAllText(files.Single())
+      return trifecta.test.common.SharedFile.ReadAllText(files.Single())
           .Split('\n')
           .Count(l => l.Contains(text));
     }
@@ -409,7 +409,7 @@ public sealed class SensorControllerTests : ComponentLogTestBase {
     while (DateTime.UtcNow < deadline) {
       var logFiles = FindLogFiles();
       if (logFiles.Length > 0) {
-        var log = await File.ReadAllTextAsync(logFiles.Single());
+        var log = await trifecta.test.common.SharedFile.ReadAllTextAsync(logFiles.Single());
         readings = ParseReadings(log, sensorType, sensorId, parse);
         if (readings.Length >= expectedCount) {
           return readings.Take(expectedCount).ToArray();

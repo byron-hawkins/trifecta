@@ -77,7 +77,7 @@ public sealed class SensorControllerTests : ComponentLogTestBase {
     while (DateTime.UtcNow < deadline) {
       var logFiles = FindLogFiles();
       if (logFiles.Length > 0) {
-        var log = await File.ReadAllTextAsync(logFiles.Single());
+        var log = await trifecta.test.common.SharedFile.ReadAllTextAsync(logFiles.Single());
         readings = ParseTemperatureReadings(log, sensorId);
         if (readings.Length >= expectedCount) {
           return readings.Take(expectedCount).ToArray();

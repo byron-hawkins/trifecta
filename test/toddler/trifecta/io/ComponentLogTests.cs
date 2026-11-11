@@ -36,7 +36,7 @@ public sealed class ComponentLogTests : ComponentLogTestBase
             logFiles.Length > 0,
             $"Expected a log file named '{basename}.<timestamp>.log' in '{OutputDirectory}'.");
 
-        var contents = await File.ReadAllTextAsync(logFiles.Single());
+        var contents = await trifecta.test.common.SharedFile.ReadAllTextAsync(logFiles.Single());
         Assert.Contains("Hello Log", contents, StringComparison.Ordinal);
     }
 }
