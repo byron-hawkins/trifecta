@@ -1,0 +1,18 @@
+<!-- author: Copilot -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../src/trifecta/common/globals.cs" Link="trifecta/common/globals.cs" />
+    <Compile Include="../src/trifecta/io/*.cs" Link="trifecta/io/%(Filename)%(Extension)" />
+    <Compile Include="../src/trifecta/environment/*.cs" Link="trifecta/environment/%(Filename)%(Extension)" />
+    <Compile Include="../src/trifecta/resource/*.cs" Link="trifecta/resource/%(Filename)%(Extension)" />
+    <Compile Include="../src/trifecta/stage/*.cs" Link="trifecta/stage/%(Filename)%(Extension)" />
+    <Compile Include="../src/trifecta/simulation/*.cs" Link="trifecta/simulation/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>
