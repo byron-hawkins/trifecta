@@ -31,3 +31,32 @@ jobs:
           name: logs-${{ matrix.os }}-${{ matrix.suite }}
           path: log
           if-no-files-found: ignore
+
+  simulator:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    env:
+      TRIFECTA_CONFIG_DIR: ${{ github.workspace }}/configuration
+      TRIFECTA_LOG_DIR: ${{ github.workspace }}/log
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build simulator
+        run: dotnet build simulator --nologo
+      - name: Run simulator for 10 seconds
+        # the simulator runs until Enter is pressed, so send one after a delay
+        run: |
+          & { Start-Sleep -Seconds 10; "" } | dotnet run --project simulator --no-build
+          if ($LASTEXITCODE -ne 0) { throw "Simulator exited with code $LASTEXITCODE" }
+      - name: Show simulator log
+        if: always()
+        run: Get-ChildItem log -Recurse -File | ForEach-Object { "== $($_.FullName)"; Get-Content $_.FullName -TotalCount 40 }
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-windows-latest-simulator
+          path: log
+          if-no-files-found: ignore
