@@ -76,6 +76,17 @@ Values the specification left open: each resource and each role has quantity 1, 
 
 `configuration/quick-stage/` is a separate configuration, unrelated to the default one. It has the same sensors, resources and role bounds, but every role has exactly one scene using both of its mapped resources: `stage_1` 50 ms, `stage_2` 75 ms and `stage_3` 100 ms. Run it by passing its manifest, `configuration/quick-stage/manifest.json`, as the argument to the simulator.
 
+### Visual Studio solution
+
+From the repository root, create a solution containing the simulator and the macarena and ensemble tests:
+
+```powershell
+dotnet new sln --name Trifecta --format sln
+dotnet sln Trifecta.sln add simulator/Trifecta.Simulation.csproj test/macarena/Trifecta.Macarena.Tests.csproj test/ensemble/Trifecta.Ensemble.Tests.csproj
+```
+
+Open `Trifecta.sln` in Visual Studio 2026 or later. Set the environment variables described below before running the tests.
+
 ## Running the tests
 
 Requirements: the .NET 10 SDK (`dotnet --version` should report 10.x).
