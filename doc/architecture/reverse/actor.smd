@@ -749,6 +749,150 @@
       }
     },
     {
+      "id": "type:trifecta.stage.Appearance",
+      "kind": "class",
+      "name": "Appearance",
+      "namespace": "trifecta.stage",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [
+        {
+          "name": "IResourceConsumer",
+          "relation": "implements",
+          "resolved_name": "trifecta.resource.IResourceConsumer"
+        }
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Appearance",
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "actor",
+              "type": {
+                "name": "Actor",
+                "resolved_name": "trifecta.stage.Actor"
+              },
+              "source_location": {
+                "start_line": 264,
+                "end_line": 264,
+                "start_column": 21,
+                "end_column": 32
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 264,
+            "end_line": 264,
+            "start_column": 3,
+            "end_column": 53
+          },
+          "source_text": "public Appearance(Actor actor)"
+        },
+        {
+          "kind": "method",
+          "name": "IsGhost",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 266,
+            "end_line": 266,
+            "start_column": 3,
+            "end_column": 57
+          },
+          "source_text": "public bool IsGhost()"
+        },
+        {
+          "kind": "method",
+          "name": "Scope",
+          "return_type": {
+            "name": "IEnumerable",
+            "type_arguments": [
+              {
+                "name": "ResourceName"
+              }
+            ]
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 268,
+            "end_line": 268,
+            "start_column": 3,
+            "end_column": 70
+          },
+          "source_text": "public IEnumerable<ResourceName> Scope()"
+        },
+        {
+          "kind": "method",
+          "name": "Grant",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "resource",
+              "type": {
+                "name": "ResourceInstance",
+                "resolved_name": "trifecta.resource.ResourceInstance"
+              },
+              "source_location": {
+                "start_line": 270,
+                "end_line": 270,
+                "start_column": 21,
+                "end_column": 46
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 270,
+            "end_line": 270,
+            "start_column": 3,
+            "end_column": 75
+          },
+          "source_text": "public void Grant(ResourceInstance resource)"
+        },
+        {
+          "kind": "field",
+          "name": "_actor",
+          "type": {
+            "name": "Actor",
+            "resolved_name": "trifecta.stage.Actor"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 272,
+            "end_line": 272,
+            "start_column": 17,
+            "end_column": 23
+          },
+          "source_text": "private Actor _actor"
+        }
+      ],
+      "source_location": {
+        "start_line": 263,
+        "end_line": 273,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
       "id": "type:trifecta.stage.Scene",
       "kind": "class",
       "name": "Scene",
@@ -2194,6 +2338,17 @@
       "source_location": {
         "start_line": 15,
         "end_line": 261,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.stage.Appearance read from src/trifecta/stage/Crew.cs.",
+      "source_location": {
+        "start_line": 263,
+        "end_line": 273,
         "start_column": 1,
         "end_column": 2
       }

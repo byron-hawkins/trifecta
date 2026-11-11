@@ -18,6 +18,11 @@
       "name": "Actor"
     },
     {
+      "id": "context:class:Appearance:1",
+      "kind": "class",
+      "name": "Appearance"
+    },
+    {
       "id": "context:class:Scene:1",
       "kind": "class",
       "name": "Scene"
@@ -57,6 +62,18 @@
     {
       "kind": "type",
       "type_id": "type:trifecta.stage.Actor"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:Appearance:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Appearance\n\nEach time an Actor queues for resources it presents a fresh Appearance, which is what the resource queues hold\nand call back. When an Actor leaves a queue (for example, on stop) it simply discards its Appearance; a queue that\nlater finds a stale Appearance recognizes it as a ghost and skips it, without needing to search the queue.\n\n### Data Structure"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.Appearance"
     },
     {
       "kind": "context",
@@ -235,6 +252,101 @@
             }
           ],
           "source_text": "void Stop(ActorPhase mode, System.Action finalize)"
+        }
+      ]
+    },
+    {
+      "id": "type:trifecta.stage.Appearance",
+      "kind": "class",
+      "name": "Appearance",
+      "namespace": "trifecta.stage",
+      "contexts": [
+        {
+          "kind": "namespace",
+          "name": "trifecta.stage",
+          "id": "context:namespace:trifecta.stage:1"
+        },
+        {
+          "kind": "class",
+          "name": "Appearance",
+          "id": "context:class:Appearance:1"
+        }
+      ],
+      "modifiers": [],
+      "base_types": [
+        {
+          "name": "resource.IResourceConsumer",
+          "relation": "implements",
+          "source_text": "resource.IResourceConsumer"
+        }
+      ],
+      "aliases": [],
+      "members": [
+        {
+          "kind": "field",
+          "name": "_actor",
+          "type": {
+            "name": "Actor"
+          },
+          "modifiers": [
+            "private"
+          ]
+        },
+        {
+          "kind": "constructor",
+          "name": "Appearance",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "actor",
+              "type": {
+                "name": "Actor"
+              }
+            }
+          ],
+          "source_text": "Appearance(Actor actor)"
+        },
+        {
+          "kind": "method",
+          "name": "IsGhost",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "bool IsGhost()"
+        },
+        {
+          "kind": "method",
+          "name": "Scope",
+          "return_type": {
+            "name": "IEnumerable",
+            "type_arguments": [
+              {
+                "name": "ResourceName"
+              }
+            ]
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "IEnumerable<ResourceName> Scope()"
+        },
+        {
+          "kind": "method",
+          "name": "Grant",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "resource",
+              "type": {
+                "name": "resource.ResourceInstance"
+              }
+            }
+          ],
+          "source_text": "void Grant(resource.ResourceInstance resource)"
         }
       ]
     },

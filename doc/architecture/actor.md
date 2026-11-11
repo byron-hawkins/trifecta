@@ -37,6 +37,25 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
     - void Start()
     - void Stop(ActorPhase mode, System.Action finalize)
 
+<!--- @context class Appearance --->
+## Appearance
+
+Each time an Actor queues for resources it presents a fresh Appearance, which is what the resource queues hold
+and call back. When an Actor leaves a queue (for example, on stop) it simply discards its Appearance; a queue that
+later finds a stale Appearance recognizes it as a ghost and skips it, without needing to search the queue.
+
+### Data Structure
+
+<!--- @type --->
+- class Appearance : resource.IResourceConsumer
+  - composition
+    - Actor _actor
+  - operations
+    - Appearance(Actor actor)
+    - bool IsGhost()
+    - IEnumerable<ResourceName> Scope()
+    - void Grant(resource.ResourceInstance resource)
+
 <!--- @context class Scene --->
 ## Scene
 
