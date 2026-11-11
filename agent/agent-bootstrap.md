@@ -10,6 +10,8 @@ At the beginning of a session in this workspace, read:
   workflow continuation.
 - `agent/collaboration.2026-11-10.md` — stage resource bounds, singleton
   test resets, lifecycle coverage, and Actor execution requirements.
+- `agent/collaboration.2026-11-11.md` — actor/queue locking, simulator,
+  forward/reverse architecture compilers, and README work.
 - `meta/generate/csharp-code-generation-policy.md` — code-generation rules.
 - `meta/generate/serialization-types.json` — global JSON-to-C# type mappings
   for generated deserialization code.
