@@ -141,8 +141,8 @@ def build(path):
         elif it[0] == 'alias-list':
             al = []
             for l in it[1]:
-                m = re.match(r'^global using (\w+) = (.*)$', l)
-                al.append({'name': m.group(1), 'target': type_ref(m.group(2)), 'source_text': l[len('global '):]})
+                m = re.match(r'^- global using (\w+) = (.*)$', l)
+                al.append({'name': m.group(1), 'target': type_ref(m.group(2)), 'source_text': l[len('- global '):]})
             alias_lists.append({'contexts': [c for c in (active_ns, active_cls) if c], 'aliases': al})
             blocks.append({'kind': 'alias_list', 'alias_list_index': len(alias_lists) - 1})
         elif it[0] == 'type':

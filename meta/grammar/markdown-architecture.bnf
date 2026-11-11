@@ -13,7 +13,7 @@
 
 <annotation-alias-list> ::= <newline> "<!--- @alias-list --->" <newline> <global-alias-list> <newline> <newline>
 <global-alias-list> ::= <global-type-alias> | <global-type-alias> <newline> <global-alias-list>
-<global-type-alias> ::= "global " <type-alias>
+<global-type-alias> ::= "- global " <type-alias>
 
 <annotation-type> ::= <annotation-type-tag> <newline> <type-outline>
 <annotation-type-tag> ::= <newline> "<!--- @type --->"

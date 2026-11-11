@@ -48,8 +48,9 @@ The terms **MUST**, **MUST NOT**, and **MAY** are normative.
 ## 2a. Global alias lists
 
 1. An `@alias-list` contains one or more `global using` type aliases, one per
-   line, terminated by a blank line. The Markdown form omits C# semicolons;
-   generated C# declarations MUST include them.
+   line, each introduced by the Markdown bullet `- `, terminated by a blank
+   line. The bullet is not part of the alias text. The Markdown form omits C#
+   semicolons; generated C# declarations MUST include them.
 2. Record each list in the document SMD's `global_alias_lists` array, with its
    aliases in source order. If `blocks` are emitted, represent each list with
    an `alias_list` block whose `alias_list_index` refers to its zero-based
