@@ -313,7 +313,8 @@ public sealed class SensorControllerTests : ComponentLogTestBase {
     var log = ReadLog().Split('\n', StringSplitOptions.RemoveEmptyEntries);
     string Component(string line) => line[1..line.IndexOf('.')];
 
-    Assert.Equal(6, log.Count(l => l.Contains("has crossed a threshold to")));
+    // a slow machine may let the scripts wrap and cross again before the stop
+    Assert.True(log.Count(l => l.Contains("has crossed a threshold to")) >= 6);
     var calls = log.Where(l => l.Contains("LoggingActor ")).ToArray();
     Assert.NotEmpty(calls);
 

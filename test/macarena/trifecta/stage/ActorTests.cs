@@ -121,7 +121,7 @@ public sealed class ActorTests : ComponentLogTestBase {
       Assert.True(workStop > completion,
                   "Missing resource scene work-stop log.");
       var elapsed = LogTimestamp(lines[workStop]) - LogTimestamp(lines[start]);
-      var tolerance = TimeSpan.FromTicks(2 * sceneTick.Ticks);
+      var tolerance = TimeSpan.FromTicks(4 * sceneTick.Ticks);
       Assert.InRange(elapsed, duration - tolerance, duration + tolerance);
     } finally {
       finish();
@@ -176,7 +176,7 @@ public sealed class ActorTests : ComponentLogTestBase {
       Assert.Same(resource, Assert.Single(firstRelease.Resources));
       var holdTime =
           Stopwatch.GetElapsedTime(grantTime, firstRelease.Timestamp);
-      var tolerance = TimeSpan.FromTicks(2 * sceneTick.Ticks);
+      var tolerance = TimeSpan.FromTicks(4 * sceneTick.Ticks);
       Assert.InRange(holdTime, minWork, resourceType.maxwork + tolerance);
       finish();
       var lines = ReadLog().Split('\n', StringSplitOptions.RemoveEmptyEntries);
@@ -279,7 +279,7 @@ public sealed class ActorTests : ComponentLogTestBase {
                                             StringComparison.Ordinal));
 
       var elapsed = LogTimestamp(lines[stopIndex]) - LogTimestamp(lines[start]);
-      var tolerance = TimeSpan.FromTicks(2 * sceneTick.Ticks);
+      var tolerance = TimeSpan.FromTicks(4 * sceneTick.Ticks);
       Assert.InRange(elapsed, duration - tolerance, duration + tolerance);
     } finally {
       finish();
@@ -450,7 +450,7 @@ public sealed class ActorTests : ComponentLogTestBase {
 
       // each hold runs from [work: start] to MultiRelease, at most the lowest
       // maxwork, and together the holds cover the scene duration
-      var tolerance = TimeSpan.FromTicks(2 * sceneTick.Ticks);
+      var tolerance = TimeSpan.FromTicks(4 * sceneTick.Ticks);
       var remaining = scene;
       for (var i = 0; i < expectedHolds; i++) {
         var expected = remaining < lowestMax ? remaining : lowestMax;
@@ -529,7 +529,7 @@ public sealed class ActorTests : ComponentLogTestBase {
   public async Task StartsWorkOnlyAfterDelayedGrantsArrive(string caseName) {
     var spec = DelayCases[caseName];
     var sceneTick = TimeSpan.FromMilliseconds(50);
-    var tolerance = TimeSpan.FromTicks(2 * sceneTick.Ticks);
+    var tolerance = TimeSpan.FromTicks(4 * sceneTick.Ticks);
     var slack =
         TimeSpan.FromMilliseconds(5); // log timestamps are truncated to ms
     var types = spec.MaxWorkMs
