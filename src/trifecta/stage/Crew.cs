@@ -44,6 +44,10 @@ public class Actor : IConditionAware {
         if (ignorable) return;
         throw new InvalidOperationException($"Cannot start {_identity} from phase {_phase}");
       }
+      if (_self is { IsCompleted: false }) {  // the task may not have run yet, so the phase is still ready
+        if (ignorable) return;
+        throw new InvalidOperationException($"Cannot start {_identity} while its run loop is active");
+      }
       if (_onstage != null) throw new InvalidOperationException($"Cannot start {_identity} with a scene on stage (phase {_phase})");
 
       _appearance = new(this);

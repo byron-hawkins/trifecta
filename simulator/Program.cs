@@ -93,6 +93,9 @@ public static class Program {
       try {
         if (directorStarted)
           Director.singleton.Stop(false);
+      } catch (Exception exception) {
+        // shutdown problems are reported but do not fail the run
+        Console.Error.WriteLine($"Ignored shutdown error: {exception.Message}");
       } finally {
         try {
           if (resourcesStarted)
