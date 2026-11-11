@@ -12,11 +12,19 @@ contribution. In case of authenticity questions, the src/ directory was mounted 
 since day one, and was developed entirely by myself, with the exception of configuration loaders and 3 small (but very
 import) patches. Please direct any questions to byron@introspicion.com. Thanks, and enjoy your tour of Trifecta!
 
-## The simulator
+## Architecture
 
-`simulation/` is a command-line app that runs the real components (sensor drivers, `SensorController`, `ResourceQueueSet`, `Director`). It prints the log file path at startup, and stops when the user presses Enter.
+A high-level overview of the project begins with the [architecture index](doc/architecture/index.md), which presents
+technology choices and considerations followed by a table of links to individual component documents and diagrams.
 
-### How the simulator is configured
+## Implementation
+
+For compatibility with the author's Linux development environment, all executable artifacts have been developed as .NET
+console projects, including the Trifecta simulator and the accompanying unit and integration tests. In directory
+`simulation/` is a command-line app that runs the prescribed manufacturing scenario, which simply logs the behavior of system
+components such as processing stages and the supporting resources and sensors. At startup it prints the log file path at startup, and stops when the user presses Enter.
+
+### Simulator configuration
 
 The specification fixes *what* a simulation must do, but not *how* a particular simulation is described to the program. That part is a design choice made here: the simulator contains no hard-coded scenario. Everything it simulates (the resources, the roles and their scenes, the sensors and what they read) is described in JSON files that it loads at startup. Changing the scenario means editing those files, with no rebuild.
 
@@ -67,66 +75,6 @@ Values the specification left open: each resource and each role has quantity 1, 
 ### The `quick-stage` variant
 
 `configuration/quick-stage/` is a separate configuration, unrelated to the default one. It has the same sensors, resources and role bounds, but every role has exactly one scene using both of its mapped resources: `stage_1` 50 ms, `stage_2` 75 ms and `stage_3` 100 ms. Run it by passing its manifest, `configuration/quick-stage/manifest.json`, as the argument to the simulator.
-
-## Architecture documents, the grammar, and the compilers
-
-See the [architecture index](doc/architecture/index.md) for a list of the architecture documents and diagrams, each with a one-line summary.
-
-### The idea
-
-The design of the system is written as ordinary Markdown in `doc/architecture/`: prose, headings, and a description of each class, interface and enum. Prose is easy to write and read, but a program cannot reliably tell which words in it name a type, a member, or a relationship. So the documents also carry a small number of **annotations**: HTML comments such as `<!--- @type --->` that mark a bulleted outline as the definition of a type, or `<!--- @context class Actor --->` that says which class the following text is about. A browser or GitHub ignores the comments, so the documents still read as normal Markdown.
-
-Because the annotations follow a fixed grammar, a tool can read the documents and extract the described types into a structured form. That makes two things possible:
-
-1. **Diagrams generated from the documents.** The same outlines can be turned into Mermaid class diagrams, so the pictures are always consistent with the text.
-2. **Checking the documents against the code.** The same structured form can be produced from the C# source. If the two forms are compared, any type or member that the documents and the code disagree about shows up as a difference.
-
-### The pieces
-
-```text
-  annotated Markdown ──(forward compile)──► SMD ──► Mermaid figures, rendered MD/HTML
-  (doc/architecture/*.md)                    ▲
-                                             │ compare
-  C# source (src/) ──(reverse compile)──► SMD
-```
-
-- **BNF grammar.** A BNF (Backus-Naur Form) is a formal, compact description of what text is allowed in a language. `markdown-architecture.bnf` defines exactly where annotations may appear in a document and what the outline inside an annotation looks like (modifiers, base types, members, generic parameters and so on). A companion document, the *semantics*, defines what the parsed annotations mean: for example, how a context tag stays in effect until the next one, and how names are resolved to types.
-- **SMD (structured markdown data).** A JSON file listing the types described by one document: for each type its kind, namespace, bases, and members. It is the common intermediate form that both compilers produce. A JSON Schema (`architecture-schema.json`) defines exactly what a valid SMD looks like, so an SMD can be validated by any JSON Schema tool.
-- **Forward compile.** Annotated Markdown → SMD → diagram figures. This is the direction used to produce the documents' pictures.
-- **Reverse compile.** C# source → SMD. It looks up each type the documents describe, reads its declaration from `src/`, and writes an SMD in the same format. Comparing a forward SMD with its reverse SMD shows where the documents and the code have drifted apart. The reverse compiler also records diagnostics, for example a documented type that is missing from the code.
-
-### Where things are
-
-| Path | What it is |
-|------|------------|
-| `meta/grammar/markdown-architecture.bnf` | The grammar of the annotations |
-| `meta/grammar/markdown-architecture-semantics.md` | What the annotations mean (context scopes, name resolution, how diagrams are chosen) |
-| `meta/grammar/architecture-schema.json` | JSON Schema for SMD files |
-| `doc/architecture/*.md` | The annotated architecture documents. `communication.md` is plain Markdown with diagrams, with no annotations |
-| `doc/architecture/bin/*.smd` | Forward-compiled SMDs, one per document |
-| `doc/architecture/reverse/*.smd` | Reverse-compiled SMDs from `src/`, one per document, to compare against `bin/` |
-| `doc/architecture/figures/` | Generated Mermaid class diagrams |
-| `doc/architecture/render/` | Generated viewable pages (`.md` and `.html`) of each diagram |
-| `meta/generate/forward/diagram_and_render.py` | The forward compiler |
-| `meta/generate/reverse-smd/` | The reverse compiler (a C# project using Roslyn) |
-
-### Running the compilers
-
-Run from the repository root. The forward compiler needs Python 3 and takes one or more annotated documents:
-
-```sh
-python3 meta/generate/forward/diagram_and_render.py doc/architecture/actor.md
-```
-
-It writes `doc/architecture/bin/actor.smd`, plus figures and rendered pages for documents that request a diagram. The reverse compiler needs the .NET SDK and takes the repository root:
-
-```sh
-dotnet run --project meta/generate/reverse-smd -- .
-```
-
-It reads the type list from `doc/architecture/bin/*.smd`, parses `src/`, and writes `doc/architecture/reverse/*.smd`. To validate an SMD against the schema, use any JSON Schema (draft 2020-12) validator; for example, with Python's `jsonschema` package, validate the file against `meta/grammar/architecture-schema.json`.
-
-The compilers are development tools. The simulator and the tests do not depend on them.
 
 ## Running the tests
 
@@ -196,3 +144,76 @@ more than the simulator does today:
   goes through a driver; scene work is simulated with a timed sleep.
 - Transition modes: only `quickstop` is implemented; `finishup` and `costmodel` throw `NotImplementedException`.
 - Actor phases `stop_at_cost` and `suspension` are reserved and throw `NotImplementedException`.
+
+## Automated architecture synchronization
+
+As an exercise focused on architecture, this project has been developed around a simple list-based outline of data
+structures and their functional interaction. To keep these core documents in sync with diagrams, source code and tests
+throughout the evolution of the project, a system of markdown annotations and a simple BNF grammar have been developed,
+allowing two-way conversion between markdown outlines and important project artifacts. Initially compiled into a JSON
+intermediate language that is directly compatible with a significant subset of the C# language specification, this
+structured approach has made it possible to automatically generate diagrams, tests and source code stubs that formally
+correspond to the original markdown outlines. In addition, since details change throughout the course of development, a
+reverse compiler has been added to backport project source code into the JSON intermediate language (called "SMD" for
+"structured markdown"). A quick look at the git history of the project will show that both the architecture outlines and
+accompanying diagrams were quickly brought into sync with source code during the final few commits. More importantly,
+the formal foundation of SMD made it possible to collaborate at a high level with GitHub Copilot on key subjects such as
+synchronization strategies, as evidenced for example by the sequence diagram outlining Copilot's lock inversion
+analysis.
+
+### In more detail
+
+The design of the system is written as ordinary Markdown in `doc/architecture/`: prose, headings, and a description of each class, interface and enum. Prose is easy to write and read, but a program cannot reliably tell which words in it name a type, a member, or a relationship. So the documents also carry a small number of **annotations**: HTML comments such as `<!--- @type --->` that mark a bulleted outline as the definition of a type, or `<!--- @context class Actor --->` that says which class the following text is about. A browser or GitHub ignores the comments, so the documents still read as normal Markdown.
+
+Because the annotations follow a fixed grammar, a tool can read the documents and extract the described types into a structured form. That makes two things possible:
+
+1. **Diagrams generated from the documents.** The same outlines can be turned into Mermaid class diagrams, so the pictures are always consistent with the text.
+2. **Checking the documents against the code.** The same structured form can be produced from the C# source. If the two forms are compared, any type or member that the documents and the code disagree about shows up as a difference.
+
+### The pieces
+
+```text
+  annotated Markdown ──(forward compile)──► SMD ──► Mermaid figures, rendered MD/HTML
+  (doc/architecture/*.md)                    ▲
+                                             │ compare
+  C# source (src/) ──(reverse compile)──► SMD
+```
+
+- **BNF grammar.** A BNF (Backus-Naur Form) is a formal, compact description of what text is allowed in a language. `markdown-architecture.bnf` defines exactly where annotations may appear in a document and what the outline inside an annotation looks like (modifiers, base types, members, generic parameters and so on). A companion document, the *semantics*, defines what the parsed annotations mean: for example, how a context tag stays in effect until the next one, and how names are resolved to types.
+- **SMD (structured markdown data).** A JSON file listing the types described by one document: for each type its kind, namespace, bases, and members. It is the common intermediate form that both compilers produce. A JSON Schema (`architecture-schema.json`) defines exactly what a valid SMD looks like, so an SMD can be validated by any JSON Schema tool.
+- **Forward compile.** Annotated Markdown → SMD → diagram figures. This is the direction used to produce the documents' pictures.
+- **Reverse compile.** C# source → SMD. It looks up each type the documents describe, reads its declaration from `src/`, and writes an SMD in the same format. Comparing a forward SMD with its reverse SMD shows where the documents and the code have drifted apart. The reverse compiler also records diagnostics, for example a documented type that is missing from the code.
+
+### Where things are
+
+| Path | What it is |
+|------|------------|
+| `meta/grammar/markdown-architecture.bnf` | The grammar of the annotations |
+| `meta/grammar/markdown-architecture-semantics.md` | What the annotations mean (context scopes, name resolution, how diagrams are chosen) |
+| `meta/grammar/architecture-schema.json` | JSON Schema for SMD files |
+| `doc/architecture/*.md` | The annotated architecture documents. `communication.md` is plain Markdown with diagrams, with no annotations |
+| `doc/architecture/bin/*.smd` | Forward-compiled SMDs, one per document |
+| `doc/architecture/reverse/*.smd` | Reverse-compiled SMDs from `src/`, one per document, to compare against `bin/` |
+| `doc/architecture/figures/` | Generated Mermaid class diagrams |
+| `doc/architecture/render/` | Generated viewable pages (`.md` and `.html`) of each diagram |
+| `meta/generate/forward/diagram_and_render.py` | The forward compiler |
+| `meta/generate/reverse-smd/` | The reverse compiler (a C# project using Roslyn) |
+
+### Running the compilers
+
+Run from the repository root. The forward compiler needs Python 3 and takes one or more annotated documents:
+
+```sh
+python3 meta/generate/forward/diagram_and_render.py doc/architecture/actor.md
+```
+
+It writes `doc/architecture/bin/actor.smd`, plus figures and rendered pages for documents that request a diagram. The reverse compiler needs the .NET SDK and takes the repository root:
+
+```sh
+dotnet run --project meta/generate/reverse-smd -- .
+```
+
+It reads the type list from `doc/architecture/bin/*.smd`, parses `src/`, and writes `doc/architecture/reverse/*.smd`. To validate an SMD against the schema, use any JSON Schema (draft 2020-12) validator; for example, with Python's `jsonschema` package, validate the file against `meta/grammar/architecture-schema.json`.
+
+The compilers are development tools. The simulator and the tests do not depend on them.
+
