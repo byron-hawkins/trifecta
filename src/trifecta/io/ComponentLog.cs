@@ -20,6 +20,12 @@ public class ComponentLog : ITextLog {
     using (_lock.EnterScope()) { _sink = sink; }
   }
 
+  public void EnableTrace(bool enabled) { _trace = enabled; }
+
+  public void Trace(string message, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0, [CallerMemberName] string member = "") {
+    if (_trace) Log(message, path, line, member);
+  }
+
   public void Log(string message, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0, [CallerMemberName] string member = "") {
     string filename = Path.GetFileName(path);
     string component = _componentNames.GetValueOrDefault(Thread.CurrentThread.ManagedThreadId, "<unknown-component-id>");
@@ -48,6 +54,7 @@ public class ComponentLog : ITextLog {
     }
   }
 
+  private volatile bool _trace = false;
   private Lock _lock = new();
   private ITextLogSink _sink;
   private Dictionary<ThreadId, string> _componentNames = new();

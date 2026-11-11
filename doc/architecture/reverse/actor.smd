@@ -1,0 +1,2268 @@
+{
+  "author": "Copilot",
+  "format": "markdown-architecture-smd",
+  "version": 1,
+  "source": {
+    "kind": "csharp",
+    "path": "src/trifecta",
+    "language_version": "latest"
+  },
+  "types": [
+    {
+      "id": "type:trifecta.stage.Actor",
+      "kind": "class",
+      "name": "Actor",
+      "namespace": "trifecta.stage",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [
+        {
+          "name": "IConditionAware",
+          "relation": "implements",
+          "resolved_name": "trifecta.environment.IConditionAware"
+        }
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Actor",
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "name": "int"
+              },
+              "source_location": {
+                "start_line": 16,
+                "end_line": 16,
+                "start_column": 16,
+                "end_column": 25
+              }
+            },
+            {
+              "name": "configuration",
+              "type": {
+                "name": "RoleConfiguration",
+                "resolved_name": "trifecta.stage.RoleConfiguration"
+              },
+              "source_location": {
+                "start_line": 16,
+                "end_line": 16,
+                "start_column": 27,
+                "end_column": 58
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 16,
+            "end_line": 16,
+            "start_column": 3,
+            "end_column": 119
+          },
+          "source_text": "public Actor(int index, RoleConfiguration configuration)"
+        },
+        {
+          "kind": "constructor",
+          "name": "Actor",
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "name": "int"
+              },
+              "source_location": {
+                "start_line": 17,
+                "end_line": 17,
+                "start_column": 16,
+                "end_column": 25
+              }
+            },
+            {
+              "name": "configuration",
+              "type": {
+                "name": "RoleConfiguration",
+                "resolved_name": "trifecta.stage.RoleConfiguration"
+              },
+              "source_location": {
+                "start_line": 17,
+                "end_line": 17,
+                "start_column": 27,
+                "end_column": 58
+              }
+            },
+            {
+              "name": "qs",
+              "type": {
+                "name": "IResourceQueueSet",
+                "resolved_name": "trifecta.resource.IResourceQueueSet"
+              },
+              "source_location": {
+                "start_line": 17,
+                "end_line": 17,
+                "start_column": 60,
+                "end_column": 80
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 17,
+            "end_line": 27,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public Actor(int index, RoleConfiguration configuration, IResourceQueueSet qs)"
+        },
+        {
+          "kind": "method",
+          "name": "IsRunning",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 29,
+            "end_line": 34,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public bool IsRunning()"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public",
+            "virtual"
+          ],
+          "parameters": [
+            {
+              "name": "ignorable",
+              "type": {
+                "name": "bool"
+              },
+              "default_value": "false",
+              "source_location": {
+                "start_line": 36,
+                "end_line": 36,
+                "start_column": 29,
+                "end_column": 51
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 36,
+            "end_line": 54,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public virtual void Start(bool ignorable = false)"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public",
+            "virtual"
+          ],
+          "parameters": [
+            {
+              "name": "mode",
+              "type": {
+                "name": "ActorPhase",
+                "resolved_name": "trifecta.stage.ActorPhase"
+              },
+              "source_location": {
+                "start_line": 56,
+                "end_line": 56,
+                "start_column": 28,
+                "end_column": 43
+              }
+            },
+            {
+              "name": "finalize",
+              "type": {
+                "name": "Action",
+                "nullable": true
+              },
+              "default_value": "null",
+              "source_location": {
+                "start_line": 56,
+                "end_line": 56,
+                "start_column": 45,
+                "end_column": 68
+              }
+            },
+            {
+              "name": "ignorable",
+              "type": {
+                "name": "bool"
+              },
+              "default_value": "false",
+              "source_location": {
+                "start_line": 56,
+                "end_line": 56,
+                "start_column": 70,
+                "end_column": 92
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 56,
+            "end_line": 81,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public virtual void Stop(ActorPhase mode, Action? finalize = null, bool ignorable = false)"
+        },
+        {
+          "kind": "method",
+          "name": "ThresholdCross",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "t",
+              "type": {
+                "name": "Temperature"
+              },
+              "source_location": {
+                "start_line": 84,
+                "end_line": 84,
+                "start_column": 30,
+                "end_column": 43
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 84,
+            "end_line": 84,
+            "start_column": 3,
+            "end_column": 47
+          },
+          "source_text": "public void ThresholdCross(Temperature t)"
+        },
+        {
+          "kind": "method",
+          "name": "ThresholdCross",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "p",
+              "type": {
+                "name": "Pressure"
+              },
+              "source_location": {
+                "start_line": 87,
+                "end_line": 87,
+                "start_column": 30,
+                "end_column": 40
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 87,
+            "end_line": 87,
+            "start_column": 3,
+            "end_column": 44
+          },
+          "source_text": "public void ThresholdCross(Pressure p)"
+        },
+        {
+          "kind": "method",
+          "name": "Scope",
+          "return_type": {
+            "name": "IEnumerable",
+            "type_arguments": [
+              {
+                "name": "ResourceName"
+              }
+            ]
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 89,
+            "end_line": 96,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public IEnumerable<ResourceName> Scope()"
+        },
+        {
+          "kind": "method",
+          "name": "Grant",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "resource",
+              "type": {
+                "name": "ResourceInstance",
+                "resolved_name": "trifecta.resource.ResourceInstance"
+              },
+              "source_location": {
+                "start_line": 98,
+                "end_line": 98,
+                "start_column": 21,
+                "end_column": 46
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 98,
+            "end_line": 115,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Grant(ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "run",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 117,
+            "end_line": 182,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "private void run()"
+        },
+        {
+          "kind": "method",
+          "name": "work",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 184,
+            "end_line": 222,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "private void work()"
+        },
+        {
+          "kind": "method",
+          "name": "Remit",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "free",
+              "type": {
+                "name": "List",
+                "type_arguments": [
+                  {
+                    "name": "ResourceInstance",
+                    "resolved_name": "trifecta.resource.ResourceInstance"
+                  }
+                ]
+              },
+              "source_location": {
+                "start_line": 224,
+                "end_line": 224,
+                "start_column": 21,
+                "end_column": 48
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 224,
+            "end_line": 230,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Remit(List<ResourceInstance> free)"
+        },
+        {
+          "kind": "method",
+          "name": "IsGhost",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "appearance",
+              "type": {
+                "name": "Appearance",
+                "resolved_name": "trifecta.stage.Appearance"
+              },
+              "source_location": {
+                "start_line": 232,
+                "end_line": 232,
+                "start_column": 23,
+                "end_column": 44
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 232,
+            "end_line": 237,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public bool IsGhost(Appearance appearance)"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 239,
+            "end_line": 239,
+            "start_column": 3,
+            "end_column": 49
+          },
+          "source_text": "public string Identity()"
+        },
+        {
+          "kind": "method",
+          "name": "worklog",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "parameters": [
+            {
+              "name": "mode",
+              "type": {
+                "name": "string"
+              },
+              "source_location": {
+                "start_line": 241,
+                "end_line": 241,
+                "start_column": 24,
+                "end_column": 35
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 241,
+            "end_line": 241,
+            "start_column": 3,
+            "end_column": 123
+          },
+          "source_text": "private void worklog(string mode)"
+        },
+        {
+          "kind": "method",
+          "name": "reset",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "parameters": [
+            {
+              "name": "phase",
+              "type": {
+                "name": "ActorPhase",
+                "resolved_name": "trifecta.stage.ActorPhase"
+              },
+              "default_value": "ActorPhase.ready",
+              "source_location": {
+                "start_line": 243,
+                "end_line": 243,
+                "start_column": 22,
+                "end_column": 57
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 243,
+            "end_line": 247,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "private void reset(ActorPhase phase = ActorPhase.ready)"
+        },
+        {
+          "kind": "field",
+          "name": "_qs",
+          "type": {
+            "name": "IResourceQueueSet",
+            "resolved_name": "trifecta.resource.IResourceQueueSet"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 249,
+            "end_line": 249,
+            "start_column": 29,
+            "end_column": 32
+          },
+          "source_text": "private IResourceQueueSet _qs"
+        },
+        {
+          "kind": "field",
+          "name": "_index",
+          "type": {
+            "name": "int"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 250,
+            "end_line": 250,
+            "start_column": 15,
+            "end_column": 21
+          },
+          "source_text": "private int _index"
+        },
+        {
+          "kind": "field",
+          "name": "_identity",
+          "type": {
+            "name": "string"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 251,
+            "end_line": 251,
+            "start_column": 18,
+            "end_column": 27
+          },
+          "source_text": "private string _identity"
+        },
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "RoleConfiguration",
+            "resolved_name": "trifecta.stage.RoleConfiguration"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 252,
+            "end_line": 252,
+            "start_column": 29,
+            "end_column": 43
+          },
+          "source_text": "private RoleConfiguration _configuration"
+        },
+        {
+          "kind": "field",
+          "name": "_idle",
+          "type": {
+            "name": "object"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "new()",
+          "source_location": {
+            "start_line": 254,
+            "end_line": 254,
+            "start_column": 18,
+            "end_column": 31
+          },
+          "source_text": "private object _idle"
+        },
+        {
+          "kind": "field",
+          "name": "_self",
+          "type": {
+            "name": "Task",
+            "nullable": true
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "null",
+          "source_location": {
+            "start_line": 255,
+            "end_line": 255,
+            "start_column": 17,
+            "end_column": 29
+          },
+          "source_text": "private Task? _self"
+        },
+        {
+          "kind": "field",
+          "name": "_workflow",
+          "type": {
+            "name": "int"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 256,
+            "end_line": 256,
+            "start_column": 15,
+            "end_column": 24
+          },
+          "source_text": "private int _workflow"
+        },
+        {
+          "kind": "field",
+          "name": "_phase",
+          "type": {
+            "name": "ActorPhase",
+            "resolved_name": "trifecta.stage.ActorPhase"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "ActorPhase.exit",
+          "source_location": {
+            "start_line": 257,
+            "end_line": 257,
+            "start_column": 22,
+            "end_column": 46
+          },
+          "source_text": "private ActorPhase _phase"
+        },
+        {
+          "kind": "field",
+          "name": "_onstage",
+          "type": {
+            "name": "Scene",
+            "resolved_name": "trifecta.stage.Scene",
+            "nullable": true
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 258,
+            "end_line": 258,
+            "start_column": 18,
+            "end_column": 26
+          },
+          "source_text": "private Scene? _onstage"
+        },
+        {
+          "kind": "field",
+          "name": "_appearance",
+          "type": {
+            "name": "Appearance",
+            "resolved_name": "trifecta.stage.Appearance",
+            "nullable": true
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "null",
+          "source_location": {
+            "start_line": 259,
+            "end_line": 259,
+            "start_column": 23,
+            "end_column": 41
+          },
+          "source_text": "private Appearance? _appearance"
+        },
+        {
+          "kind": "field",
+          "name": "_scenes",
+          "type": {
+            "name": "List",
+            "type_arguments": [
+              {
+                "name": "Scene",
+                "resolved_name": "trifecta.stage.Scene"
+              }
+            ]
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "[]",
+          "source_location": {
+            "start_line": 260,
+            "end_line": 260,
+            "start_column": 23,
+            "end_column": 35
+          },
+          "source_text": "private List<Scene> _scenes"
+        }
+      ],
+      "source_location": {
+        "start_line": 15,
+        "end_line": 261,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.stage.Scene",
+      "kind": "class",
+      "name": "Scene",
+      "namespace": "trifecta.stage",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Scene",
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "name": "int"
+              },
+              "source_location": {
+                "start_line": 276,
+                "end_line": 276,
+                "start_column": 16,
+                "end_column": 25
+              }
+            },
+            {
+              "name": "configuration",
+              "type": {
+                "name": "SceneConfiguration",
+                "resolved_name": "trifecta.stage.SceneConfiguration"
+              },
+              "source_location": {
+                "start_line": 276,
+                "end_line": 276,
+                "start_column": 27,
+                "end_column": 59
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 276,
+            "end_line": 276,
+            "start_column": 3,
+            "end_column": 120
+          },
+          "source_text": "public Scene(int index, SceneConfiguration configuration)"
+        },
+        {
+          "kind": "constructor",
+          "name": "Scene",
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "name": "int"
+              },
+              "source_location": {
+                "start_line": 277,
+                "end_line": 277,
+                "start_column": 16,
+                "end_column": 25
+              }
+            },
+            {
+              "name": "configuration",
+              "type": {
+                "name": "SceneConfiguration",
+                "resolved_name": "trifecta.stage.SceneConfiguration"
+              },
+              "source_location": {
+                "start_line": 277,
+                "end_line": 277,
+                "start_column": 27,
+                "end_column": 59
+              }
+            },
+            {
+              "name": "qs",
+              "type": {
+                "name": "IResourceQueueSet",
+                "resolved_name": "trifecta.resource.IResourceQueueSet"
+              },
+              "source_location": {
+                "start_line": 277,
+                "end_line": 277,
+                "start_column": 61,
+                "end_column": 81
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 277,
+            "end_line": 286,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public Scene(int index, SceneConfiguration configuration, IResourceQueueSet qs)"
+        },
+        {
+          "kind": "method",
+          "name": "GetStatus",
+          "return_type": {
+            "name": "SceneStatus",
+            "resolved_name": "trifecta.stage.SceneStatus"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 288,
+            "end_line": 288,
+            "start_column": 3,
+            "end_column": 53
+          },
+          "source_text": "public SceneStatus GetStatus()"
+        },
+        {
+          "kind": "method",
+          "name": "IsContinuation",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 290,
+            "end_line": 290,
+            "start_column": 3,
+            "end_column": 73
+          },
+          "source_text": "public bool IsContinuation()"
+        },
+        {
+          "kind": "method",
+          "name": "Begin",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 292,
+            "end_line": 316,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Begin()"
+        },
+        {
+          "kind": "method",
+          "name": "Execute",
+          "return_type": {
+            "name": "SceneStatus",
+            "resolved_name": "trifecta.stage.SceneStatus"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "duration",
+              "type": {
+                "name": "TimeSpan"
+              },
+              "source_location": {
+                "start_line": 318,
+                "end_line": 318,
+                "start_column": 30,
+                "end_column": 47
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 318,
+            "end_line": 341,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public SceneStatus Execute(TimeSpan duration)"
+        },
+        {
+          "kind": "method",
+          "name": "Grant",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "resource",
+              "type": {
+                "name": "ResourceInstance",
+                "resolved_name": "trifecta.resource.ResourceInstance"
+              },
+              "source_location": {
+                "start_line": 343,
+                "end_line": 343,
+                "start_column": 21,
+                "end_column": 46
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 343,
+            "end_line": 346,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public bool Grant(ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "actor",
+              "type": {
+                "name": "Actor",
+                "resolved_name": "trifecta.stage.Actor"
+              },
+              "source_location": {
+                "start_line": 348,
+                "end_line": 348,
+                "start_column": 21,
+                "end_column": 32
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 348,
+            "end_line": 352,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Reset(Actor actor)"
+        },
+        {
+          "kind": "method",
+          "name": "Remit",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "actor",
+              "type": {
+                "name": "Actor",
+                "resolved_name": "trifecta.stage.Actor"
+              },
+              "source_location": {
+                "start_line": 354,
+                "end_line": 354,
+                "start_column": 21,
+                "end_column": 32
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 354,
+            "end_line": 362,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Remit(Actor actor)"
+        },
+        {
+          "kind": "method",
+          "name": "Scope",
+          "return_type": {
+            "name": "IEnumerable",
+            "type_arguments": [
+              {
+                "name": "ResourceName"
+              }
+            ]
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 364,
+            "end_line": 364,
+            "start_column": 3,
+            "end_column": 80
+          },
+          "source_text": "public IEnumerable<ResourceName> Scope()"
+        },
+        {
+          "kind": "method",
+          "name": "IsLocal",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 366,
+            "end_line": 366,
+            "start_column": 3,
+            "end_column": 72
+          },
+          "source_text": "public bool IsLocal()"
+        },
+        {
+          "kind": "method",
+          "name": "GetStepDuration",
+          "return_type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 368,
+            "end_line": 377,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public TimeSpan GetStepDuration()"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 379,
+            "end_line": 379,
+            "start_column": 3,
+            "end_column": 49
+          },
+          "source_text": "public string Identity()"
+        },
+        {
+          "kind": "method",
+          "name": "apply",
+          "return_type": {
+            "name": "SceneStatus",
+            "resolved_name": "trifecta.stage.SceneStatus"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "parameters": [
+            {
+              "name": "s",
+              "type": {
+                "name": "SceneStatus",
+                "resolved_name": "trifecta.stage.SceneStatus"
+              },
+              "source_location": {
+                "start_line": 381,
+                "end_line": 381,
+                "start_column": 29,
+                "end_column": 42
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 381,
+            "end_line": 381,
+            "start_column": 3,
+            "end_column": 69
+          },
+          "source_text": "private SceneStatus apply(SceneStatus s)"
+        },
+        {
+          "kind": "field",
+          "name": "_qs",
+          "type": {
+            "name": "IResourceQueueSet",
+            "resolved_name": "trifecta.resource.IResourceQueueSet"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 391,
+            "end_line": 391,
+            "start_column": 29,
+            "end_column": 32
+          },
+          "source_text": "private IResourceQueueSet _qs"
+        },
+        {
+          "kind": "field",
+          "name": "_index",
+          "type": {
+            "name": "int"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 392,
+            "end_line": 392,
+            "start_column": 15,
+            "end_column": 21
+          },
+          "source_text": "private int _index"
+        },
+        {
+          "kind": "field",
+          "name": "_identity",
+          "type": {
+            "name": "string"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 393,
+            "end_line": 393,
+            "start_column": 18,
+            "end_column": 27
+          },
+          "source_text": "private string _identity"
+        },
+        {
+          "kind": "field",
+          "name": "_period",
+          "type": {
+            "name": "Period",
+            "resolved_name": "trifecta.stage.Scene+Period"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "new()",
+          "source_location": {
+            "start_line": 394,
+            "end_line": 394,
+            "start_column": 18,
+            "end_column": 33
+          },
+          "source_text": "private Period _period"
+        },
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "SceneConfiguration",
+            "resolved_name": "trifecta.stage.SceneConfiguration"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 395,
+            "end_line": 395,
+            "start_column": 30,
+            "end_column": 44
+          },
+          "source_text": "private SceneConfiguration _configuration"
+        },
+        {
+          "kind": "field",
+          "name": "_resources",
+          "type": {
+            "name": "List",
+            "type_arguments": [
+              {
+                "name": "ResourceInstance",
+                "resolved_name": "trifecta.resource.ResourceInstance"
+              }
+            ]
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "[]",
+          "source_location": {
+            "start_line": 396,
+            "end_line": 396,
+            "start_column": 34,
+            "end_column": 49
+          },
+          "source_text": "private List<ResourceInstance> _resources"
+        },
+        {
+          "kind": "field",
+          "name": "_status",
+          "type": {
+            "name": "SceneStatus",
+            "resolved_name": "trifecta.stage.SceneStatus"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 397,
+            "end_line": 397,
+            "start_column": 23,
+            "end_column": 30
+          },
+          "source_text": "private SceneStatus _status"
+        }
+      ],
+      "source_location": {
+        "start_line": 275,
+        "end_line": 398,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.stage.Director",
+      "kind": "class",
+      "name": "Director",
+      "namespace": "trifecta.stage",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [
+        {
+          "name": "IConditionAware",
+          "relation": "implements",
+          "resolved_name": "trifecta.environment.IConditionAware"
+        },
+        {
+          "name": "ICastManager",
+          "relation": "implements",
+          "resolved_name": "trifecta.stage.ICastManager"
+        }
+      ],
+      "members": [
+        {
+          "kind": "field",
+          "name": "singleton",
+          "type": {
+            "name": "Director",
+            "resolved_name": "trifecta.stage.Director"
+          },
+          "modifiers": [
+            "public",
+            "static"
+          ],
+          "initializer": "new()",
+          "annotations": [
+            "singleton"
+          ],
+          "source_location": {
+            "start_line": 401,
+            "end_line": 401,
+            "start_column": 26,
+            "end_column": 43
+          },
+          "source_text": "public static Director singleton"
+        },
+        {
+          "kind": "method",
+          "name": "configure",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "configuration",
+              "type": {
+                "name": "DirectorConfiguration",
+                "resolved_name": "trifecta.stage.DirectorConfiguration"
+              },
+              "source_location": {
+                "start_line": 403,
+                "end_line": 403,
+                "start_column": 25,
+                "end_column": 60
+              }
+            },
+            {
+              "name": "precast",
+              "type": {
+                "name": "Dictionary",
+                "type_arguments": [
+                  {
+                    "name": "RoleId"
+                  },
+                  {
+                    "name": "List",
+                    "type_arguments": [
+                      {
+                        "name": "Actor",
+                        "resolved_name": "trifecta.stage.Actor"
+                      }
+                    ]
+                  }
+                ],
+                "nullable": true
+              },
+              "default_value": "null",
+              "source_location": {
+                "start_line": 403,
+                "end_line": 403,
+                "start_column": 62,
+                "end_column": 109
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 403,
+            "end_line": 422,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void configure(DirectorConfiguration configuration, Dictionary<RoleId, List<Actor>>? precast = null)"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 424,
+            "end_line": 436,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Start()"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "nicely",
+              "type": {
+                "name": "bool"
+              },
+              "source_location": {
+                "start_line": 438,
+                "end_line": 438,
+                "start_column": 20,
+                "end_column": 31
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 438,
+            "end_line": 461,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Stop(bool nicely)"
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 463,
+            "end_line": 473,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Reset()"
+        },
+        {
+          "kind": "method",
+          "name": "ThresholdCross",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "t",
+              "type": {
+                "name": "Temperature"
+              },
+              "source_location": {
+                "start_line": 475,
+                "end_line": 475,
+                "start_column": 30,
+                "end_column": 43
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 475,
+            "end_line": 483,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void ThresholdCross(Temperature t)"
+        },
+        {
+          "kind": "method",
+          "name": "ThresholdCross",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "p",
+              "type": {
+                "name": "Pressure"
+              },
+              "source_location": {
+                "start_line": 485,
+                "end_line": 485,
+                "start_column": 30,
+                "end_column": 40
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 485,
+            "end_line": 493,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void ThresholdCross(Pressure p)"
+        },
+        {
+          "kind": "method",
+          "name": "Interrupt",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "role",
+              "type": {
+                "name": "RoleId"
+              },
+              "source_location": {
+                "start_line": 495,
+                "end_line": 495,
+                "start_column": 25,
+                "end_column": 36
+              }
+            },
+            {
+              "name": "exitStrategy",
+              "type": {
+                "name": "ActorPhase",
+                "resolved_name": "trifecta.stage.ActorPhase"
+              },
+              "source_location": {
+                "start_line": 495,
+                "end_line": 495,
+                "start_column": 38,
+                "end_column": 61
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 495,
+            "end_line": 497,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Interrupt(RoleId role, ActorPhase exitStrategy)"
+        },
+        {
+          "kind": "method",
+          "name": "Initiate",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "role",
+              "type": {
+                "name": "RoleId"
+              },
+              "source_location": {
+                "start_line": 499,
+                "end_line": 499,
+                "start_column": 24,
+                "end_column": 35
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 499,
+            "end_line": 501,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Initiate(RoleId role)"
+        },
+        {
+          "kind": "method",
+          "name": "run",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 503,
+            "end_line": 529,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "private void run()"
+        },
+        {
+          "kind": "field",
+          "name": "_started",
+          "type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "false",
+          "source_location": {
+            "start_line": 531,
+            "end_line": 531,
+            "start_column": 16,
+            "end_column": 32
+          },
+          "source_text": "private bool _started"
+        },
+        {
+          "kind": "field",
+          "name": "_stop",
+          "type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "false",
+          "source_location": {
+            "start_line": 532,
+            "end_line": 532,
+            "start_column": 16,
+            "end_column": 29
+          },
+          "source_text": "private bool _stop"
+        },
+        {
+          "kind": "field",
+          "name": "_optimize",
+          "type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "false",
+          "source_location": {
+            "start_line": 533,
+            "end_line": 533,
+            "start_column": 16,
+            "end_column": 33
+          },
+          "source_text": "private bool _optimize"
+        },
+        {
+          "kind": "field",
+          "name": "_self",
+          "type": {
+            "name": "Task",
+            "nullable": true
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "null",
+          "source_location": {
+            "start_line": 534,
+            "end_line": 534,
+            "start_column": 17,
+            "end_column": 29
+          },
+          "source_text": "private Task? _self"
+        },
+        {
+          "kind": "field",
+          "name": "_idle",
+          "type": {
+            "name": "object"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "new()",
+          "source_location": {
+            "start_line": 535,
+            "end_line": 535,
+            "start_column": 18,
+            "end_column": 31
+          },
+          "source_text": "private object _idle"
+        },
+        {
+          "kind": "field",
+          "name": "_cast",
+          "type": {
+            "name": "Dictionary",
+            "type_arguments": [
+              {
+                "name": "RoleId"
+              },
+              {
+                "name": "List",
+                "type_arguments": [
+                  {
+                    "name": "Actor",
+                    "resolved_name": "trifecta.stage.Actor"
+                  }
+                ]
+              }
+            ]
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "[]",
+          "source_location": {
+            "start_line": 537,
+            "end_line": 537,
+            "start_column": 43,
+            "end_column": 53
+          },
+          "source_text": "private Dictionary<RoleId, List<Actor>> _cast"
+        },
+        {
+          "kind": "field",
+          "name": "_optimizer",
+          "type": {
+            "name": "CastOptimizer",
+            "resolved_name": "trifecta.stage.CastOptimizer",
+            "nullable": true
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "null",
+          "source_location": {
+            "start_line": 538,
+            "end_line": 538,
+            "start_column": 26,
+            "end_column": 43
+          },
+          "source_text": "private CastOptimizer? _optimizer"
+        },
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "DirectorConfiguration",
+            "resolved_name": "trifecta.stage.DirectorConfiguration"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "null!",
+          "source_location": {
+            "start_line": 539,
+            "end_line": 539,
+            "start_column": 33,
+            "end_column": 55
+          },
+          "source_text": "private DirectorConfiguration _configuration"
+        }
+      ],
+      "source_location": {
+        "start_line": 400,
+        "end_line": 540,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.stage.CastOptimizer",
+      "kind": "class",
+      "name": "CastOptimizer",
+      "namespace": "trifecta.stage",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "CastOptimizer",
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "configuration",
+              "type": {
+                "name": "DirectorConfiguration",
+                "resolved_name": "trifecta.stage.DirectorConfiguration"
+              },
+              "source_location": {
+                "start_line": 543,
+                "end_line": 543,
+                "start_column": 24,
+                "end_column": 59
+              }
+            },
+            {
+              "name": "manager",
+              "type": {
+                "name": "ICastManager",
+                "resolved_name": "trifecta.stage.ICastManager"
+              },
+              "source_location": {
+                "start_line": 543,
+                "end_line": 543,
+                "start_column": 61,
+                "end_column": 81
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 543,
+            "end_line": 546,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public CastOptimizer(DirectorConfiguration configuration, ICastManager manager)"
+        },
+        {
+          "kind": "method",
+          "name": "Optimize",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "t",
+              "type": {
+                "name": "Temperature"
+              },
+              "source_location": {
+                "start_line": 548,
+                "end_line": 548,
+                "start_column": 24,
+                "end_column": 37
+              }
+            },
+            {
+              "name": "p",
+              "type": {
+                "name": "Pressure"
+              },
+              "source_location": {
+                "start_line": 548,
+                "end_line": 548,
+                "start_column": 39,
+                "end_column": 49
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 548,
+            "end_line": 560,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Optimize(Temperature t, Pressure p)"
+        },
+        {
+          "kind": "field",
+          "name": "_manager",
+          "type": {
+            "name": "ICastManager",
+            "resolved_name": "trifecta.stage.ICastManager"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 562,
+            "end_line": 562,
+            "start_column": 24,
+            "end_column": 32
+          },
+          "source_text": "private ICastManager _manager"
+        },
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "DirectorConfiguration",
+            "resolved_name": "trifecta.stage.DirectorConfiguration"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 563,
+            "end_line": 563,
+            "start_column": 33,
+            "end_column": 47
+          },
+          "source_text": "private DirectorConfiguration _configuration"
+        }
+      ],
+      "source_location": {
+        "start_line": 542,
+        "end_line": 564,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.stage.ICastManager",
+      "kind": "interface",
+      "name": "ICastManager",
+      "namespace": "trifecta.stage",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Interrupt",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "role",
+              "type": {
+                "name": "RoleId"
+              },
+              "source_location": {
+                "start_line": 567,
+                "end_line": 567,
+                "start_column": 18,
+                "end_column": 29
+              }
+            },
+            {
+              "name": "exitStrategy",
+              "type": {
+                "name": "ActorPhase",
+                "resolved_name": "trifecta.stage.ActorPhase"
+              },
+              "source_location": {
+                "start_line": 567,
+                "end_line": 567,
+                "start_column": 31,
+                "end_column": 54
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 567,
+            "end_line": 567,
+            "start_column": 3,
+            "end_column": 56
+          },
+          "source_text": "void Interrupt(RoleId role, ActorPhase exitStrategy)"
+        },
+        {
+          "kind": "method",
+          "name": "Initiate",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "role",
+              "type": {
+                "name": "RoleId"
+              },
+              "source_location": {
+                "start_line": 568,
+                "end_line": 568,
+                "start_column": 17,
+                "end_column": 28
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 568,
+            "end_line": 568,
+            "start_column": 3,
+            "end_column": 30
+          },
+          "source_text": "void Initiate(RoleId role)"
+        }
+      ],
+      "source_location": {
+        "start_line": 566,
+        "end_line": 569,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.stage.SceneStatus",
+      "kind": "enum",
+      "name": "SceneStatus",
+      "namespace": "trifecta.stage",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "enum_member",
+          "name": "dark",
+          "source_location": {
+            "start_line": 572,
+            "end_line": 572,
+            "start_column": 3,
+            "end_column": 7
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "working",
+          "source_location": {
+            "start_line": 573,
+            "end_line": 573,
+            "start_column": 3,
+            "end_column": 10
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "underflow",
+          "source_location": {
+            "start_line": 574,
+            "end_line": 574,
+            "start_column": 3,
+            "end_column": 12
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "completed",
+          "source_location": {
+            "start_line": 575,
+            "end_line": 575,
+            "start_column": 3,
+            "end_column": 12
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "error",
+          "source_location": {
+            "start_line": 576,
+            "end_line": 576,
+            "start_column": 3,
+            "end_column": 8
+          }
+        }
+      ],
+      "source_location": {
+        "start_line": 571,
+        "end_line": 577,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.stage.ActorPhase",
+      "kind": "enum",
+      "name": "ActorPhase",
+      "namespace": "trifecta.stage",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "enum_member",
+          "name": "ready",
+          "source_location": {
+            "start_line": 580,
+            "end_line": 580,
+            "start_column": 3,
+            "end_column": 8
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "queue_up",
+          "source_location": {
+            "start_line": 581,
+            "end_line": 581,
+            "start_column": 3,
+            "end_column": 11
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "on_queue",
+          "source_location": {
+            "start_line": 582,
+            "end_line": 582,
+            "start_column": 3,
+            "end_column": 11
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "work",
+          "source_location": {
+            "start_line": 583,
+            "end_line": 583,
+            "start_column": 3,
+            "end_column": 7
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "suspension",
+          "source_location": {
+            "start_line": 584,
+            "end_line": 584,
+            "start_column": 3,
+            "end_column": 13
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "stop_at_cost",
+          "source_location": {
+            "start_line": 585,
+            "end_line": 585,
+            "start_column": 3,
+            "end_column": 15
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "stop_at_completion",
+          "source_location": {
+            "start_line": 586,
+            "end_line": 586,
+            "start_column": 3,
+            "end_column": 21
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "stop_now",
+          "source_location": {
+            "start_line": 587,
+            "end_line": 587,
+            "start_column": 3,
+            "end_column": 11
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "exit",
+          "source_location": {
+            "start_line": 588,
+            "end_line": 588,
+            "start_column": 3,
+            "end_column": 7
+          }
+        }
+      ],
+      "source_location": {
+        "start_line": 579,
+        "end_line": 589,
+        "start_column": 1,
+        "end_column": 2
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.stage.Actor read from src/trifecta/stage/Crew.cs.",
+      "source_location": {
+        "start_line": 15,
+        "end_line": 261,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.stage.Scene read from src/trifecta/stage/Crew.cs.",
+      "source_location": {
+        "start_line": 275,
+        "end_line": 398,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.stage.Director read from src/trifecta/stage/Crew.cs.",
+      "source_location": {
+        "start_line": 400,
+        "end_line": 540,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.stage.CastOptimizer read from src/trifecta/stage/Crew.cs.",
+      "source_location": {
+        "start_line": 542,
+        "end_line": 564,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.stage.ICastManager read from src/trifecta/stage/Crew.cs.",
+      "source_location": {
+        "start_line": 566,
+        "end_line": 569,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.stage.SceneStatus read from src/trifecta/stage/Crew.cs.",
+      "source_location": {
+        "start_line": 571,
+        "end_line": 577,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.stage.ActorPhase read from src/trifecta/stage/Crew.cs.",
+      "source_location": {
+        "start_line": 579,
+        "end_line": 589,
+        "start_column": 1,
+        "end_column": 2
+      }
+    }
+  ]
+}

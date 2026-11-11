@@ -144,15 +144,18 @@ public class Actor : IConditionAware {
             case ActorPhase.work:
             case ActorPhase.stop_at_completion:
               work();
+              if (_phase == ActorPhase.stop_now) continue;  // a Stop() arrived while the lock was released
 
               if (_onstage.GetStatus() == SceneStatus.completed) {
                 if (_onstage.IsContinuation()) {
                   if (_onstage.IsLocal()) throw new InvalidOperationException($"{_identity} local work on {_onstage.Identity()} was truncated");
                   _onstage.Remit(this);
-                  _phase = ActorPhase.queue_up;
+                  if (_phase != ActorPhase.stop_now) _phase = ActorPhase.queue_up;
                 } else {
                   _onstage.Reset(this);
-                  if (++_workflow == _scenes.Count) {
+                  if (_phase == ActorPhase.stop_now) {
+                    continue;
+                  } else if (++_workflow == _scenes.Count) {
                     reset();
                   } else {
                     _onstage = _scenes[_workflow];
@@ -171,7 +174,7 @@ public class Actor : IConditionAware {
               return;
           }
 
-          ComponentLog.singleton.Log($"Director goes idle");
+          ComponentLog.singleton.Log($"{_identity} goes idle");
           Monitor.Wait(_idle);
         }
       } finally { Monitor.Exit(_idle); }
@@ -239,7 +242,7 @@ public class Actor : IConditionAware {
 
   private void reset(ActorPhase phase = ActorPhase.ready) {
     _workflow = 0;
-    _phase = phase;
+    if (_phase != ActorPhase.stop_now || phase == ActorPhase.exit) _phase = phase;
     _onstage = null;
   }
 

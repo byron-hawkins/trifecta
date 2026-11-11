@@ -78,6 +78,7 @@ public sealed class DirectorTests : ComponentLogTestBase {
     var director = Director.singleton;
     try {
       director.Reset();
+      director.configure(new DirectorConfiguration());
       director.Start();
       try {
         var timer = Stopwatch.StartNew();

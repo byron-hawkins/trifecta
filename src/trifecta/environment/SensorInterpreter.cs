@@ -53,7 +53,7 @@ public class SensorInterpreter : ISensorAware<Temperature>, ISensorAware<Pressur
       _stable.t = reading;
       int t2 = FindSlot(_thresholds.t, _stable.t);
       if (t1 != t2) {  // TODO: also give threshold value?
-        ComponentLog.singleton.Log($"Temperature sensor {id} crosses {Math.Abs(t2-t1)} thresholds to {reading}");
+        ComponentLog.singleton.Trace($"Temperature sensor {id} crosses {Math.Abs(t2-t1)} thresholds to {reading}");
         foreach (IConditionAware a in _registry) a.ThresholdCross(_stable.t);
       }
     }
@@ -65,7 +65,7 @@ public class SensorInterpreter : ISensorAware<Temperature>, ISensorAware<Pressur
       _stable.p = reading;
       int p2 = FindSlot(_thresholds.p, _stable.p);
       if (p1 != p2) {
-        ComponentLog.singleton.Log($"Pressure sensor {id} crosses {Math.Abs(p2-p1)} thresholds to {reading}");
+        ComponentLog.singleton.Trace($"Pressure sensor {id} crosses {Math.Abs(p2-p1)} thresholds to {reading}");
         foreach (IConditionAware a in _registry) a.ThresholdCross(_stable.p);
       }
     }
@@ -86,8 +86,12 @@ public class SensorInterpreter : ISensorAware<Temperature>, ISensorAware<Pressur
     public Pressure p;
   }
 
-  private int FindSlot<T>(T[] set, T find)
-      where T : INumber<T> {
+  private int FindSlot(Temperature[] set, Temperature find) {
+    int i = Array.FindIndex(set, (e) => e >= find);
+    return (i < 0) ? set.Length : i;
+  }
+
+  private int FindSlot(Pressure[] set, Pressure find) {
     int i = Array.FindIndex(set, (e) => e > find);
     return (i < 0) ? set.Length : i;
   }

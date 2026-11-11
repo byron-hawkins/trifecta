@@ -1,0 +1,52 @@
+{
+  "events": [
+    {
+      "duration-ms": 400,
+      "value": 2.0
+    },
+    {
+      "duration-ms": 100,
+      "value": 2.0
+    },
+    {
+      "duration-ms": 1400,
+      "value": 7.0
+    },
+    {
+      "duration-ms": 100,
+      "value": 7.0
+    },
+    {
+      "duration-ms": 200,
+      "value": 15.0
+    },
+    {
+      "duration-ms": 100,
+      "value": 15.0
+    },
+    {
+      "duration-ms": 1500,
+      "value": 24.0
+    },
+    {
+      "duration-ms": 100,
+      "value": 24.0
+    },
+    {
+      "duration-ms": 1500,
+      "value": 24.0
+    },
+    {
+      "duration-ms": 100,
+      "value": 24.0
+    },
+    {
+      "duration-ms": 200,
+      "value": 15.0
+    },
+    {
+      "duration-ms": 100,
+      "value": 15.0
+    }
+  ]
+}

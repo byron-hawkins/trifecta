@@ -1,0 +1,1117 @@
+{
+  "author": "Copilot",
+  "format": "markdown-architecture-smd",
+  "version": 1,
+  "source": {
+    "kind": "csharp",
+    "path": "src/trifecta",
+    "language_version": "latest"
+  },
+  "types": [
+    {
+      "id": "type:trifecta.resource.ResourceQueue",
+      "kind": "class",
+      "name": "ResourceQueue",
+      "namespace": "trifecta.resource",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "ResourceQueue",
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "configuration",
+              "type": {
+                "name": "ResourceType",
+                "resolved_name": "trifecta.stage.ResourceType"
+              },
+              "source_location": {
+                "start_line": 15,
+                "end_line": 15,
+                "start_column": 24,
+                "end_column": 50
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 15,
+            "end_line": 21,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public ResourceQueue(ResourceType configuration)"
+        },
+        {
+          "kind": "method",
+          "name": "Push",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "consumer",
+              "type": {
+                "name": "IResourceConsumer",
+                "resolved_name": "trifecta.resource.IResourceConsumer"
+              },
+              "source_location": {
+                "start_line": 23,
+                "end_line": 23,
+                "start_column": 20,
+                "end_column": 46
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 23,
+            "end_line": 41,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Push(IResourceConsumer consumer)"
+        },
+        {
+          "kind": "method",
+          "name": "Push",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "resource",
+              "type": {
+                "name": "ResourceInstance",
+                "resolved_name": "trifecta.resource.ResourceInstance"
+              },
+              "source_location": {
+                "start_line": 43,
+                "end_line": 43,
+                "start_column": 20,
+                "end_column": 45
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 43,
+            "end_line": 67,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Push(ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "Dispatch",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 69,
+            "end_line": 82,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Dispatch()"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 84,
+            "end_line": 84,
+            "start_column": 3,
+            "end_column": 49
+          },
+          "source_text": "public string Identity()"
+        },
+        {
+          "kind": "field",
+          "name": "_identity",
+          "type": {
+            "name": "string"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 86,
+            "end_line": 86,
+            "start_column": 18,
+            "end_column": 27
+          },
+          "source_text": "private string _identity"
+        },
+        {
+          "kind": "field",
+          "name": "_configuration",
+          "type": {
+            "name": "ResourceType",
+            "resolved_name": "trifecta.stage.ResourceType"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 87,
+            "end_line": 87,
+            "start_column": 24,
+            "end_column": 38
+          },
+          "source_text": "private ResourceType _configuration"
+        },
+        {
+          "kind": "field",
+          "name": "_lock",
+          "type": {
+            "name": "Lock"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "new()",
+          "source_location": {
+            "start_line": 88,
+            "end_line": 88,
+            "start_column": 16,
+            "end_column": 29
+          },
+          "source_text": "private Lock _lock"
+        },
+        {
+          "kind": "field",
+          "name": "_resources",
+          "type": {
+            "name": "Queue",
+            "type_arguments": [
+              {
+                "name": "ResourceInstance",
+                "resolved_name": "trifecta.resource.ResourceInstance"
+              }
+            ]
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "new()",
+          "source_location": {
+            "start_line": 89,
+            "end_line": 89,
+            "start_column": 35,
+            "end_column": 53
+          },
+          "source_text": "private Queue<ResourceInstance> _resources"
+        },
+        {
+          "kind": "field",
+          "name": "_consumers",
+          "type": {
+            "name": "Queue",
+            "type_arguments": [
+              {
+                "name": "IResourceConsumer",
+                "resolved_name": "trifecta.resource.IResourceConsumer"
+              }
+            ]
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "new()",
+          "source_location": {
+            "start_line": 90,
+            "end_line": 90,
+            "start_column": 36,
+            "end_column": 54
+          },
+          "source_text": "private Queue<IResourceConsumer> _consumers"
+        }
+      ],
+      "source_location": {
+        "start_line": 14,
+        "end_line": 91,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.resource.ResourceQueueSet",
+      "kind": "class",
+      "name": "ResourceQueueSet",
+      "namespace": "trifecta.resource",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [
+        {
+          "name": "IResourceQueueSet",
+          "relation": "implements",
+          "resolved_name": "trifecta.resource.IResourceQueueSet"
+        }
+      ],
+      "members": [
+        {
+          "kind": "field",
+          "name": "singleton",
+          "type": {
+            "name": "ResourceQueueSet",
+            "resolved_name": "trifecta.resource.ResourceQueueSet"
+          },
+          "modifiers": [
+            "public",
+            "static"
+          ],
+          "initializer": "new()",
+          "annotations": [
+            "singleton"
+          ],
+          "source_location": {
+            "start_line": 99,
+            "end_line": 99,
+            "start_column": 34,
+            "end_column": 51
+          },
+          "source_text": "public static ResourceQueueSet singleton"
+        },
+        {
+          "kind": "method",
+          "name": "configure",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "resources",
+              "type": {
+                "name": "ResourceSet",
+                "resolved_name": "trifecta.stage.ResourceSet"
+              },
+              "source_location": {
+                "start_line": 101,
+                "end_line": 101,
+                "start_column": 25,
+                "end_column": 46
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 101,
+            "end_line": 108,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void configure(ResourceSet resources)"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 110,
+            "end_line": 121,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Start()"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 123,
+            "end_line": 142,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Stop()"
+        },
+        {
+          "kind": "method",
+          "name": "Bump",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 144,
+            "end_line": 153,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Bump()"
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 155,
+            "end_line": 166,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Reset()"
+        },
+        {
+          "kind": "method",
+          "name": "MultiPush",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "consumer",
+              "type": {
+                "name": "IResourceConsumer",
+                "resolved_name": "trifecta.resource.IResourceConsumer"
+              },
+              "source_location": {
+                "start_line": 168,
+                "end_line": 168,
+                "start_column": 25,
+                "end_column": 51
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 168,
+            "end_line": 175,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void MultiPush(IResourceConsumer consumer)"
+        },
+        {
+          "kind": "method",
+          "name": "MultiRelease",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "release",
+              "type": {
+                "name": "IEnumerable",
+                "type_arguments": [
+                  {
+                    "name": "ResourceInstance",
+                    "resolved_name": "trifecta.resource.ResourceInstance"
+                  }
+                ]
+              },
+              "source_location": {
+                "start_line": 177,
+                "end_line": 177,
+                "start_column": 28,
+                "end_column": 65
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 177,
+            "end_line": 181,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void MultiRelease(IEnumerable<ResourceInstance> release)"
+        },
+        {
+          "kind": "method",
+          "name": "run",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 183,
+            "end_line": 198,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "private void run()"
+        },
+        {
+          "kind": "field",
+          "name": "_started",
+          "type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "false",
+          "source_location": {
+            "start_line": 200,
+            "end_line": 200,
+            "start_column": 16,
+            "end_column": 32
+          },
+          "source_text": "private bool _started"
+        },
+        {
+          "kind": "field",
+          "name": "_stop",
+          "type": {
+            "name": "bool"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "false",
+          "source_location": {
+            "start_line": 201,
+            "end_line": 201,
+            "start_column": 16,
+            "end_column": 29
+          },
+          "source_text": "private bool _stop"
+        },
+        {
+          "kind": "field",
+          "name": "_self",
+          "type": {
+            "name": "Task",
+            "nullable": true
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "null",
+          "source_location": {
+            "start_line": 202,
+            "end_line": 202,
+            "start_column": 17,
+            "end_column": 29
+          },
+          "source_text": "private Task? _self"
+        },
+        {
+          "kind": "field",
+          "name": "_idle",
+          "type": {
+            "name": "object"
+          },
+          "modifiers": [
+            "private",
+            "readonly"
+          ],
+          "initializer": "new()",
+          "source_location": {
+            "start_line": 203,
+            "end_line": 203,
+            "start_column": 27,
+            "end_column": 40
+          },
+          "source_text": "private readonly object _idle"
+        },
+        {
+          "kind": "field",
+          "name": "_multilock",
+          "type": {
+            "name": "Lock"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "new()",
+          "source_location": {
+            "start_line": 204,
+            "end_line": 204,
+            "start_column": 16,
+            "end_column": 34
+          },
+          "source_text": "private Lock _multilock"
+        },
+        {
+          "kind": "field",
+          "name": "_resources",
+          "type": {
+            "name": "ResourceSet",
+            "resolved_name": "trifecta.stage.ResourceSet",
+            "nullable": true
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 206,
+            "end_line": 206,
+            "start_column": 24,
+            "end_column": 34
+          },
+          "source_text": "private ResourceSet? _resources"
+        },
+        {
+          "kind": "field",
+          "name": "_queues",
+          "type": {
+            "name": "Dictionary",
+            "type_arguments": [
+              {
+                "name": "ResourceName"
+              },
+              {
+                "name": "ResourceQueue",
+                "resolved_name": "trifecta.resource.ResourceQueue"
+              }
+            ]
+          },
+          "modifiers": [
+            "private"
+          ],
+          "initializer": "new()",
+          "source_location": {
+            "start_line": 207,
+            "end_line": 207,
+            "start_column": 51,
+            "end_column": 66
+          },
+          "source_text": "private Dictionary<ResourceName, ResourceQueue> _queues"
+        }
+      ],
+      "source_location": {
+        "start_line": 98,
+        "end_line": 208,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.resource.ResourceInstance",
+      "kind": "class",
+      "name": "ResourceInstance",
+      "namespace": "trifecta.resource",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "ResourceInstance",
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "type",
+              "type": {
+                "name": "ResourceType",
+                "resolved_name": "trifecta.stage.ResourceType"
+              },
+              "source_location": {
+                "start_line": 211,
+                "end_line": 211,
+                "start_column": 27,
+                "end_column": 44
+              }
+            },
+            {
+              "name": "driver",
+              "type": {
+                "name": "IResourceDriver",
+                "resolved_name": "trifecta.resource.IResourceDriver"
+              },
+              "default_value": "null",
+              "source_location": {
+                "start_line": 211,
+                "end_line": 211,
+                "start_column": 46,
+                "end_column": 75
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 211,
+            "end_line": 214,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public ResourceInstance(ResourceType type, IResourceDriver driver = null)"
+        },
+        {
+          "kind": "method",
+          "name": "GetName",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 216,
+            "end_line": 216,
+            "start_column": 3,
+            "end_column": 49
+          },
+          "source_text": "public string GetName()"
+        },
+        {
+          "kind": "method",
+          "name": "GetStatus",
+          "return_type": {
+            "name": "ResourceDriverStatus",
+            "resolved_name": "trifecta.resource.ResourceDriverStatus"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 218,
+            "end_line": 218,
+            "start_column": 3,
+            "end_column": 74
+          },
+          "source_text": "public ResourceDriverStatus GetStatus()"
+        },
+        {
+          "kind": "method",
+          "name": "GetMinWork",
+          "return_type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 220,
+            "end_line": 220,
+            "start_column": 3,
+            "end_column": 57
+          },
+          "source_text": "public TimeSpan GetMinWork()"
+        },
+        {
+          "kind": "method",
+          "name": "GetMaxWork",
+          "return_type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 221,
+            "end_line": 221,
+            "start_column": 3,
+            "end_column": 57
+          },
+          "source_text": "public TimeSpan GetMaxWork()"
+        },
+        {
+          "kind": "field",
+          "name": "_type",
+          "type": {
+            "name": "ResourceType",
+            "resolved_name": "trifecta.stage.ResourceType"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 223,
+            "end_line": 223,
+            "start_column": 24,
+            "end_column": 29
+          },
+          "source_text": "private ResourceType _type"
+        },
+        {
+          "kind": "field",
+          "name": "_driver",
+          "type": {
+            "name": "IResourceDriver",
+            "resolved_name": "trifecta.resource.IResourceDriver"
+          },
+          "modifiers": [
+            "private"
+          ],
+          "source_location": {
+            "start_line": 224,
+            "end_line": 224,
+            "start_column": 27,
+            "end_column": 34
+          },
+          "source_text": "private IResourceDriver _driver"
+        }
+      ],
+      "source_location": {
+        "start_line": 210,
+        "end_line": 225,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.resource.IResourceDriver",
+      "kind": "interface",
+      "name": "IResourceDriver",
+      "namespace": "trifecta.resource",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "GetStatus",
+          "return_type": {
+            "name": "ResourceDriverStatus",
+            "resolved_name": "trifecta.resource.ResourceDriverStatus"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_location": {
+            "start_line": 240,
+            "end_line": 240,
+            "start_column": 3,
+            "end_column": 36
+          },
+          "source_text": "ResourceDriverStatus GetStatus()"
+        }
+      ],
+      "source_location": {
+        "start_line": 239,
+        "end_line": 241,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.resource.IPassiveResourceDriver",
+      "kind": "interface",
+      "name": "IPassiveResourceDriver",
+      "namespace": "trifecta.resource",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [
+        {
+          "name": "IResourceDriver",
+          "relation": "extends",
+          "resolved_name": "trifecta.resource.IResourceDriver"
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Work",
+          "return_type": {
+            "name": "ResourceDriverStatus",
+            "resolved_name": "trifecta.resource.ResourceDriverStatus"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "duration",
+              "type": {
+                "name": "TimeSpan"
+              },
+              "source_location": {
+                "start_line": 244,
+                "end_line": 244,
+                "start_column": 29,
+                "end_column": 46
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 244,
+            "end_line": 244,
+            "start_column": 3,
+            "end_column": 48
+          },
+          "source_text": "ResourceDriverStatus Work(TimeSpan duration)"
+        }
+      ],
+      "source_location": {
+        "start_line": 243,
+        "end_line": 245,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.resource.IResourceConsumer",
+      "kind": "interface",
+      "name": "IResourceConsumer",
+      "namespace": "trifecta.resource",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "IsGhost",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_location": {
+            "start_line": 228,
+            "end_line": 228,
+            "start_column": 3,
+            "end_column": 18
+          },
+          "source_text": "bool IsGhost()"
+        },
+        {
+          "kind": "method",
+          "name": "Scope",
+          "return_type": {
+            "name": "IEnumerable",
+            "type_arguments": [
+              {
+                "name": "ResourceName"
+              }
+            ]
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_location": {
+            "start_line": 229,
+            "end_line": 229,
+            "start_column": 3,
+            "end_column": 37
+          },
+          "source_text": "IEnumerable<ResourceName> Scope()"
+        },
+        {
+          "kind": "method",
+          "name": "Grant",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "resource",
+              "type": {
+                "name": "ResourceInstance",
+                "resolved_name": "trifecta.resource.ResourceInstance"
+              },
+              "source_location": {
+                "start_line": 230,
+                "end_line": 230,
+                "start_column": 14,
+                "end_column": 39
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 230,
+            "end_line": 230,
+            "start_column": 3,
+            "end_column": 41
+          },
+          "source_text": "void Grant(ResourceInstance resource)"
+        }
+      ],
+      "source_location": {
+        "start_line": 227,
+        "end_line": 231,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "id": "type:trifecta.resource.ResourceDriverStatus",
+      "kind": "enum",
+      "name": "ResourceDriverStatus",
+      "namespace": "trifecta.resource",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [],
+      "members": [
+        {
+          "kind": "enum_member",
+          "name": "idle",
+          "source_location": {
+            "start_line": 234,
+            "end_line": 234,
+            "start_column": 3,
+            "end_column": 7
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "working",
+          "source_location": {
+            "start_line": 235,
+            "end_line": 235,
+            "start_column": 3,
+            "end_column": 10
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "error",
+          "source_location": {
+            "start_line": 236,
+            "end_line": 236,
+            "start_column": 3,
+            "end_column": 8
+          }
+        }
+      ],
+      "source_location": {
+        "start_line": 233,
+        "end_line": 237,
+        "start_column": 1,
+        "end_column": 2
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.resource.ResourceQueue read from src/trifecta/resource/Resources.cs.",
+      "source_location": {
+        "start_line": 14,
+        "end_line": 91,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.resource.ResourceQueueSet read from src/trifecta/resource/Resources.cs.",
+      "source_location": {
+        "start_line": 98,
+        "end_line": 208,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.resource.ResourceInstance read from src/trifecta/resource/Resources.cs.",
+      "source_location": {
+        "start_line": 210,
+        "end_line": 225,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.resource.IResourceDriver read from src/trifecta/resource/Resources.cs.",
+      "source_location": {
+        "start_line": 239,
+        "end_line": 241,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.resource.IPassiveResourceDriver read from src/trifecta/resource/Resources.cs.",
+      "source_location": {
+        "start_line": 243,
+        "end_line": 245,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "type-not-found",
+      "message": "trifecta.resource.IActiveResourceDriver is documented but not declared in src/trifecta."
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.resource.IResourceConsumer read from src/trifecta/resource/Resources.cs.",
+      "source_location": {
+        "start_line": 227,
+        "end_line": 231,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "type-not-found",
+      "message": "trifecta.resource.ResourceMode is documented but not declared in src/trifecta."
+    },
+    {
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.resource.ResourceDriverStatus read from src/trifecta/resource/Resources.cs.",
+      "source_location": {
+        "start_line": 233,
+        "end_line": 237,
+        "start_column": 1,
+        "end_column": 2
+      }
+    }
+  ]
+}

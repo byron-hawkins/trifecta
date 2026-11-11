@@ -1,0 +1,7 @@
+{
+  "id": 2,
+  "name": "pressure-active",
+  "tick-interval": 70,
+  "type": "pressure",
+  "mode": "active"
+}

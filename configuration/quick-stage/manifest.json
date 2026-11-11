@@ -1,0 +1,14 @@
+{
+  "sensors": [
+    {
+      "device": "quick-stage/sensors/device/temperature-active.json",
+      "script": "quick-stage/sensors/script/temperature-cycle.json"
+    },
+    {
+      "device": "quick-stage/sensors/device/pressure-active.json",
+      "script": "quick-stage/sensors/script/pressure-cycle.json"
+    }
+  ],
+  "resources": "quick-stage/resources.json",
+  "director": "quick-stage/director.json"
+}

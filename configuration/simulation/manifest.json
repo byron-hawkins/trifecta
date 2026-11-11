@@ -1,12 +1,12 @@
 {
   "sensors": [
     {
-      "device": "simulation/sensors/device/temperature-passive.json",
-      "script": "simulation/sensors/script/temperature-ascending.json"
+      "device": "simulation/sensors/device/temperature-active.json",
+      "script": "simulation/sensors/script/temperature-cycle.json"
     },
     {
       "device": "simulation/sensors/device/pressure-active.json",
-      "script": "simulation/sensors/script/pressure-ascending.json"
+      "script": "simulation/sensors/script/pressure-cycle.json"
     }
   ],
   "resources": "simulation/stage/resources.json",

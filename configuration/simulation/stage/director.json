@@ -1,0 +1,109 @@
+{
+  "mode": "quickstop",
+  "roles": [
+    {
+      "name": "stage_1",
+      "id": 1,
+      "quantity": 1,
+      "tmin": 10.0,
+      "pmax": 100,
+      "scenes": [
+        {
+          "duration-ms": 500,
+          "tickrate": 50,
+          "resources": [
+            "R_A"
+          ]
+        },
+        {
+          "duration-ms": 600,
+          "tickrate": 50,
+          "resources": [
+            "R_B",
+            "R_A"
+          ]
+        },
+        {
+          "duration-ms": 300,
+          "tickrate": 50,
+          "resources": []
+        },
+        {
+          "duration-ms": 600,
+          "tickrate": 50,
+          "resources": [
+            "R_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stage_2",
+      "id": 2,
+      "quantity": 1,
+      "tmin": 5.0,
+      "pmax": 50,
+      "scenes": [
+        {
+          "duration-ms": 700,
+          "tickrate": 50,
+          "resources": [
+            "R_C"
+          ]
+        },
+        {
+          "duration-ms": 600,
+          "tickrate": 50,
+          "resources": [
+            "R_C",
+            "R_B"
+          ]
+        },
+        {
+          "duration-ms": 500,
+          "tickrate": 50,
+          "resources": [
+            "R_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stage_3",
+      "id": 3,
+      "quantity": 1,
+      "tmin": 20.0,
+      "pmax": 100,
+      "scenes": [
+        {
+          "duration-ms": 500,
+          "tickrate": 50,
+          "resources": [
+            "R_A",
+            "R_C"
+          ]
+        },
+        {
+          "duration-ms": 300,
+          "tickrate": 50,
+          "resources": []
+        },
+        {
+          "duration-ms": 400,
+          "tickrate": 50,
+          "resources": [
+            "R_C"
+          ]
+        },
+        {
+          "duration-ms": 600,
+          "tickrate": 50,
+          "resources": [
+            "R_C",
+            "R_A"
+          ]
+        }
+      ]
+    }
+  ]
+}

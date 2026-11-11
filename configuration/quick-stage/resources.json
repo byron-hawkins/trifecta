@@ -1,0 +1,28 @@
+{
+  "elements": [
+    {
+      "name": "R_A",
+      "quantity": 1,
+      "tickrate": 50,
+      "mode": "passive",
+      "min-work": 50,
+      "max-work": 1000
+    },
+    {
+      "name": "R_B",
+      "quantity": 1,
+      "tickrate": 50,
+      "mode": "passive",
+      "min-work": 50,
+      "max-work": 1000
+    },
+    {
+      "name": "R_C",
+      "quantity": 1,
+      "tickrate": 50,
+      "mode": "passive",
+      "min-work": 50,
+      "max-work": 1000
+    }
+  ]
+}

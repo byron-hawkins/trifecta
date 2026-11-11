@@ -1,0 +1,7 @@
+{
+  "id": 1,
+  "name": "temperature-active",
+  "tick-interval": 50,
+  "type": "temperature",
+  "mode": "active"
+}

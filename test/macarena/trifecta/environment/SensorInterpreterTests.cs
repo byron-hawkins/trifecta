@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using trifecta.environment;
+using trifecta.io;
 using trifecta.test.common;
 using Xunit;
 
@@ -49,16 +50,24 @@ public sealed class SensorInterpreterTests : ComponentLogTestBase {
   public async Task SensorUpdatesCanBeReadBackAndAreLogged() {
     var basename = $"SensorInterpreterTests-{Guid.NewGuid():N}";
     setup(basename);
+    // crossings are trace messages
+    ComponentLog.singleton.EnableTrace(true);
 
     var temperatureId = Random.Shared.Next(1, int.MaxValue);
-    var temperature = (float)Random.Shared.Next(-100_000, 100_001);
+    var temperature = (float)Random.Shared.Next(1, 100_001);
     var pressureId = Random.Shared.Next(1, int.MaxValue);
-    var pressure = Random.Shared.Next(-100_000, 100_001);
+    var pressure = Random.Shared.Next(1, 100_001);
 
     try {
+      // the interpreter logs only threshold crossings: guarantee one per update
+      SensorInterpreter.singleton.SetThresholds(
+          new SensorInterpreter.Thresholds { t = [0f], p = [0] });
+      SensorInterpreter.singleton.SensorUpdate(0, -1f);
+      SensorInterpreter.singleton.SensorUpdate(0, -1);
       SensorInterpreter.singleton.SensorUpdate(temperatureId, temperature);
       SensorInterpreter.singleton.SensorUpdate(pressureId, pressure);
     } finally {
+      ComponentLog.singleton.EnableTrace(false);
       finish();
     }
 
