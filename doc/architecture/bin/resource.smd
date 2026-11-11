@@ -100,6 +100,14 @@
     {
       "kind": "type",
       "type_id": "type:trifecta.resource.ResourceDriverStatus"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Diagrams"
+    },
+    {
+      "kind": "diagram",
+      "diagram_index": 0
     }
   ],
   "types": [
@@ -546,6 +554,32 @@
       ]
     }
   ],
-  "diagrams": [],
+  "diagrams": [
+    {
+      "path": "figures/resources.md",
+      "types": [
+        {
+          "kind": "class",
+          "name": "ResourceInstance",
+          "type_id": "type:trifecta.resource.ResourceInstance"
+        },
+        {
+          "kind": "class",
+          "name": "ResourceQueueSet",
+          "type_id": "type:trifecta.resource.ResourceQueueSet"
+        },
+        {
+          "kind": "class",
+          "name": "ResourceQueue",
+          "type_id": "type:trifecta.resource.ResourceQueue"
+        },
+        {
+          "kind": "interface",
+          "name": "IResourceConsumer",
+          "type_id": "type:trifecta.resource.IResourceConsumer"
+        }
+      ]
+    }
+  ],
   "diagnostics": []
 }

@@ -1,0 +1,166 @@
+<!-- author: Copilot -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resource architecture</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { line-height: 1.55; margin: 0 auto; max-width: 72rem; padding: 2rem; }
+    .mermaid { overflow-x: auto; }
+    code { font-family: ui-monospace, monospace; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      mermaid.initialize({ startOnLoad: true, securityLevel: "strict" });
+    });
+  </script>
+</head>
+<body>
+  <p><em>author: Copilot</em></p>
+  <p><em>Author: Byron</em></p>
+  <p><em>Subject: outline an event model for an application resource</em></p>
+  <p><code>namespace trifecta.resource</code></p>
+  <h2>ResourceQueue</h2>
+  <p>Configurable set of resources potentially available to the machine.</p>
+  <h3>Data Structure</h3>
+  <ul>
+    <li>class ResourceQueue</li>
+    <ul>
+      <li>composition</li>
+      <ul>
+        <li>System.Threading.Lock _lock</li>
+        <li>Queue&lt;ResourceInstance&gt; _resources</li>
+        <li>Queue&lt;IResourceConsumer&gt; _consumers</li>
+      </ul>
+      <li>operations</li>
+      <ul>
+        <li>void Push(IResourceConsumer consumer)</li>
+        <li>void Push(ResourceInstance resource)</li>
+      </ul>
+    </ul>
+  </ul>
+  <h2>ResourceQueueSet</h2>
+  <p>Since multiple Stage types may run concurrently, and since each Stage may require multiple resources, a greedy resource acquisition policy can fail with deadlock. Instead, a single monitor RQS.M can guard the entire set of resource queues RQS, allowing a consumer to atomically push back on the queue of each needed resource. Mutual waiting is avoided because it only occurs where a group of consumers having overlapping resource needs has been enqeueued with differing precedence on at least two queues of RQS.</p>
+  <h3>Data Structure</h3>
+  <ul>
+    <li>class ResourceQueueSet</li>
+    <ul>
+      <li>composition</li>
+      <ul>
+        <li>[singleton]</li>
+        <li>Task _self</li>
+        <li>readonly object _idle</li>
+        <li>System.Threading.Lock _multilock</li>
+        <li>Dictionary&lt;ResourceName, ResourceQueue&gt; _queues</li>
+        <li>ResourceSet _resources</li>
+      </ul>
+      <li>operations</li>
+      <ul>
+        <li>void configure(ResourceSet resources)</li>
+        <li>void Start()</li>
+        <li>void Stop()</li>
+        <li>void Bump()</li>
+        <li>void MultiPush(IResourceConsumer consumer)</li>
+      </ul>
+    </ul>
+  </ul>
+  <h2>ResourceInstance</h2>
+  <p>To avoid limitations on the kinds of resources that can be incorporated into a Stage, a resource interface needs to provide for both passive and active usage models. Active usage occupies the calling thread for the duration of usage, while passive usage can be trivially started, permitting the caller to perform other operations concurrently.</p>
+  <ul>
+    <li>class ResourceInstance</li>
+    <ul>
+      <li>composition</li>
+      <ul>
+        <li>IResourceDriver _driver</li>
+      </ul>
+      <li>operations</li>
+      <ul>
+        <li>ResourceDriverStatus GetStatus()</li>
+      </ul>
+    </ul>
+  </ul>
+  <h2>Interfaces</h2>
+  <ul>
+    <li>interface IResourceDriver</li>
+    <ul>
+      <li>operations</li>
+      <ul>
+        <li>ResourceDriverStatus GetStatus()</li>
+      </ul>
+    </ul>
+  </ul>
+  <ul>
+    <li>interface IPassiveResourceDriver : IResourceDriver</li>
+    <ul>
+      <li>operations</li>
+      <ul>
+        <li>ResourceDriverStatus Work()</li>
+      </ul>
+    </ul>
+  </ul>
+  <ul>
+    <li>interface IResourceConsumer</li>
+    <ul>
+      <li>operations</li>
+      <ul>
+        <li>IEnumerable&lt;ResourceName&gt; Scope()</li>
+        <li>void Grant(ResourceInstance resource)</li>
+      </ul>
+    </ul>
+  </ul>
+  <h2>Enumerations</h2>
+  <ul>
+    <li>enum ResourceDriverStatus</li>
+    <ul>
+      <li>composition</li>
+      <ul>
+        <li>idle</li>
+        <li>working</li>
+        <li>error</li>
+      </ul>
+    </ul>
+  </ul>
+  <h2>Diagrams</h2>
+  <pre class="mermaid">
+classDiagram
+namespace trifecta.resource {
+  class ResourceInstance {
+    IResourceDriver _driver
+    +GetStatus() ResourceDriverStatus
+  }
+  class ResourceQueueSet {
+    singleton
+    Task _self
+    object _idle
+    System.Threading.Lock _multilock
+    Dictionary~ResourceName, ResourceQueue~ _queues
+    ResourceSet _resources
+    +configure(ResourceSet resources) void
+    +Start() void
+    +Stop() void
+    +Bump() void
+    +MultiPush(IResourceConsumer consumer) void
+  }
+  class ResourceQueue {
+    System.Threading.Lock _lock
+    Queue~ResourceInstance~ _resources
+    Queue~IResourceConsumer~ _consumers
+    +Push(IResourceConsumer consumer) void
+    +Push(ResourceInstance resource) void
+  }
+  class IResourceConsumer {
+    &lt;&lt;interface&gt;&gt;
+    +Scope() IEnumerable~ResourceName~
+    +Grant(ResourceInstance resource) void
+  }
+}
+ResourceQueueSet *-- ResourceQueue : _queues
+ResourceQueue *-- ResourceInstance : _resources
+ResourceQueue *-- IResourceConsumer : _consumers
+  </pre>
+  <p><small>Diagrams use Mermaid from jsDelivr; rendering requires an internet connection.</small></p>
+</body>
+</html>

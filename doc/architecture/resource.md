@@ -91,3 +91,6 @@ operations concurrently.
     - working
     - error
 
+## Diagrams
+
+<!--- @diagram [figures/resources.md] [class ResourceInstance, class ResourceQueueSet, class ResourceQueue, interface IResourceConsumer] -->

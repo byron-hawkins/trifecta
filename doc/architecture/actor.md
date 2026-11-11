@@ -41,8 +41,9 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
 ## Appearance
 
 Each time an Actor queues for resources it presents a fresh Appearance, which is what the resource queues hold
-and call back. When an Actor leaves a queue (for example, on stop) it simply discards its Appearance; a queue that
-later finds a stale Appearance recognizes it as a ghost and skips it, without needing to search the queue.
+and to which they `Grant()` the resource.. When an Actor leaves a queue (for example, on stop) it simply
+discards its Appearance; a queue that later finds a stale Appearance recognizes it as a ghost and skips it,
+precluding the need to remove abandoned resource requests from the queue.
 
 ### Data Structure
 
@@ -134,3 +135,6 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
     - stop_now
     - exit
 
+## Diagrams
+
+<!--- @diagram [figures/actor.md] [class Actor, class Appearance, class Scene, class Director, class CastOptimizer, enum ActorPhase, enum SceneStatus] --->

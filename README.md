@@ -1,0 +1,186 @@
+# Trifecta
+
+## The simulator
+
+`simulation/` is a command-line app that runs the real components (sensor drivers, `SensorController`, `ResourceQueueSet`, `Director`). It prints the log file path at startup, and stops when the user presses Enter.
+
+### How the simulator is configured
+
+The specification fixes *what* a simulation must do, but not *how* a particular simulation is described to the program. That part is a design choice made here: the simulator contains no hard-coded scenario. Everything it simulates (the resources, the roles and their scenes, the sensors and what they read) is described in JSON files that it loads at startup. Changing the scenario means editing those files, with no rebuild.
+
+The files are grouped in a directory under `configuration/`, and one file, the **manifest**, names all the others:
+
+```text
+configuration/simulation/
+  manifest.json                       <- entry point; lists the files below
+  stage/resources.json                <- resources: name, quantity, min/max work time
+  stage/director.json                 <- roles, their environment bounds, and their scenes
+  sensors/device/*.json               <- one file per sensor: id, type, mode, tick interval
+  sensors/script/*.json               <- one file per sensor: the readings it will produce over time
+```
+
+- **`manifest.json`** has three keys: `sensors` (a list of `device` + `script` file pairs), `resources` (one file) and `director` (one file). Paths in the manifest are relative to the `configuration/` directory, not to the manifest itself.
+- **Resources** (`resources.json`): a list of `elements`, each with `name`, `quantity`, `tickrate`, `mode`, and `min-work` / `max-work` in milliseconds.
+- **Roles** (`director.json`): the Director's transition `mode` (only `quickstop` is implemented), and a list of `roles`. Each role has an `id`, a `name`, a `quantity`, its environment bounds `tmin` (minimum temperature) and `pmax` (maximum pressure), and an ordered list of `scenes`. Each scene has a `duration-ms`, a `tickrate`, and the `resources` it needs, which may be empty for a scene that uses none.
+- **Sensor device** files give a sensor's `id`, `name`, `type` (`temperature` or `pressure`), `mode` (`active`) and `tick-interval` in milliseconds.
+- **Sensor script** files hold a list of `events`, each with a `duration-ms` and a `value`. A script is a timeline of readings: during an event the sensor's reading slides in a straight line from that event's value to the next event's value, and after the last event the script starts over. An event followed by one with the same value therefore holds the reading steady.
+
+The roles' `tmin` and `pmax` values are also what the simulator watches for: the Director starts a role when the sensors say the environment is within that role's bounds, and stops it otherwise.
+
+By default the simulator loads `configuration/simulation/manifest.json`. To load a different configuration, pass its manifest as the argument, for example `dotnet run --project simulation -- configuration/quick-stage/manifest.json`. The environment variables `TRIFECTA_CONFIG_DIR` and `TRIFECTA_LOG_DIR` (see [Running the tests](#running-the-tests)) locate the `configuration` and log directories; if they are unset, the program uses `configuration` and `log` in the current directory. A manifest that references a missing file is rejected at startup.
+
+### Default configuration
+
+The files in `configuration/simulation/` follow these constraints.
+
+1. Resources are named `R_A`, `R_B` and `R_C`. Every resource has `min-work` 50 ms and `max-work` 1000 ms.
+2. Roles are named `stage_1`, `stage_2` and `stage_3`. Role ids are integers, so the names are carried in a `name` field and the ids are 1, 2 and 3.
+3. Each role has 1 to 4 scenes. A scene uses none (a local scene), one, or both of the role's two mapped resources, in either order:
+   - `stage_1`: `R_A`, `R_B`
+   - `stage_2`: `R_C`, `R_B`
+   - `stage_3`: `R_A`, `R_C`
+
+   Consecutive scenes of a role always differ in the set of resources they use (order alone is not a difference), so there is never an `(AB),(AB)`, `(AB),(BA)` or `(A),(A)` pair. For example, `stage_1` runs `(A), (BA), (local), (B)`. The scene durations of each role sum to between 100 ms and 5000 ms.
+4. There are two sensors, both active: a temperature sensor with a 50 ms tick and a pressure sensor with a 70 ms tick. Their scripts loop on a 5.8 s cycle that visits every reachable combination of active roles (none, `stage_2`, `stage_1`+`stage_2`, all three, `stage_1`+`stage_3`, `stage_1`), with 100 ms ramps between them. `stage_3` can never run without `stage_1`, so `stage_1` is active slightly longer. Over a long run the roles are active for about 1.0 : 0.95 : 0.8 of the time (`stage_1` : `stage_2` : `stage_3`).
+5. Role environment bounds:
+
+   | Role | tmin | pmax |
+   |------|------|------|
+   | `stage_1` | 10.0 | 100 |
+   | `stage_2` | 5.0 | 50 |
+   | `stage_3` | 20.0 | 100 |
+
+Values the specification left open: each resource and each role has quantity 1, resources are passive, scene tick rate is 50 ms, and the Director mode is `quickstop`.
+
+### The `quick-stage` variant
+
+`configuration/quick-stage/` is a separate configuration, unrelated to the default one. It has the same sensors, resources and role bounds, but every role has exactly one scene using both of its mapped resources: `stage_1` 50 ms, `stage_2` 75 ms and `stage_3` 100 ms. Run it by passing its manifest, `configuration/quick-stage/manifest.json`, as the argument to the simulator.
+
+## Architecture documents, the grammar, and the compilers
+
+See the [architecture index](doc/architecture/index.md) for a list of the architecture documents and diagrams, each with a one-line summary.
+
+### The idea
+
+The design of the system is written as ordinary Markdown in `doc/architecture/`: prose, headings, and a description of each class, interface and enum. Prose is easy to write and read, but a program cannot reliably tell which words in it name a type, a member, or a relationship. So the documents also carry a small number of **annotations**: HTML comments such as `<!--- @type --->` that mark a bulleted outline as the definition of a type, or `<!--- @context class Actor --->` that says which class the following text is about. A browser or GitHub ignores the comments, so the documents still read as normal Markdown.
+
+Because the annotations follow a fixed grammar, a tool can read the documents and extract the described types into a structured form. That makes two things possible:
+
+1. **Diagrams generated from the documents.** The same outlines can be turned into Mermaid class diagrams, so the pictures are always consistent with the text.
+2. **Checking the documents against the code.** The same structured form can be produced from the C# source. If the two forms are compared, any type or member that the documents and the code disagree about shows up as a difference.
+
+### The pieces
+
+```text
+  annotated Markdown ──(forward compile)──► SMD ──► Mermaid figures, rendered MD/HTML
+  (doc/architecture/*.md)                    ▲
+                                             │ compare
+  C# source (src/) ──(reverse compile)──► SMD
+```
+
+- **BNF grammar.** A BNF (Backus-Naur Form) is a formal, compact description of what text is allowed in a language. `markdown-architecture.bnf` defines exactly where annotations may appear in a document and what the outline inside an annotation looks like (modifiers, base types, members, generic parameters and so on). A companion document, the *semantics*, defines what the parsed annotations mean: for example, how a context tag stays in effect until the next one, and how names are resolved to types.
+- **SMD (structured markdown data).** A JSON file listing the types described by one document: for each type its kind, namespace, bases, and members. It is the common intermediate form that both compilers produce. A JSON Schema (`architecture-schema.json`) defines exactly what a valid SMD looks like, so an SMD can be validated by any JSON Schema tool.
+- **Forward compile.** Annotated Markdown → SMD → diagram figures. This is the direction used to produce the documents' pictures.
+- **Reverse compile.** C# source → SMD. It looks up each type the documents describe, reads its declaration from `src/`, and writes an SMD in the same format. Comparing a forward SMD with its reverse SMD shows where the documents and the code have drifted apart. The reverse compiler also records diagnostics, for example a documented type that is missing from the code.
+
+### Where things are
+
+| Path | What it is |
+|------|------------|
+| `meta/grammar/markdown-architecture.bnf` | The grammar of the annotations |
+| `meta/grammar/markdown-architecture-semantics.md` | What the annotations mean (context scopes, name resolution, how diagrams are chosen) |
+| `meta/grammar/architecture-schema.json` | JSON Schema for SMD files |
+| `doc/architecture/*.md` | The annotated architecture documents. `communication.md` is plain Markdown with diagrams, with no annotations |
+| `doc/architecture/bin/*.smd` | Forward-compiled SMDs, one per document |
+| `doc/architecture/reverse/*.smd` | Reverse-compiled SMDs from `src/`, one per document, to compare against `bin/` |
+| `doc/architecture/figures/` | Generated Mermaid class diagrams |
+| `doc/architecture/render/` | Generated viewable pages (`.md` and `.html`) of each diagram |
+| `meta/generate/forward/diagram_and_render.py` | The forward compiler |
+| `meta/generate/reverse-smd/` | The reverse compiler (a C# project using Roslyn) |
+
+### Running the compilers
+
+Run from the repository root. The forward compiler needs Python 3 and takes one or more annotated documents:
+
+```sh
+python3 meta/generate/forward/diagram_and_render.py doc/architecture/actor.md
+```
+
+It writes `doc/architecture/bin/actor.smd`, plus figures and rendered pages for documents that request a diagram. The reverse compiler needs the .NET SDK and takes the repository root:
+
+```sh
+dotnet run --project meta/generate/reverse-smd -- .
+```
+
+It reads the type list from `doc/architecture/bin/*.smd`, parses `src/`, and writes `doc/architecture/reverse/*.smd`. To validate an SMD against the schema, use any JSON Schema (draft 2020-12) validator; for example, with Python's `jsonschema` package, validate the file against `meta/grammar/architecture-schema.json`.
+
+The compilers are development tools. The simulator and the tests do not depend on them.
+
+## Running the tests
+
+Requirements: the .NET 10 SDK (`dotnet --version` should report 10.x).
+
+The tests read two environment variables, both required:
+
+- `TRIFECTA_CONFIG_DIR`: the `configuration` directory of this repository
+- `TRIFECTA_LOG_DIR`: a writable directory for log files (created if missing)
+
+Run all commands from the repository root.
+
+### Macarena tests
+
+Linux/macOS:
+
+```sh
+TRIFECTA_CONFIG_DIR="$PWD/configuration" TRIFECTA_LOG_DIR="$PWD/log" dotnet test test/macarena/Trifecta.Macarena.Tests.csproj --nologo
+```
+
+Windows (PowerShell):
+
+```powershell
+$env:TRIFECTA_CONFIG_DIR = "$PWD\configuration"; $env:TRIFECTA_LOG_DIR = "$PWD\log"; dotnet test test\macarena\Trifecta.Macarena.Tests.csproj --nologo
+```
+
+Expect about a minute for the full suite.
+
+### The test levels
+
+The tests are split by how much of the real system each one uses:
+
+| Level | Uses | Purpose |
+|-------|------|---------|
+| toddler | Stubs only | A Test Driven Development (TDD) bootstrap: the name is "ToDDler", for TDD |
+| macarena | The real `src/` code of the component under test, with its neighbors replaced by deliberate semantic mocks | Checks one component's behavior in isolation, with controlled inputs |
+| ensemble | The real components working together, in general with no mocks | Integration tests of the components' interaction: threads, locks, timing and logs |
+
+**toddler** tests were written first, against stub implementations of the
+components, to pin down each component's interface and expected behavior
+before the real code existed. They are the first steps of the TDD cycle, and
+the macarena tests grew from them once the real code was in place.
+
+**ensemble** tests are integration tests. They wire real sensor drivers, the
+sensor controller, the interpreter, the queue set, Actors and the Director
+together with no mocks. The exception is a test that needs to observe a
+thread, which may substitute a thin recording subclass; the rest of the
+system around it stays real.
+
+"Semantic" means that a mock behaves as the neighbor's contract allows, not
+just as a no-op. For example, a mock `ISensorAware` records every value
+delivered by a real sensor driver, and a mock Actor records when it was
+granted a resource, so the tests can check ordering and timing precisely.
+
+Tests that assert on log content enable `ComponentLog.Trace()` messages
+(`ComponentLog.singleton.EnableTrace(true)`). Trace messages are off by
+default so that long simulation runs do not fill the disk.
+
+## Interfaced but not implemented
+
+Some features exist in the code only as interfaces or reserved names, so the architecture documents describe
+more than the simulator does today:
+
+- Passive sensor drivers: `SensorMode.passive` and `ScriptedPassiveSensorDriver` exist, but the
+  `SensorController` does not poll passive drivers.
+- Passive resource drivers: `IPassiveResourceDriver` and `PassiveResourceDriver` exist, but no resource work
+  goes through a driver; scene work is simulated with a timed sleep.
+- Transition modes: only `quickstop` is implemented; `finishup` and `costmodel` throw `NotImplementedException`.
+- Actor phases `stop_at_cost` and `suspension` are reserved and throw `NotImplementedException`.

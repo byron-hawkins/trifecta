@@ -69,7 +69,7 @@
     },
     {
       "kind": "markdown",
-      "text": "## Appearance\n\nEach time an Actor queues for resources it presents a fresh Appearance, which is what the resource queues hold\nand call back. When an Actor leaves a queue (for example, on stop) it simply discards its Appearance; a queue that\nlater finds a stale Appearance recognizes it as a ghost and skips it, without needing to search the queue.\n\n### Data Structure"
+      "text": "## Appearance\n\nEach time an Actor queues for resources it presents a fresh Appearance, which is what the resource queues hold\nand to which they `Grant()` the resource.. When an Actor leaves a queue (for example, on stop) it simply\ndiscards its Appearance; a queue that later finds a stale Appearance recognizes it as a ghost and skips it,\nprecluding the need to remove abandoned resource requests from the queue.\n\n### Data Structure"
     },
     {
       "kind": "type",
@@ -130,6 +130,14 @@
     {
       "kind": "type",
       "type_id": "type:trifecta.stage.ActorPhase"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Diagrams"
+    },
+    {
+      "kind": "diagram",
+      "diagram_index": 0
     }
   ],
   "types": [
@@ -797,6 +805,47 @@
       ]
     }
   ],
-  "diagrams": [],
+  "diagrams": [
+    {
+      "path": "figures/actor.md",
+      "types": [
+        {
+          "kind": "class",
+          "name": "Actor",
+          "type_id": "type:trifecta.stage.Actor"
+        },
+        {
+          "kind": "class",
+          "name": "Appearance",
+          "type_id": "type:trifecta.stage.Appearance"
+        },
+        {
+          "kind": "class",
+          "name": "Scene",
+          "type_id": "type:trifecta.stage.Scene"
+        },
+        {
+          "kind": "class",
+          "name": "Director",
+          "type_id": "type:trifecta.stage.Director"
+        },
+        {
+          "kind": "class",
+          "name": "CastOptimizer",
+          "type_id": "type:trifecta.stage.CastOptimizer"
+        },
+        {
+          "kind": "enum",
+          "name": "ActorPhase",
+          "type_id": "type:trifecta.stage.ActorPhase"
+        },
+        {
+          "kind": "enum",
+          "name": "SceneStatus",
+          "type_id": "type:trifecta.stage.SceneStatus"
+        }
+      ]
+    }
+  ],
   "diagnostics": []
 }
