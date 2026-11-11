@@ -33,6 +33,88 @@
       "name": "CastOptimizer"
     }
   ],
+  "blocks": [
+    {
+      "kind": "markdown",
+      "text": "*Author: Byron*\n\n*Subject: outline an event model for an autonomous stage executor*"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:namespace:trifecta.stage:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "`namespace trifecta.stage`"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:Actor:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Actor\n\nTo perform a sequence of Scene comprising a stage for some duration 100ms <= tx <= 5s, while responding to\nchanges in conditions, an autonomous Actor will operate on its own threaed and coordinate events under a\nsingle instance-specific lock. All actions will be trivial except when performing a Scene that involves\nsignificant continuous computation. Responsiveness to concurrent events during computation will depend on\ngranularity of the computation steps; for example, if a Scene performs computation in 10ms loop iterations,\nthen events relevant to the Actor may go unnoticed for as long as 10ms. For a Scene that consumes one or\nmore resources and does not perform computation, it is assumed that the Actor remains passively available\nfor event notification while each resource performs work on s separate driver thread.\n\nWhen not performing computation, an Actor is either busy with a trivial event while holding its lock, or\nwaits on its lock until some notification occurs. Implementation can most likely use a simple Monitor,\nwhich can be held privately within Actor. Events will arrive over interface callbacks, which Actor can\nimplement as synchronizing on its Monitor. Before initiating a wait phase, Actor will discover any state\nchanges on subscribed event sources; if found, no wait will occur and Actor will directly respond.\n\n### Data Structure"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.Actor"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:Scene:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Scene\n\n### Data Structure"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.Scene"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:Director:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Director\n\nAttempts to optimize productivity by regulating the number of concurrent actors.\n\n### Data Structure"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.Director"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:CastOptimizer:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## CastOptimizer"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.CastOptimizer"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Interfaces"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.ICastManager"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Enumerations"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.SceneStatus"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.ActorPhase"
+    }
+  ],
   "types": [
     {
       "id": "type:trifecta.stage.Actor",
@@ -56,12 +138,7 @@
         {
           "name": "environment.IConditionAware",
           "relation": "implements",
-          "resolved_name": "trifecta.environment.IConditionAware"
-        },
-        {
-          "name": "resource.IResourceConsumer",
-          "relation": "implements",
-          "resolved_name": "trifecta.resource.IResourceConsumer"
+          "source_text": "environment.IConditionAware"
         }
       ],
       "aliases": [],
@@ -70,32 +147,32 @@
           "kind": "field",
           "name": "_configuration",
           "type": {
-            "name": "RoleConfiguration",
-            "resolved_name": "trifecta.stage.RoleConfiguration"
+            "name": "RoleConfiguration"
           },
-          "modifiers": [],
-          "source_text": "RoleConfiguration _configuration"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
           "name": "_phase",
           "type": {
-            "name": "ActorPhase",
-            "resolved_name": "trifecta.stage.ActorPhase"
+            "name": "ActorPhase"
           },
-          "modifiers": [],
-          "source_text": "ActorPhase _phase"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
           "name": "_onstage",
           "type": {
             "name": "Scene",
-            "resolved_name": "trifecta.stage.Scene",
             "nullable": true
           },
-          "modifiers": [],
-          "source_text": "Scene? _onstage"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
@@ -104,13 +181,13 @@
             "name": "List",
             "type_arguments": [
               {
-                "name": "Scene",
-                "resolved_name": "trifecta.stage.Scene"
+                "name": "Scene"
               }
             ]
           },
-          "modifiers": [],
-          "source_text": "List<Scene> _scenes"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "constructor",
@@ -120,8 +197,7 @@
             {
               "name": "configuration",
               "type": {
-                "name": "RoleConfiguration",
-                "resolved_name": "trifecta.stage.RoleConfiguration"
+                "name": "RoleConfiguration"
               }
             }
           ],
@@ -148,8 +224,7 @@
             {
               "name": "mode",
               "type": {
-                "name": "ActorPhase",
-                "resolved_name": "trifecta.stage.ActorPhase"
+                "name": "ActorPhase"
               }
             },
             {
@@ -188,11 +263,11 @@
           "kind": "field",
           "name": "_configuration",
           "type": {
-            "name": "SceneConfiguration",
-            "resolved_name": "trifecta.stage.SceneConfiguration"
+            "name": "SceneConfiguration"
           },
-          "modifiers": [],
-          "source_text": "SceneConfiguration _configuration"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
@@ -201,23 +276,23 @@
             "name": "List",
             "type_arguments": [
               {
-                "name": "resource.ResourceInstance",
-                "resolved_name": "trifecta.resource.ResourceInstance"
+                "name": "resource.ResourceInstance"
               }
             ]
           },
-          "modifiers": [],
-          "source_text": "List<resource.ResourceInstance> _resources"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
           "name": "_status",
           "type": {
-            "name": "SceneStatus",
-            "resolved_name": "trifecta.stage.SceneStatus"
+            "name": "SceneStatus"
           },
-          "modifiers": [],
-          "source_text": "SceneStatus _status"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "constructor",
@@ -227,8 +302,7 @@
             {
               "name": "configuration",
               "type": {
-                "name": "SceneConfiguration",
-                "resolved_name": "trifecta.stage.SceneConfiguration"
+                "name": "SceneConfiguration"
               }
             }
           ],
@@ -238,8 +312,7 @@
           "kind": "method",
           "name": "GetStatus",
           "return_type": {
-            "name": "SceneStatus",
-            "resolved_name": "trifecta.stage.SceneStatus"
+            "name": "SceneStatus"
           },
           "modifiers": [],
           "parameters": [],
@@ -249,8 +322,7 @@
           "kind": "method",
           "name": "Execute",
           "return_type": {
-            "name": "SceneStatus",
-            "resolved_name": "trifecta.stage.SceneStatus"
+            "name": "SceneStatus"
           },
           "modifiers": [],
           "parameters": [],
@@ -280,12 +352,12 @@
         {
           "name": "environment.IConditionAware",
           "relation": "implements",
-          "resolved_name": "trifecta.environment.IConditionAware"
+          "source_text": "environment.IConditionAware"
         },
         {
           "name": "ICastManager",
           "relation": "implements",
-          "resolved_name": "trifecta.stage.ICastManager"
+          "source_text": "ICastManager"
         }
       ],
       "aliases": [],
@@ -294,8 +366,7 @@
           "kind": "field",
           "name": "singleton",
           "type": {
-            "name": "Director",
-            "resolved_name": "trifecta.stage.Director"
+            "name": "Director"
           },
           "modifiers": [
             "public",
@@ -312,42 +383,41 @@
             "name": "Dictionary",
             "type_arguments": [
               {
-                "name": "RoleId",
-                "resolved_name": "System.Int32"
+                "name": "RoleId"
               },
               {
                 "name": "List",
                 "type_arguments": [
                   {
-                    "name": "Actor",
-                    "resolved_name": "trifecta.stage.Actor"
+                    "name": "Actor"
                   }
                 ]
               }
             ]
           },
-          "modifiers": [],
-          "source_text": "Dictionary<RoleId, List<Actor>> _cast"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
           "name": "_optimizer",
           "type": {
-            "name": "CastOptimizer",
-            "resolved_name": "trifecta.stage.CastOptimizer"
+            "name": "CastOptimizer"
           },
-          "modifiers": [],
-          "source_text": "CastOptimizer _optimizer"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
           "name": "_configuration",
           "type": {
-            "name": "DirectorConfiguration",
-            "resolved_name": "trifecta.stage.DirectorConfiguration"
+            "name": "DirectorConfiguration"
           },
-          "modifiers": [],
-          "source_text": "DirectorConfiguration _configuration"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "method",
@@ -360,8 +430,7 @@
             {
               "name": "configuration",
               "type": {
-                "name": "DirectorConfiguration",
-                "resolved_name": "trifecta.stage.DirectorConfiguration"
+                "name": "DirectorConfiguration"
               }
             }
           ],
@@ -421,21 +490,21 @@
           "kind": "field",
           "name": "_manager",
           "type": {
-            "name": "ICastManager",
-            "resolved_name": "trifecta.stage.ICastManager"
+            "name": "ICastManager"
           },
-          "modifiers": [],
-          "source_text": "ICastManager _manager"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
           "name": "_configuration",
           "type": {
-            "name": "DirectorConfiguration",
-            "resolved_name": "trifecta.stage.DirectorConfiguration"
+            "name": "DirectorConfiguration"
           },
-          "modifiers": [],
-          "source_text": "DirectorConfiguration _configuration"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "constructor",
@@ -445,15 +514,13 @@
             {
               "name": "configuration",
               "type": {
-                "name": "DirectorConfiguration",
-                "resolved_name": "trifecta.stage.DirectorConfiguration"
+                "name": "DirectorConfiguration"
               }
             },
             {
               "name": "manager",
               "type": {
-                "name": "ICastManager",
-                "resolved_name": "trifecta.stage.ICastManager"
+                "name": "ICastManager"
               }
             }
           ],
@@ -498,15 +565,13 @@
             {
               "name": "actor",
               "type": {
-                "name": "Actor",
-                "resolved_name": "trifecta.stage.Actor"
+                "name": "Actor"
               }
             },
             {
               "name": "exitStrategy",
               "type": {
-                "name": "ActorPhase",
-                "resolved_name": "trifecta.stage.ActorPhase"
+                "name": "ActorPhase"
               }
             }
           ],
@@ -523,8 +588,7 @@
             {
               "name": "role",
               "type": {
-                "name": "RoleId",
-                "resolved_name": "System.Int32"
+                "name": "RoleId"
               }
             }
           ],
@@ -550,11 +614,15 @@
       "members": [
         {
           "kind": "enum_member",
-          "name": "pending"
+          "name": "dark"
         },
         {
           "kind": "enum_member",
-          "name": "running"
+          "name": "working"
+        },
+        {
+          "kind": "enum_member",
+          "name": "underflow"
         },
         {
           "kind": "enum_member",
@@ -588,7 +656,7 @@
         },
         {
           "kind": "enum_member",
-          "name": "queue"
+          "name": "queue_up"
         },
         {
           "kind": "enum_member",
@@ -600,17 +668,23 @@
         },
         {
           "kind": "enum_member",
-          "name": "exit_at_cost"
+          "name": "stop_at_cost"
         },
         {
           "kind": "enum_member",
-          "name": "exit_at_completion"
+          "name": "stop_at_completion"
         },
         {
           "kind": "enum_member",
-          "name": "exit_now"
+          "name": "stop_now"
+        },
+        {
+          "kind": "enum_member",
+          "name": "exit"
         }
       ]
     }
-  ]
+  ],
+  "diagrams": [],
+  "diagnostics": []
 }

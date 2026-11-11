@@ -18,6 +18,11 @@
       "name": "ComponentLog"
     },
     {
+      "id": "context:class:LifespanToken:1",
+      "kind": "class",
+      "name": "LifespanToken"
+    },
+    {
       "id": "context:class:FileLogSink:1",
       "kind": "class",
       "name": "FileLogSink"
@@ -47,6 +52,14 @@
     {
       "kind": "type",
       "type_id": "type:trifecta.io.ComponentLog"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:LifespanToken:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## LifespanToken"
     },
     {
       "kind": "type",
@@ -119,15 +132,7 @@
           "source_text": "ITextLog"
         }
       ],
-      "aliases": [
-        {
-          "name": "ThreadId",
-          "target": {
-            "name": "int"
-          },
-          "source_text": "using ThreadId = int"
-        }
-      ],
+      "aliases": [],
       "members": [
         {
           "kind": "field",
@@ -200,23 +205,6 @@
         },
         {
           "kind": "method",
-          "name": "Log",
-          "return_type": {
-            "name": "void"
-          },
-          "modifiers": [],
-          "parameters": [
-            {
-              "name": "message",
-              "type": {
-                "name": "string"
-              }
-            }
-          ],
-          "source_text": "void Log(string message)"
-        },
-        {
-          "kind": "method",
           "name": "Register",
           "return_type": {
             "name": "LifespanToken"
@@ -247,8 +235,8 @@
         },
         {
           "kind": "class",
-          "name": "ComponentLog",
-          "id": "context:class:ComponentLog:1"
+          "name": "LifespanToken",
+          "id": "context:class:LifespanToken:1"
         }
       ],
       "modifiers": [],
@@ -259,6 +247,7 @@
           "source_text": "IDisposable"
         }
       ],
+      "aliases": [],
       "members": []
     },
     {
@@ -286,6 +275,7 @@
           "source_text": "ITextLogSink"
         }
       ],
+      "aliases": [],
       "members": [
         {
           "kind": "field",
@@ -320,9 +310,7 @@
         {
           "kind": "constructor",
           "name": "FileLog",
-          "modifiers": [
-            "public"
-          ],
+          "modifiers": [],
           "parameters": [
             {
               "name": "context",
@@ -356,6 +344,7 @@
       ],
       "modifiers": [],
       "base_types": [],
+      "aliases": [],
       "members": [
         {
           "kind": "method",
@@ -390,6 +379,7 @@
       ],
       "modifiers": [],
       "base_types": [],
+      "aliases": [],
       "members": [
         {
           "kind": "method",
@@ -424,6 +414,7 @@
       ],
       "modifiers": [],
       "base_types": [],
+      "aliases": [],
       "members": [
         {
           "kind": "enum_member",
@@ -452,6 +443,11 @@
           "kind": "class",
           "name": "ComponentLog",
           "type_id": "type:trifecta.io.ComponentLog"
+        },
+        {
+          "kind": "interface",
+          "name": "ITextLog",
+          "type_id": "type:trifecta.io.ITextLog"
         },
         {
           "kind": "interface",

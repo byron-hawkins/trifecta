@@ -28,6 +28,80 @@
       "name": "ResourceInstance"
     }
   ],
+  "blocks": [
+    {
+      "kind": "markdown",
+      "text": "*Author: Byron*\n\n*Subject: outline an event model for an application resource*"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:namespace:trifecta.resource:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "`namespace trifecta.resource`"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:ResourceQueue:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## ResourceQueue\n\nConfigurable set of resources potentially available to the machine.\n\n### Data Structure"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.resource.ResourceQueue"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:ResourceQueueSet:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## ResourceQueueSet\n\nSince multiple Stage types may run concurrently, and since each Stage may require multiple resources, a greedy\nresource acquisition policy can fail with deadlock. Instead, a single monitor RQS.M can guard the entire set of\nresource queues RQS, allowing a consumer to atomically push back on the queue of each needed resource. Mutual\nwaiting is avoided because it only occurs where a group of consumers having overlapping resource needs has been\nenqeueued with differing precedence on at least two queues of RQS.\n\n### Data Structure"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.resource.ResourceQueueSet"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:ResourceInstance:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## ResourceInstance\n\nTo avoid limitations on the kinds of resources that can be incorporated into a Stage, a resource interface\nneeds to provide for both passive and active usage models. Active usage occupies the calling thread for the\nduration of usage, while passive usage can be trivially started, permitting the caller to perform other\noperations concurrently."
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.resource.ResourceInstance"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Interfaces"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.resource.IResourceDriver"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.resource.IPassiveResourceDriver"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.resource.IResourceConsumer"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Enumerations"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.resource.ResourceDriverStatus"
+    }
+  ],
   "types": [
     {
       "id": "type:trifecta.resource.ResourceQueue",
@@ -56,8 +130,9 @@
           "type": {
             "name": "System.Threading.Lock"
           },
-          "modifiers": [],
-          "source_text": "System.Threading.Lock _lock"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
@@ -66,13 +141,13 @@
             "name": "Queue",
             "type_arguments": [
               {
-                "name": "ResourceInstance",
-                "resolved_name": "trifecta.resource.ResourceInstance"
+                "name": "ResourceInstance"
               }
             ]
           },
-          "modifiers": [],
-          "source_text": "Queue<ResourceInstance> _resources"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
@@ -81,13 +156,13 @@
             "name": "Queue",
             "type_arguments": [
               {
-                "name": "IResourceConsumer",
-                "resolved_name": "trifecta.resource.IResourceConsumer"
+                "name": "IResourceConsumer"
               }
             ]
           },
-          "modifiers": [],
-          "source_text": "Queue<IResourceConsumer> _consumers"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "method",
@@ -100,8 +175,7 @@
             {
               "name": "consumer",
               "type": {
-                "name": "IResourceConsumer",
-                "resolved_name": "trifecta.resource.IResourceConsumer"
+                "name": "IResourceConsumer"
               }
             }
           ],
@@ -118,8 +192,7 @@
             {
               "name": "resource",
               "type": {
-                "name": "ResourceInstance",
-                "resolved_name": "trifecta.resource.ResourceInstance"
+                "name": "ResourceInstance"
               }
             }
           ],
@@ -168,8 +241,9 @@
           "type": {
             "name": "Task"
           },
-          "modifiers": [],
-          "source_text": "Task _self"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
@@ -178,9 +252,9 @@
             "name": "object"
           },
           "modifiers": [
+            "private",
             "readonly"
-          ],
-          "source_text": "readonly object _idle"
+          ]
         },
         {
           "kind": "field",
@@ -188,8 +262,9 @@
           "type": {
             "name": "System.Threading.Lock"
           },
-          "modifiers": [],
-          "source_text": "System.Threading.Lock _multilock"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
@@ -198,17 +273,43 @@
             "name": "Dictionary",
             "type_arguments": [
               {
-                "name": "ResourceName",
-                "resolved_name": "System.String"
+                "name": "ResourceName"
               },
               {
-                "name": "ResourceQueue",
-                "resolved_name": "trifecta.resource.ResourceQueue"
+                "name": "ResourceQueue"
               }
             ]
           },
+          "modifiers": [
+            "private"
+          ]
+        },
+        {
+          "kind": "field",
+          "name": "_resources",
+          "type": {
+            "name": "ResourceSet"
+          },
+          "modifiers": [
+            "private"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "configure",
+          "return_type": {
+            "name": "void"
+          },
           "modifiers": [],
-          "source_text": "Dictionary<ResourceName, ResourceQueue> _queues"
+          "parameters": [
+            {
+              "name": "resources",
+              "type": {
+                "name": "ResourceSet"
+              }
+            }
+          ],
+          "source_text": "void configure(ResourceSet resources)"
         },
         {
           "kind": "method",
@@ -232,6 +333,16 @@
         },
         {
           "kind": "method",
+          "name": "Bump",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Bump()"
+        },
+        {
+          "kind": "method",
           "name": "MultiPush",
           "return_type": {
             "name": "void"
@@ -241,8 +352,7 @@
             {
               "name": "consumer",
               "type": {
-                "name": "IResourceConsumer",
-                "resolved_name": "trifecta.resource.IResourceConsumer"
+                "name": "IResourceConsumer"
               }
             }
           ],
@@ -275,28 +385,17 @@
           "kind": "field",
           "name": "_driver",
           "type": {
-            "name": "IResourceDriver",
-            "resolved_name": "trifecta.resource.IResourceDriver"
+            "name": "IResourceDriver"
           },
-          "modifiers": [],
-          "source_text": "IResourceDriver _driver"
-        },
-        {
-          "kind": "field",
-          "name": "_status",
-          "type": {
-            "name": "ResourceDriverStatus",
-            "resolved_name": "trifecta.resource.ResourceDriverStatus"
-          },
-          "modifiers": [],
-          "source_text": "ResourceDriverStatus _status"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "method",
           "name": "GetStatus",
           "return_type": {
-            "name": "ResourceDriverStatus",
-            "resolved_name": "trifecta.resource.ResourceDriverStatus"
+            "name": "ResourceDriverStatus"
           },
           "modifiers": [],
           "parameters": [],
@@ -324,8 +423,7 @@
           "kind": "method",
           "name": "GetStatus",
           "return_type": {
-            "name": "ResourceDriverStatus",
-            "resolved_name": "trifecta.resource.ResourceDriverStatus"
+            "name": "ResourceDriverStatus"
           },
           "modifiers": [],
           "parameters": [],
@@ -346,55 +444,20 @@
         }
       ],
       "modifiers": [],
-      "base_types": [],
-      "aliases": [],
-      "members": [
+      "base_types": [
         {
-          "kind": "method",
-          "name": "Start",
-          "return_type": {
-            "name": "ResourceDriverStatus",
-            "resolved_name": "trifecta.resource.ResourceDriverStatus"
-          },
-          "modifiers": [],
-          "parameters": [],
-          "source_text": "ResourceDriverStatus Start()"
-        },
-        {
-          "kind": "method",
-          "name": "Stop",
-          "return_type": {
-            "name": "ResourceDriverStatus",
-            "resolved_name": "trifecta.resource.ResourceDriverStatus"
-          },
-          "modifiers": [],
-          "parameters": [],
-          "source_text": "ResourceDriverStatus Stop()"
-        }
-      ]
-    },
-    {
-      "id": "type:trifecta.resource.IActiveResourceDriver",
-      "kind": "interface",
-      "name": "IActiveResourceDriver",
-      "namespace": "trifecta.resource",
-      "contexts": [
-        {
-          "kind": "namespace",
-          "name": "trifecta.resource",
-          "id": "context:namespace:trifecta.resource:1"
+          "name": "IResourceDriver",
+          "relation": "extends",
+          "source_text": "IResourceDriver"
         }
       ],
-      "modifiers": [],
-      "base_types": [],
       "aliases": [],
       "members": [
         {
           "kind": "method",
           "name": "Work",
           "return_type": {
-            "name": "ResourceDriverStatus",
-            "resolved_name": "trifecta.resource.ResourceDriverStatus"
+            "name": "ResourceDriverStatus"
           },
           "modifiers": [],
           "parameters": [],
@@ -425,8 +488,7 @@
             "name": "IEnumerable",
             "type_arguments": [
               {
-                "name": "ResourceName",
-                "resolved_name": "System.String"
+                "name": "ResourceName"
               }
             ]
           },
@@ -445,38 +507,11 @@
             {
               "name": "resource",
               "type": {
-                "name": "ResourceInstance",
-                "resolved_name": "trifecta.resource.ResourceInstance"
+                "name": "ResourceInstance"
               }
             }
           ],
           "source_text": "void Grant(ResourceInstance resource)"
-        }
-      ]
-    },
-    {
-      "id": "type:trifecta.resource.ResourceMode",
-      "kind": "enum",
-      "name": "ResourceMode",
-      "namespace": "trifecta.resource",
-      "contexts": [
-        {
-          "kind": "namespace",
-          "name": "trifecta.resource",
-          "id": "context:namespace:trifecta.resource:1"
-        }
-      ],
-      "modifiers": [],
-      "base_types": [],
-      "aliases": [],
-      "members": [
-        {
-          "kind": "enum_member",
-          "name": "active"
-        },
-        {
-          "kind": "enum_member",
-          "name": "passive"
         }
       ]
     },
@@ -510,5 +545,7 @@
         }
       ]
     }
-  ]
+  ],
+  "diagrams": [],
+  "diagnostics": []
 }

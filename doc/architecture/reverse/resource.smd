@@ -1082,11 +1082,6 @@
       }
     },
     {
-      "severity": "warning",
-      "code": "type-not-found",
-      "message": "trifecta.resource.IActiveResourceDriver is documented but not declared in src/trifecta."
-    },
-    {
       "severity": "info",
       "code": "type-source",
       "message": "trifecta.resource.IResourceConsumer read from src/trifecta/resource/Resources.cs.",
@@ -1096,11 +1091,6 @@
         "start_column": 1,
         "end_column": 2
       }
-    },
-    {
-      "severity": "warning",
-      "code": "type-not-found",
-      "message": "trifecta.resource.ResourceMode is documented but not declared in src/trifecta."
     },
     {
       "severity": "info",

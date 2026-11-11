@@ -38,6 +38,92 @@
       "name": "SceneConfiguration"
     }
   ],
+  "blocks": [
+    {
+      "kind": "markdown",
+      "text": "*Author: Byron*\n\n*Subject: outline a configuration model for actors and resources*"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:namespace:trifecta.stage:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "`namespace trifecta.stage`"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:ResourceType:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## ResourceType"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.ResourceType"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:ResourceSet:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## ResourceSet"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.ResourceSet"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:DirectorConfiguration:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## DirectorConfiguration"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.DirectorConfiguration"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:RoleConfiguration:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## RoleConfiguration"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.RoleConfiguration"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:SceneConfiguration:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## SceneConfiguration"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.SceneConfiguration"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Enumerations"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.ResourceMode"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.stage.TransitionMode"
+    }
+  ],
   "types": [
     {
       "id": "type:trifecta.stage.ResourceType",
@@ -64,13 +150,11 @@
           "kind": "field",
           "name": "name",
           "type": {
-            "name": "ResourceName",
-            "resolved_name": "System.String"
+            "name": "ResourceName"
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public ResourceName name"
+          ]
         },
         {
           "kind": "field",
@@ -80,8 +164,7 @@
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public int quantity"
+          ]
         },
         {
           "kind": "field",
@@ -91,20 +174,17 @@
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public TimeSpan tickrate"
+          ]
         },
         {
           "kind": "field",
           "name": "mode",
           "type": {
-            "name": "ResourceMode",
-            "resolved_name": "trifecta.stage.ResourceMode"
+            "name": "ResourceMode"
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public ResourceMode mode"
+          ]
         },
         {
           "kind": "field",
@@ -114,8 +194,7 @@
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public TimeSpan minwork"
+          ]
         },
         {
           "kind": "field",
@@ -125,8 +204,7 @@
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public TimeSpan maxwork"
+          ]
         }
       ]
     },
@@ -158,15 +236,13 @@
             "name": "List",
             "type_arguments": [
               {
-                "name": "ResourceType",
-                "resolved_name": "trifecta.stage.ResourceType"
+                "name": "ResourceType"
               }
             ]
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public List<ResourceType> elements"
+          ]
         }
       ]
     },
@@ -195,13 +271,11 @@
           "kind": "field",
           "name": "mode",
           "type": {
-            "name": "TransitionMode",
-            "resolved_name": "trifecta.stage.TransitionMode"
+            "name": "TransitionMode"
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public TransitionMode mode"
+          ]
         },
         {
           "kind": "field",
@@ -210,15 +284,13 @@
             "name": "List",
             "type_arguments": [
               {
-                "name": "RoleConfiguration",
-                "resolved_name": "trifecta.stage.RoleConfiguration"
+                "name": "RoleConfiguration"
               }
             ]
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public List<RoleConfiguration> roles"
+          ]
         }
       ]
     },
@@ -247,13 +319,11 @@
           "kind": "field",
           "name": "id",
           "type": {
-            "name": "RoleId",
-            "resolved_name": "System.Int32"
+            "name": "RoleId"
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public RoleId id"
+          ]
         },
         {
           "kind": "field",
@@ -263,32 +333,27 @@
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public int quantity"
+          ]
         },
         {
           "kind": "field",
           "name": "tmin",
           "type": {
-            "name": "Temperature",
-            "resolved_name": "System.Single"
+            "name": "Temperature"
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public Temperature tmin"
+          ]
         },
         {
           "kind": "field",
           "name": "pmax",
           "type": {
-            "name": "Pressure",
-            "resolved_name": "System.Int32"
+            "name": "Pressure"
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public Pressure pmax"
+          ]
         },
         {
           "kind": "field",
@@ -297,15 +362,13 @@
             "name": "List",
             "type_arguments": [
               {
-                "name": "SceneConfiguration",
-                "resolved_name": "trifecta.stage.SceneConfiguration"
+                "name": "SceneConfiguration"
               }
             ]
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public List<SceneConfiguration> scenes"
+          ]
         }
       ]
     },
@@ -338,8 +401,7 @@
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public TimeSpan duration"
+          ]
         },
         {
           "kind": "field",
@@ -349,8 +411,7 @@
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public TimeSpan tickrate"
+          ]
         },
         {
           "kind": "field",
@@ -359,15 +420,13 @@
             "name": "List",
             "type_arguments": [
               {
-                "name": "ResourceName",
-                "resolved_name": "System.String"
+                "name": "ResourceName"
               }
             ]
           },
           "modifiers": [
             "public"
-          ],
-          "source_text": "public List<ResourceName> resources"
+          ]
         }
       ]
     },
@@ -427,5 +486,7 @@
         }
       ]
     }
-  ]
+  ],
+  "diagrams": [],
+  "diagnostics": []
 }

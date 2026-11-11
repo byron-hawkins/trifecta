@@ -1341,6 +1341,103 @@
       }
     },
     {
+      "id": "type:trifecta.environment.IActiveSensorDriver`1",
+      "kind": "interface",
+      "name": "IActiveSensorDriver",
+      "type_parameters": [
+        "T"
+      ],
+      "namespace": "trifecta.environment",
+      "modifiers": [
+        "public"
+      ],
+      "base_types": [
+        {
+          "name": "ISensorDriver",
+          "relation": "extends",
+          "resolved_name": "trifecta.environment.ISensorDriver"
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Attach",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "aware",
+              "type": {
+                "name": "ISensorAware",
+                "resolved_name": "trifecta.environment.ISensorAware`1",
+                "type_arguments": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              },
+              "source_location": {
+                "start_line": 31,
+                "end_line": 31,
+                "start_column": 15,
+                "end_column": 36
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 31,
+            "end_line": 31,
+            "start_column": 3,
+            "end_column": 38
+          },
+          "source_text": "void Attach(ISensorAware<T> aware)"
+        },
+        {
+          "kind": "method",
+          "name": "Detach",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "aware",
+              "type": {
+                "name": "ISensorAware",
+                "resolved_name": "trifecta.environment.ISensorAware`1",
+                "type_arguments": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              },
+              "source_location": {
+                "start_line": 32,
+                "end_line": 32,
+                "start_column": 15,
+                "end_column": 36
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 32,
+            "end_line": 32,
+            "start_column": 3,
+            "end_column": 38
+          },
+          "source_text": "void Detach(ISensorAware<T> aware)"
+        }
+      ],
+      "source_location": {
+        "start_line": 30,
+        "end_line": 33,
+        "start_column": 1,
+        "end_column": 2
+      }
+    },
+    {
       "id": "type:trifecta.environment.ISensorAware`1",
       "kind": "interface",
       "name": "ISensorAware",
@@ -1525,11 +1622,6 @@
       }
     },
     {
-      "severity": "warning",
-      "code": "type-not-found",
-      "message": "trifecta.environment.IConditionTypes is documented but not declared in src/trifecta."
-    },
-    {
       "severity": "info",
       "code": "type-source",
       "message": "trifecta.environment.IConditionAware read from src/trifecta/environment/Environment.cs.",
@@ -1563,14 +1655,15 @@
       }
     },
     {
-      "severity": "warning",
-      "code": "type-not-found",
-      "message": "trifecta.environment.ISensorDriverActive is documented but not declared in src/trifecta."
-    },
-    {
-      "severity": "warning",
-      "code": "type-not-found",
-      "message": "trifecta.environment.ISensorDriverPassive is documented but not declared in src/trifecta."
+      "severity": "info",
+      "code": "type-source",
+      "message": "trifecta.environment.IActiveSensorDriver read from src/trifecta/environment/Environment.cs.",
+      "source_location": {
+        "start_line": 30,
+        "end_line": 33,
+        "start_column": 1,
+        "end_column": 2
+      }
     },
     {
       "severity": "info",

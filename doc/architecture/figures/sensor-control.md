@@ -7,28 +7,22 @@ namespace trifecta.environment {
     singleton
     System.Collections.Generic.List~ISensorDriver~ _actives
     System.Collections.Generic.List~ISensorDriver~ _passives
-    +SensorController(SensorInterpreter interpreter)
     +Register(ISensorDriver driver) void
     +Release(ISensorDriver driver) void
+    +Start() void
   }
   class ISensorDriver {
     <<interface>>
     +GetId() SensorId
-    +GetType() SensorType
+    +GetSensorType() SensorType
   }
-  class ISensorDriverActive~T~ {
+  class IActiveSensorDriver~T~ {
     <<interface>>
-    +Register(ISensorAware~T~ aware) void
-    +Release(ISensorAware~T~ aware) void
-  }
-  class ISensorDriverPassive~T~ {
-    <<interface>>
-    +GetFrequency() TimeSpan
-    +Read() T
+    +Attach(ISensorAware~T~ aware) void
+    +Detach(ISensorAware~T~ aware) void
   }
 }
 SensorController *-- ISensorDriver : _actives
 SensorController *-- ISensorDriver : _passives
-ISensorDriverActive~T~ ..|> ISensorDriver
-ISensorDriverPassive~T~ ..|> ISensorDriver
+IActiveSensorDriver~T~ ..|> ISensorDriver
 ```

@@ -61,7 +61,6 @@ operations concurrently.
 - class ResourceInstance
   - composition
     - IResourceDriver _driver
-    - ResourceDriverStatus _status
   - operations
     - ResourceDriverStatus GetStatus()
 
@@ -71,12 +70,6 @@ operations concurrently.
 - interface IResourceDriver
   - operations
     - ResourceDriverStatus GetStatus()
-
-<!--- @type --->
-- interface IActiveResourceDriver : IResourceDriver
-  - operations
-    - ResourceDriverStatus Start()
-    - ResourceDriverStatus Stop()
 
 <!--- @type --->
 - interface IPassiveResourceDriver : IResourceDriver

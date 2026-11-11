@@ -23,6 +23,100 @@
       "name": "SensorInterpreter"
     }
   ],
+  "blocks": [
+    {
+      "kind": "markdown",
+      "text": "*Author: Byron*\n\n*Subject: outline an event model for an autonomous stage executor*"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:namespace:trifecta.environment:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "`namespace trifecta.environment`"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:SensorController:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## SensorController"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.SensorController"
+    },
+    {
+      "kind": "context",
+      "context_id": "context:class:SensorInterpreter:1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## SensorInterpreter"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.SensorInterpreter"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.SensorInterpreter+Thresholds"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.SensorInterpreter+Granularity"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Interfaces"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.IConditionAware"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.IConditionParanoid"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.ISensorDriver"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.IActiveSensorDriver`1"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.ISensorAware`1"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Enumerations"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.SensorType"
+    },
+    {
+      "kind": "type",
+      "type_id": "type:trifecta.environment.SensorMode"
+    },
+    {
+      "kind": "markdown",
+      "text": "## Diagrams"
+    },
+    {
+      "kind": "diagram",
+      "diagram_index": 0
+    },
+    {
+      "kind": "diagram",
+      "diagram_index": 1
+    }
+  ],
   "types": [
     {
       "id": "type:trifecta.environment.SensorController",
@@ -42,12 +136,7 @@
         }
       ],
       "modifiers": [],
-      "base_types": [
-        {
-          "name": "IConditionTypes",
-          "relation": "implements"
-        }
-      ],
+      "base_types": [],
       "aliases": [],
       "members": [
         {
@@ -66,14 +155,6 @@
         },
         {
           "kind": "field",
-          "name": "_interpreter",
-          "type": {
-            "name": "SensorInterpreter"
-          },
-          "modifiers": []
-        },
-        {
-          "kind": "field",
           "name": "_actives",
           "type": {
             "name": "System.Collections.Generic.List",
@@ -83,7 +164,9 @@
               }
             ]
           },
-          "modifiers": []
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
@@ -96,21 +179,9 @@
               }
             ]
           },
-          "modifiers": []
-        },
-        {
-          "kind": "constructor",
-          "name": "SensorController",
-          "modifiers": [],
-          "parameters": [
-            {
-              "name": "interpreter",
-              "type": {
-                "name": "SensorInterpreter"
-              }
-            }
-          ],
-          "source_text": "SensorController(SensorInterpreter interpreter)"
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "method",
@@ -178,17 +249,14 @@
       "modifiers": [],
       "base_types": [
         {
-          "name": "IConditionTypes",
-          "relation": "implements"
-        },
-        {
           "name": "ISensorAware",
           "relation": "implements",
           "type_arguments": [
             {
               "name": "Temperature"
             }
-          ]
+          ],
+          "source_text": "ISensorAware<Temperature>"
         },
         {
           "name": "ISensorAware",
@@ -197,7 +265,8 @@
             {
               "name": "Pressure"
             }
-          ]
+          ],
+          "source_text": "ISensorAware<Pressure>"
         }
       ],
       "aliases": [],
@@ -222,16 +291,19 @@
           "type": {
             "name": "System.Threading.Lock"
           },
-          "modifiers": []
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
           "name": "_thresholds",
           "type": {
-            "name": "Thresholds",
-            "resolved_name": "trifecta.environment.SensorInterpreter+Thresholds"
+            "name": "Thresholds"
           },
-          "modifiers": []
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
@@ -244,7 +316,9 @@
               }
             ]
           },
-          "modifiers": []
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "field",
@@ -257,7 +331,9 @@
               }
             ]
           },
-          "modifiers": []
+          "modifiers": [
+            "private"
+          ]
         },
         {
           "kind": "method",
@@ -290,8 +366,7 @@
             {
               "name": "thresholds",
               "type": {
-                "name": "Thresholds",
-                "resolved_name": "trifecta.environment.SensorInterpreter+Thresholds"
+                "name": "Thresholds"
               }
             }
           ],
@@ -348,8 +423,7 @@
             {
               "name": "granularity",
               "type": {
-                "name": "Granularity",
-                "resolved_name": "trifecta.environment.SensorInterpreter+Granularity"
+                "name": "Granularity"
               }
             },
             {
@@ -399,12 +473,7 @@
         }
       ],
       "modifiers": [],
-      "base_types": [
-        {
-          "name": "IConditionTypes",
-          "relation": "implements"
-        }
-      ],
+      "base_types": [],
       "aliases": [],
       "members": [
         {
@@ -450,12 +519,7 @@
         }
       ],
       "modifiers": [],
-      "base_types": [
-        {
-          "name": "IConditionTypes",
-          "relation": "implements"
-        }
-      ],
+      "base_types": [],
       "aliases": [],
       "members": [
         {
@@ -481,45 +545,6 @@
       ]
     },
     {
-      "id": "type:trifecta.environment.IConditionTypes",
-      "kind": "interface",
-      "name": "IConditionTypes",
-      "namespace": "trifecta.environment",
-      "contexts": [
-        {
-          "kind": "namespace",
-          "name": "trifecta.environment",
-          "id": "context:namespace:trifecta.environment:1"
-        }
-      ],
-      "modifiers": [],
-      "base_types": [],
-      "aliases": [
-        {
-          "name": "Temperature",
-          "target": {
-            "name": "float"
-          },
-          "source_text": "using Temperature = float"
-        },
-        {
-          "name": "Pressure",
-          "target": {
-            "name": "int"
-          },
-          "source_text": "using Pressure = int"
-        },
-        {
-          "name": "SensorId",
-          "target": {
-            "name": "int"
-          },
-          "source_text": "using SensorId = int"
-        }
-      ],
-      "members": []
-    },
-    {
       "id": "type:trifecta.environment.IConditionAware",
       "kind": "interface",
       "name": "IConditionAware",
@@ -532,12 +557,7 @@
         }
       ],
       "modifiers": [],
-      "base_types": [
-        {
-          "name": "IConditionTypes",
-          "relation": "extends"
-        }
-      ],
+      "base_types": [],
       "aliases": [],
       "members": [
         {
@@ -592,11 +612,8 @@
       "base_types": [
         {
           "name": "IConditionAware",
-          "relation": "extends"
-        },
-        {
-          "name": "IConditionTypes",
-          "relation": "extends"
+          "relation": "extends",
+          "source_text": "IConditionAware"
         }
       ],
       "aliases": [],
@@ -650,12 +667,7 @@
         }
       ],
       "modifiers": [],
-      "base_types": [
-        {
-          "name": "IConditionTypes",
-          "relation": "extends"
-        }
-      ],
+      "base_types": [],
       "aliases": [],
       "members": [
         {
@@ -670,20 +682,20 @@
         },
         {
           "kind": "method",
-          "name": "GetType",
+          "name": "GetSensorType",
           "return_type": {
             "name": "SensorType"
           },
           "modifiers": [],
           "parameters": [],
-          "source_text": "SensorType GetType()"
+          "source_text": "SensorType GetSensorType()"
         }
       ]
     },
     {
-      "id": "type:trifecta.environment.ISensorDriverActive`1",
+      "id": "type:trifecta.environment.IActiveSensorDriver`1",
       "kind": "interface",
-      "name": "ISensorDriverActive",
+      "name": "IActiveSensorDriver",
       "type_parameters": [
         "T"
       ],
@@ -699,14 +711,15 @@
       "base_types": [
         {
           "name": "ISensorDriver",
-          "relation": "extends"
+          "relation": "extends",
+          "source_text": "ISensorDriver"
         }
       ],
       "aliases": [],
       "members": [
         {
           "kind": "method",
-          "name": "Register",
+          "name": "Attach",
           "return_type": {
             "name": "void"
           },
@@ -724,11 +737,11 @@
               }
             }
           ],
-          "source_text": "void Register(ISensorAware<T> aware)"
+          "source_text": "void Attach(ISensorAware<T> aware)"
         },
         {
           "kind": "method",
-          "name": "Release",
+          "name": "Detach",
           "return_type": {
             "name": "void"
           },
@@ -746,53 +759,7 @@
               }
             }
           ],
-          "source_text": "void Release(ISensorAware<T> aware)"
-        }
-      ]
-    },
-    {
-      "id": "type:trifecta.environment.ISensorDriverPassive`1",
-      "kind": "interface",
-      "name": "ISensorDriverPassive",
-      "type_parameters": [
-        "T"
-      ],
-      "namespace": "trifecta.environment",
-      "contexts": [
-        {
-          "kind": "namespace",
-          "name": "trifecta.environment",
-          "id": "context:namespace:trifecta.environment:1"
-        }
-      ],
-      "modifiers": [],
-      "base_types": [
-        {
-          "name": "ISensorDriver",
-          "relation": "extends"
-        }
-      ],
-      "aliases": [],
-      "members": [
-        {
-          "kind": "method",
-          "name": "GetFrequency",
-          "return_type": {
-            "name": "TimeSpan"
-          },
-          "modifiers": [],
-          "parameters": [],
-          "source_text": "TimeSpan GetFrequency()"
-        },
-        {
-          "kind": "method",
-          "name": "Read",
-          "return_type": {
-            "name": "T"
-          },
-          "modifiers": [],
-          "parameters": [],
-          "source_text": "T Read()"
+          "source_text": "void Detach(ISensorAware<T> aware)"
         }
       ]
     },
@@ -812,12 +779,7 @@
         }
       ],
       "modifiers": [],
-      "base_types": [
-        {
-          "name": "IConditionTypes",
-          "relation": "extends"
-        }
-      ],
+      "base_types": [],
       "aliases": [],
       "members": [
         {
@@ -924,11 +886,6 @@
         },
         {
           "kind": "interface",
-          "name": "IConditionTypes",
-          "type_id": "type:trifecta.environment.IConditionTypes"
-        },
-        {
-          "kind": "interface",
           "name": "IConditionAware",
           "type_id": "type:trifecta.environment.IConditionAware"
         },
@@ -954,21 +911,14 @@
         },
         {
           "kind": "interface",
-          "name": "ISensorDriverActive",
+          "name": "IActiveSensorDriver",
           "type_parameters": [
             "T"
           ],
-          "type_id": "type:trifecta.environment.ISensorDriverActive`1"
-        },
-        {
-          "kind": "interface",
-          "name": "ISensorDriverPassive",
-          "type_parameters": [
-            "T"
-          ],
-          "type_id": "type:trifecta.environment.ISensorDriverPassive`1"
+          "type_id": "type:trifecta.environment.IActiveSensorDriver`1"
         }
       ]
     }
-  ]
+  ],
+  "diagnostics": []
 }

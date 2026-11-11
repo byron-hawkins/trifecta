@@ -5,12 +5,11 @@ classDiagram
 namespace trifecta.environment {
   class SensorController {
     singleton
-    SensorInterpreter _interpreter
     System.Collections.Generic.List~ISensorDriver~ _actives
     System.Collections.Generic.List~ISensorDriver~ _passives
-    +SensorController(SensorInterpreter interpreter)
     +Register(ISensorDriver driver) void
     +Release(ISensorDriver driver) void
+    +Start() void
   }
   class SensorInterpreter {
     singleton
@@ -36,9 +35,6 @@ namespace trifecta.environment {
     +Temperature t
     +Pressure p
   }
-  class IConditionTypes {
-    <<interface>>
-  }
   class IConditionAware {
     <<interface>>
     +ThresholdCross(Temperature t) void
@@ -50,12 +46,8 @@ namespace trifecta.environment {
     +Change(Pressure p) void
   }
 }
-SensorController *-- SensorInterpreter : _interpreter
-SensorController ..|> IConditionTypes
-SensorInterpreter ..|> IConditionTypes
 SensorInterpreter *-- Thresholds : _thresholds
-Thresholds ..|> IConditionTypes
-Granularity ..|> IConditionTypes
-IConditionAware ..|> IConditionTypes
+SensorInterpreter *-- IConditionAware : _registry
+SensorInterpreter *-- IConditionAware : _paranoid
 IConditionParanoid ..|> IConditionAware
 ```

@@ -1133,17 +1133,6 @@
       }
     },
     {
-      "severity": "warning",
-      "code": "nesting-differs",
-      "message": "trifecta.simulation.SensorConfiguration is documented as a top-level type but declared inside SensorDriverFactory.",
-      "source_location": {
-        "start_line": 45,
-        "end_line": 51,
-        "start_column": 3,
-        "end_column": 4
-      }
-    },
-    {
       "severity": "info",
       "code": "type-source",
       "message": "trifecta.simulation.SensorConfiguration read from src/trifecta/simulation/SensorDrivers.cs.",

@@ -11,22 +11,21 @@
 ## SensorController
 
 <!--- @type --->
-- class SensorController : IConditionTypes
+- class SensorController
   - composition
     - [singleton]
-    - SensorInterpreter _interpreter
     - System.Collections.Generic.List<ISensorDriver> _actives
     - System.Collections.Generic.List<ISensorDriver> _passives
   - operations
-    - SensorController(SensorInterpreter interpreter)
     - void Register(ISensorDriver driver)
     - void Release(ISensorDriver driver)
+    - void Start()
 
 <!--- @context class SensorInterpreter --->
 ## SensorInterpreter
 
 <!--- @type --->
-- class SensorInterpreter : IConditionTypes, ISensorAware<Temperature>, ISensorAware<Pressure>
+- class SensorInterpreter : ISensorAware<Temperature>, ISensorAware<Pressure>
   - composition
     - [singleton]
     - System.Threading.Lock _lock
@@ -43,13 +42,13 @@
     - void Relax(IConditionParanoid relax)
 
 <!--- @type --->
-- struct Thresholds : IConditionTypes
+- struct Thresholds
   - composition
     - public Temperature[] t
     - public Pressure[] p
 
 <!--- @type --->
-- struct Granularity : IConditionTypes
+- struct Granularity
   - composition
     - public Temperature t
     - public Pressure p
@@ -57,44 +56,31 @@
 ## Interfaces
 
 <!--- @type --->
-- interface IConditionTypes
-  - types
-    - using Temperature = float
-    - using Pressure = int
-    - using SensorId = int
-
-<!--- @type --->
-- interface IConditionAware : IConditionTypes
+- interface IConditionAware
   - operations
     - void ThresholdCross(Temperature t)
     - void ThresholdCross(Pressure p)
 
 <!--- @type --->
-- interface IConditionParanoid : IConditionAware, IConditionTypes
+- interface IConditionParanoid : IConditionAware
   - operations
     - void Change(Temperature t)
     - void Change(Pressure p)
 
 <!--- @type --->
-- interface ISensorDriver : IConditionTypes
+- interface ISensorDriver
   - operations
     - SensorId GetId()
-    - SensorType GetType()
+    - SensorType GetSensorType()
 
 <!--- @type --->
-- interface ISensorDriverActive<T> : ISensorDriver
+- interface IActiveSensorDriver<T> : ISensorDriver
   - operations
-    - void Register(ISensorAware<T> aware)
-    - void Release(ISensorAware<T> aware)
+    - void Attach(ISensorAware<T> aware)
+    - void Detach(ISensorAware<T> aware)
 
 <!--- @type --->
-- interface ISensorDriverPassive<T> : ISensorDriver
-  - operations
-    - TimeSpan GetFrequency()
-    - T Read()
-
-<!--- @type --->
-- interface ISensorAware<T> : IConditionTypes
+- interface ISensorAware<T>
   - operations
     - void SensorUpdate(SensorId id, T reading)
 
@@ -106,20 +92,24 @@
     - temperature
     - pressure
 
-## Diagrams
+<!--- @type --->
+- enum SensorMode
+  - composition
+    - active
+    - passive
 
+## Diagrams
 
 ```mermaid
 classDiagram
 namespace trifecta.environment {
   class SensorController {
     singleton
-    SensorInterpreter _interpreter
     System.Collections.Generic.List~ISensorDriver~ _actives
     System.Collections.Generic.List~ISensorDriver~ _passives
-    +SensorController(SensorInterpreter interpreter)
     +Register(ISensorDriver driver) void
     +Release(ISensorDriver driver) void
+    +Start() void
   }
   class SensorInterpreter {
     singleton
@@ -145,9 +135,6 @@ namespace trifecta.environment {
     +Temperature t
     +Pressure p
   }
-  class IConditionTypes {
-    <<interface>>
-  }
   class IConditionAware {
     <<interface>>
     +ThresholdCross(Temperature t) void
@@ -159,16 +146,11 @@ namespace trifecta.environment {
     +Change(Pressure p) void
   }
 }
-SensorController *-- SensorInterpreter : _interpreter
-SensorController ..|> IConditionTypes
-SensorInterpreter ..|> IConditionTypes
 SensorInterpreter *-- Thresholds : _thresholds
-Thresholds ..|> IConditionTypes
-Granularity ..|> IConditionTypes
-IConditionAware ..|> IConditionTypes
+SensorInterpreter *-- IConditionAware : _registry
+SensorInterpreter *-- IConditionAware : _paranoid
 IConditionParanoid ..|> IConditionAware
 ```
-
 ```mermaid
 classDiagram
 namespace trifecta.environment {
@@ -176,28 +158,23 @@ namespace trifecta.environment {
     singleton
     System.Collections.Generic.List~ISensorDriver~ _actives
     System.Collections.Generic.List~ISensorDriver~ _passives
-    +SensorController(SensorInterpreter interpreter)
     +Register(ISensorDriver driver) void
     +Release(ISensorDriver driver) void
+    +Start() void
   }
   class ISensorDriver {
     <<interface>>
     +GetId() SensorId
-    +GetType() SensorType
+    +GetSensorType() SensorType
   }
-  class ISensorDriverActive~T~ {
+  class IActiveSensorDriver~T~ {
     <<interface>>
-    +Register(ISensorAware~T~ aware) void
-    +Release(ISensorAware~T~ aware) void
-  }
-  class ISensorDriverPassive~T~ {
-    <<interface>>
-    +GetFrequency() TimeSpan
-    +Read() T
+    +Attach(ISensorAware~T~ aware) void
+    +Detach(ISensorAware~T~ aware) void
   }
 }
 SensorController *-- ISensorDriver : _actives
 SensorController *-- ISensorDriver : _passives
-ISensorDriverActive~T~ ..|> ISensorDriver
-ISensorDriverPassive~T~ ..|> ISensorDriver
+IActiveSensorDriver~T~ ..|> ISensorDriver
 ```
+

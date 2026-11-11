@@ -26,7 +26,7 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
 ### Data Structure
 
 <!--- @type --->
-- class Actor : environment.IConditionAware, resource.IResourceConsumer
+- class Actor : environment.IConditionAware
   - composition
     - RoleConfiguration _configuration
     - ActorPhase _phase
@@ -97,7 +97,7 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
 <!--- @type --->
 - enum SceneStatus
   - composition
-    - pending
+    - dark
     - working
     - underflow
     - completed
@@ -107,7 +107,7 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
 - enum ActorPhase
   - composition
     - ready
-    - queue
+    - queue_up
     - work
     - suspension
     - stop_at_cost

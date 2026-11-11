@@ -22,6 +22,9 @@
     - void Configure(ITextLogSink sink)
     - LifespanToken Register(string componentName)
 
+<!--- @context class LifespanToken --->
+## LifespanToken
+
 <!--- @type --->
 - class LifespanToken
   - inherits

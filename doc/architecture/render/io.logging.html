@@ -4,27 +4,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>I/O architecture</title>
+  <title>Io architecture</title>
   <style>
-    :root {
-      color-scheme: light dark;
-      font-family: system-ui, sans-serif;
-    }
-
-    body {
-      line-height: 1.55;
-      margin: 0 auto;
-      max-width: 72rem;
-      padding: 2rem;
-    }
-
-    .mermaid {
-      overflow-x: auto;
-    }
-
-    code {
-      font-family: ui-monospace, monospace;
-    }
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { line-height: 1.55; margin: 0 auto; max-width: 72rem; padding: 2rem; }
+    .mermaid { overflow-x: auto; }
+    code { font-family: ui-monospace, monospace; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script>
@@ -34,95 +19,92 @@
   </script>
 </head>
 <body>
+  <p><em>author: Copilot</em></p>
   <p><em>Author: Byron</em></p>
   <p><em>Subject: outline I/O facilities for the application</em></p>
   <p><code>namespace trifecta.io</code></p>
-
   <h2>ComponentLog</h2>
   <h3>Data Structure</h3>
   <ul>
-    <li>class ComponentLog
+    <li>class ComponentLog : ITextLog</li>
+    <ul>
+      <li>composition</li>
       <ul>
-        <li>types
-          <ul><li>using ThreadId = int</li></ul>
-        </li>
-        <li>composition
-          <ul>
-            <li>[singleton]</li>
-            <li>System.Threading.Lock _lock</li>
-            <li>ITextLogSink _sink</li>
-            <li>System.Dictionary&lt;ThreadId, string&gt; _componentNames</li>
-          </ul>
-        </li>
-        <li>operations
-          <ul>
-            <li>void Configure(ITextLogSink sink)</li>
-            <li>LifespanToken Register(string componentName)</li>
-          </ul>
-        </li>
+        <li>[singleton]</li>
+        <li>System.Threading.Lock _lock</li>
+        <li>ITextLogSink _sink</li>
+        <li>System.Dictionary&lt;ThreadId, string&gt; _componentNames</li>
       </ul>
-    </li>
+      <li>operations</li>
+      <ul>
+        <li>void Configure(ITextLogSink sink)</li>
+        <li>LifespanToken Register(string componentName)</li>
+      </ul>
+    </ul>
   </ul>
-
+  <h2>LifespanToken</h2>
   <ul>
-    <li>class LifespanToken
-      <ul><li>inherits
-        <ul><li>IDisposable</li></ul>
-      </li></ul>
-    </li>
+    <li>class LifespanToken</li>
+    <ul>
+      <li>inherits</li>
+      <ul>
+        <li>IDisposable</li>
+      </ul>
+    </ul>
   </ul>
-
   <h2>FileLogSink</h2>
   <h3>Data Structure</h3>
   <ul>
-    <li>class FileLog : ITextLogSink
+    <li>class FileLog : ITextLogSink</li>
+    <ul>
+      <li>composition</li>
       <ul>
-        <li>composition
-          <ul>
-            <li>LogContext _context</li>
-            <li>System.IO.StreamWriter _sink</li>
-          </ul>
-        </li>
+        <li>LogContext _context</li>
+        <li>string _basename</li>
+        <li>System.IO.StreamWriter _sink</li>
       </ul>
-    </li>
+      <li>operations</li>
+      <ul>
+        <li>FileLog(LogContext context, string basename = "trace")</li>
+      </ul>
+    </ul>
   </ul>
-
   <h2>Prompt</h2>
   <p>A console interface for the user to query state and issue commands.</p>
-
   <h2>CommandParser</h2>
-  <p>Loads a sequence of commands from a structured file (e.g., JSON). Each command indicates a delay since the last
-  command, an action to take, and an optional tag string. Commands simulate manual oversight and administration of
-  the factory and are routed to static singletons (e.g., actor.Directory.instance()._____()).</p>
-
+  <p>Loads a sequence of commands from a structured file (e.g., JSON). Each command indicates a delay since the last command, an action to take, and an optional tag string. Commands simulate manual oversight and administration of the factory and are routed to static singletons (e.g., actor.Directory.instance()._____()).</p>
   <h2>Interfaces</h2>
   <ul>
-    <li>interface ITextLog
-      <ul><li>operations
-        <ul><li>void Log(string message)</li></ul>
-      </li></ul>
-    </li>
-    <li>interface ITextLogSink
-      <ul><li>operations
-        <ul><li>void Log(string message)</li></ul>
-      </li></ul>
-    </li>
+    <li>interface ITextLog</li>
+    <ul>
+      <li>operations</li>
+      <ul>
+        <li>void Log(string message)</li>
+      </ul>
+    </ul>
   </ul>
-
+  <ul>
+    <li>interface ITextLogSink</li>
+    <ul>
+      <li>operations</li>
+      <ul>
+        <li>void Log(string message)</li>
+      </ul>
+    </ul>
+  </ul>
   <h2>Enumerations</h2>
   <ul>
-    <li>enum LogContext
-      <ul><li>composition
-        <ul>
-          <li>toddler</li>
-          <li>macarena</li>
-          <li>ensemble</li>
-          <li>simulation</li>
-        </ul>
-      </li></ul>
-    </li>
+    <li>enum LogContext</li>
+    <ul>
+      <li>composition</li>
+      <ul>
+        <li>toddler</li>
+        <li>macarena</li>
+        <li>ensemble</li>
+        <li>simulation</li>
+      </ul>
+    </ul>
   </ul>
-
   <h2>Diagrams</h2>
   <pre class="mermaid">
 classDiagram
@@ -130,9 +112,14 @@ namespace trifecta.io {
   class ComponentLog {
     singleton
     System.Threading.Lock _lock
+    ITextLogSink _sink
     System.Dictionary~ThreadId, string~ _componentNames
     +Configure(ITextLogSink sink) void
     +Register(string componentName) LifespanToken
+  }
+  class ITextLog {
+    &lt;&lt;interface&gt;&gt;
+    +Log(string message) void
   }
   class ITextLogSink {
     &lt;&lt;interface&gt;&gt;
@@ -140,7 +127,9 @@ namespace trifecta.io {
   }
   class FileLog {
     LogContext _context
+    string _basename
     System.IO.StreamWriter _sink
+    +FileLog(LogContext context, string basename)
   }
   class LogContext {
     &lt;&lt;enumeration&gt;&gt;
@@ -151,8 +140,9 @@ namespace trifecta.io {
   }
 }
 ComponentLog *-- ITextLogSink : _sink
-FileLog ..|> ITextLogSink
+ComponentLog ..|&gt; ITextLog
 FileLog *-- LogContext : _context
+FileLog ..|&gt; ITextLogSink
   </pre>
   <p><small>Diagrams use Mermaid from jsDelivr; rendering requires an internet connection.</small></p>
 </body>

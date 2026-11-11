@@ -15,7 +15,6 @@
     - System.Collections.Generic.List<ISensorDriver> _actives
     - System.Collections.Generic.List<ISensorDriver> _passives
   - operations
-    - SensorController(SensorInterpreter interpreter)
     - void Register(ISensorDriver driver)
     - void Release(ISensorDriver driver)
     - void Start()
@@ -24,7 +23,7 @@
 ## SensorInterpreter
 
 <!--- @type --->
-- class SensorInterpreter , ISensorAware<Temperature>, ISensorAware<Pressure>
+- class SensorInterpreter : ISensorAware<Temperature>, ISensorAware<Pressure>
   - composition
     - [singleton]
     - System.Threading.Lock _lock
@@ -70,19 +69,13 @@
 - interface ISensorDriver
   - operations
     - SensorId GetId()
-    - SensorType GetType()
+    - SensorType GetSensorType()
 
 <!--- @type --->
-- interface ISensorDriverActive<T> : ISensorDriver
+- interface IActiveSensorDriver<T> : ISensorDriver
   - operations
-    - void Register(ISensorAware<T> aware)
-    - void Release(ISensorAware<T> aware)
-
-<!--- @type --->
-- interface ISensorDriverPassive<T> : ISensorDriver
-  - operations
-    - TimeSpan GetFrequency()
-    - T Read()
+    - void Attach(ISensorAware<T> aware)
+    - void Detach(ISensorAware<T> aware)
 
 <!--- @type --->
 - interface ISensorAware<T>
@@ -106,5 +99,5 @@
 ## Diagrams
 
 <!--- @diagram [figures/sensor-awareness.md] [class SensorController, class SensorInterpreter, struct Thresholds, struct Granularity, interface IConditionAware, interface IConditionParanoid] --->
-<!--- @diagram [figures/sensor-control.md] [class SensorController, interface ISensorDriver, interface ISensorDriverActive<T>, interface ISensorDriverPassive<T>] --->
+<!--- @diagram [figures/sensor-control.md] [class SensorController, interface ISensorDriver, interface IActiveSensorDriver<T>] --->
 
