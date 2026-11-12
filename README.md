@@ -91,6 +91,8 @@ Open `Trifecta.sln` in Visual Studio 2026 or later. Set the environment variable
 
 ## Running the tests
 
+The [test index](test/index.md) describes the test groups and links to their source files.
+
 Requirements: the .NET 10 SDK (`dotnet --version` should report 10.x).
 
 The tests read two environment variables, both required:
@@ -157,6 +159,27 @@ more than the simulator does today:
   goes through a driver; scene work is simulated with a timed sleep.
 - Transition modes: only `quickstop` is implemented; `finishup` and `costmodel` throw `NotImplementedException`.
 - Actor phases `stop_at_cost` and `suspension` are reserved and throw `NotImplementedException`.
+
+## Agent collaboration
+
+To start work with another coding agent, open the repository in its workspace and ask it to read
+[`agent/agent-bootstrap.md`](agent/agent-bootstrap.md) first. That file points to the collaboration journals and
+project rules for generated C# and tests. The journals explain earlier decisions, but the current source and
+documentation are the authority if the project has changed since they were written. Tell the agent what you want to
+change and which files it may edit; for this project, `src/` was kept read-only during the original collaboration.
+
+Depending on the task, you can direct the agent to:
+
+- Read the [architecture index](doc/architecture/index.md) and the relevant documents for the components involved.
+- Work with the simulator in `simulator/` and its JSON configurations in `configuration/`.
+- Run or extend the tests in `test/macarena/` and `test/ensemble/`; see [Running the tests](#running-the-tests) for
+  their environment variables and the distinction between test levels.
+- Update annotated architecture documents, generate diagrams, or compare them with C# using the grammar and
+  forward/reverse compilers described in [Automated architecture synchronization](#automated-architecture-synchronization).
+
+Ask the agent to check the current implementation and test its changes, especially around concurrency and timing.
+The [Interfaced but not implemented](#interfaced-but-not-implemented) section identifies features that cannot yet be
+used as complete implementations.
 
 ## Automated architecture synchronization
 

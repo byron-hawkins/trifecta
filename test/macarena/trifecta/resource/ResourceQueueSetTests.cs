@@ -47,7 +47,7 @@ public sealed class ResourceQueueSetTests : ComponentLogTestBase {
     int At(string entry) =>
         Array.FindIndex(log, l => l.Contains(entry, StringComparison.Ordinal));
 
-    var received = At($"{q} receives one consumer");
+    var received = At($"{q} receives consumer {actor.Identity()}");
     var quick = At($"{q} grants quick");
     var returned = At($"{q} receives one resource");
     var stored = At($"{q} enqueues resource");
@@ -135,13 +135,115 @@ public sealed class ResourceQueueSetTests : ComponentLogTestBase {
     var q = "ResourceQueue<heater>";
     int Count(string entry) =>
         log.Count(l => l.Contains(entry, StringComparison.Ordinal));
-    Assert.Equal(2, Count($"{q} receives one consumer"));
+    Assert.Equal(2, Count($"{q} receives consumer "));
     Assert.Equal(2, Count($"{q} receives one resource"));
     var lastResourceEntry = log.Last(
         l => l.Contains($"{q} enqueues resource", StringComparison.Ordinal) ||
              l.Contains($"{q} ricochet-grant", StringComparison.Ordinal) ||
              l.Contains($"{q} dispatch-grant", StringComparison.Ordinal));
     Assert.Contains("enqueues resource", lastResourceEntry);
+  }
+
+  [Theory]
+  [InlineData("heater", "valve")]
+  [InlineData("valve", "heater")]
+  public void ResourceExchangesFollowGrantAndReturnSequence(string first,
+                                                            string second) {
+    ResourceType Type(string name) =>
+        new ResourceType { name = name, quantity = 1,
+                           tickrate = TimeSpan.FromMilliseconds(50),
+                           minwork = TimeSpan.FromMilliseconds(50),
+                           maxwork = TimeSpan.FromSeconds(2) };
+    var queues = new ResourceQueueSet();
+    var a = new ExchangeConsumer("A", first, second);
+    var b = new ExchangeConsumer("B", first, second);
+
+    setup($"ResourceQueueSetExchangeTests-{Guid.NewGuid():N}");
+    try {
+      queues.configure(
+          new ResourceSet { elements = [Type(first), Type(second)] });
+      queues.Start();
+      try {
+        queues.MultiPush(a);
+        Assert.Equal(2, a.Granted.Count);
+        var firstResource = Assert.Single(a.Granted, r => r.GetName() == first);
+        var secondResource = Assert.Single(a.Granted, r => r.GetName() == second);
+        Assert.NotSame(firstResource, secondResource);
+        queues.MultiPush(b);
+        Assert.Empty(b.Granted);
+
+        queues.MultiRelease([firstResource]);
+        Assert.Same(firstResource, Assert.Single(b.Granted));
+        queues.MultiRelease([firstResource]);
+        queues.MultiRelease([secondResource]);
+        Assert.Equal(2, b.Granted.Count);
+        Assert.Same(secondResource,
+                    Assert.Single(b.Granted, r => r.GetName() == second));
+        queues.MultiRelease([secondResource]);
+
+        var c = new ExchangeConsumer("C", first, second);
+        queues.MultiPush(c);
+        Assert.Equal(2, c.Granted.Count);
+        Assert.Same(firstResource,
+                    Assert.Single(c.Granted, r => r.GetName() == first));
+        Assert.Same(secondResource,
+                    Assert.Single(c.Granted, r => r.GetName() == second));
+        queues.MultiRelease(c.Granted);
+      } finally {
+        queues.Stop();
+      }
+    } finally {
+      finish();
+    }
+
+    var events = ReadLog().Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                     .Select(line => line[(line.IndexOf("]: ", StringComparison.Ordinal) + 3)..]
+                                         .TrimEnd('\r'))
+                     .Where(message => message.StartsWith(
+                                "ResourceQueue<", StringComparison.Ordinal))
+                     .ToArray();
+    Assert.Equal(new[] {
+      $"ResourceQueue<{first}> receives consumer A",
+      $"ResourceQueue<{first}> grants quick",
+      $"ResourceQueue<{second}> receives consumer A",
+      $"ResourceQueue<{second}> grants quick",
+      $"ResourceQueue<{first}> receives consumer B",
+      $"ResourceQueue<{first}> enqueues consumer B",
+      $"ResourceQueue<{second}> receives consumer B",
+      $"ResourceQueue<{second}> enqueues consumer B",
+      $"ResourceQueue<{first}> receives one resource {first}",
+      $"ResourceQueue<{first}> ricochet-grant on resource {first}",
+      $"ResourceQueue<{first}> receives one resource {first}",
+      $"ResourceQueue<{first}> enqueues resource {first}",
+      $"ResourceQueue<{second}> receives one resource {second}",
+      $"ResourceQueue<{second}> ricochet-grant on resource {second}",
+      $"ResourceQueue<{second}> receives one resource {second}",
+      $"ResourceQueue<{second}> enqueues resource {second}",
+      $"ResourceQueue<{first}> receives consumer C",
+      $"ResourceQueue<{first}> grants quick",
+      $"ResourceQueue<{second}> receives consumer C",
+      $"ResourceQueue<{second}> grants quick",
+      $"ResourceQueue<{first}> receives one resource {first}",
+      $"ResourceQueue<{first}> enqueues resource {first}",
+      $"ResourceQueue<{second}> receives one resource {second}",
+      $"ResourceQueue<{second}> enqueues resource {second}"
+    }, events);
+  }
+
+  private sealed class ExchangeConsumer : IResourceConsumer {
+    private readonly string _name;
+    private readonly string[] _scope;
+
+    public ExchangeConsumer(string name, params string[] scope) {
+      _name = name;
+      _scope = scope;
+    }
+
+    public List<ResourceInstance> Granted { get; } = [];
+    public bool IsGhost() { return false; }
+    public IEnumerable<ResourceName> Scope() { return _scope; }
+    public void Grant(ResourceInstance resource) { Granted.Add(resource); }
+    public string Identity() { return _name; }
   }
 
   // start, hold, cycles, gap (local work between cycles), stopAfter (no new
