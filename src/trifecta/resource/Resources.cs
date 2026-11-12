@@ -2,6 +2,7 @@
 /* stub: Copilot */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ public class ResourceQueue {
   }
 
   public void Push(IResourceConsumer consumer) {
-    ComponentLog.singleton.Log($"{_identity} receives one consumer");
+    ComponentLog.singleton.Log($"{_identity} receives consumer {consumer.Identity()}");
 
     if (consumer.IsGhost()) return;
 
@@ -32,7 +33,7 @@ public class ResourceQueue {
         ResourceInstance resource = _resources.Dequeue();
         consumer.Grant(resource);
       } else {
-        ComponentLog.singleton.Log($"{_identity} enqueues the consumer");
+        ComponentLog.singleton.Log($"{_identity} enqueues consumer {consumer.Identity()}");
 
         _consumers.Enqueue(consumer);
       }
@@ -41,14 +42,14 @@ public class ResourceQueue {
   }
 
   public void Push(ResourceInstance resource) {
-    ComponentLog.singleton.Log($"{_identity} receives one resource {resource.GetName}");
+    ComponentLog.singleton.Log($"{_identity} receives one resource {resource.GetName()}");
 
     bool retry;
     using (_lock.EnterScope()) {
       do {
         retry = false;
         if (_consumers.Count > 0) {
-          ComponentLog.singleton.Log($"{_identity} ricochet-grant on resource {resource.GetName}");
+          ComponentLog.singleton.Log($"{_identity} ricochet-grant on resource {resource.GetName()}");
 
           IResourceConsumer consumer = _consumers.Dequeue();
           if (consumer.IsGhost()) {
@@ -57,7 +58,7 @@ public class ResourceQueue {
           }
           consumer.Grant(resource);
         } else {
-          ComponentLog.singleton.Log($"{_identity} enqueues resource {resource.GetName}");
+          ComponentLog.singleton.Log($"{_identity} enqueues resource {resource.GetName()}");
 
           _resources.Enqueue(resource);
         }
@@ -74,9 +75,9 @@ public class ResourceQueue {
 
         ResourceInstance resource = _resources.Dequeue();
 
-        ComponentLog.singleton.Log($"{_identity} dispatch-grant on resource {resource.GetName}");
+        ComponentLog.singleton.Log($"{_identity} dispatch-grant on resource {resource.GetName()}");
 
-        consumer.Grant(resource);  // TODO: possible option to allow on-thread refusal, in case of race on consumer state
+        consumer.Grant(resource);
       }
     }
   }
@@ -166,7 +167,7 @@ public class ResourceQueueSet : IResourceQueueSet {
   }
 
   public void MultiPush(IResourceConsumer consumer) {
-    ComponentLog.singleton.Log($"ResourceQueueSet pushes multiple resource requests");
+    ComponentLog.singleton.Log($"ResourceQueueSet pushes multiple resource requests {string.Join(", ", consumer.Scope())}");
 
     using (_multilock.EnterScope()) {
       foreach (string resource in consumer.Scope()) { _queues[resource].Push(consumer); }
@@ -175,7 +176,7 @@ public class ResourceQueueSet : IResourceQueueSet {
   }
 
   public void MultiRelease(IEnumerable<ResourceInstance> release) {
-    ComponentLog.singleton.Log($"ResourceQueueSet releases multiple resources");
+    ComponentLog.singleton.Log($"ResourceQueueSet releases multiple resources {string.Join(", ", release.ToList().Select(x => x.GetName()))}");
 
     foreach (ResourceInstance resource in release) { _queues[resource.GetName()].Push(resource); }
   }
@@ -228,6 +229,7 @@ public interface IResourceConsumer {
   bool IsGhost();
   IEnumerable<ResourceName> Scope();
   void Grant(ResourceInstance resource);
+  string Identity();
 }
 
 public enum ResourceDriverStatus {

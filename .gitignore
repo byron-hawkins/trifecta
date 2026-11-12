@@ -3,3 +3,5 @@ log/
 test/**/bin/
 test/**/obj/
 temp/
+simulator/bin/
+simulator/obj/

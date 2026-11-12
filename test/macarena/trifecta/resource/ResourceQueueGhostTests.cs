@@ -220,6 +220,8 @@ public sealed class ResourceQueueGhostTests : ComponentLogTestBase {
     public List<ResourceInstance> Granted {
       get { lock (_granted) return _granted.ToList(); }
     }
+
+    public string Identity() { return "Consumer"; }
   }
 }
 

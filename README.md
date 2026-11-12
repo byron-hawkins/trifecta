@@ -20,9 +20,11 @@ technology choices and considerations followed by a table of links to individual
 ## Implementation
 
 For compatibility with the author's Linux development environment, all executable artifacts have been developed as .NET
-console projects, including the Trifecta simulator and the accompanying unit and integration tests. In directory
-`simulation/` is a command-line app that runs the prescribed manufacturing scenario, which simply logs the behavior of system
-components such as processing stages and the supporting resources and sensors. At startup it prints the log file path at startup, and stops when the user presses Enter.
+console projects, which run equally well in a Windows PowerShell as in a Linux Bash shell. In directory
+`simulator/` is a command-line app that runs the prescribed manufacturing scenario, which simply logs the behavior of
+system components such as processing stages and the supporting resources and sensors. At startup it prints the log
+file path at startup, and stops when the user presses Enter. Test suites at the unit and integration level can easily be
+run with the standard `dotnet test` command.
 
 ### Simulator configuration
 
@@ -47,7 +49,7 @@ configuration/simulation/
 
 The roles' `tmin` and `pmax` values are also what the simulator watches for: the Director starts a role when the sensors say the environment is within that role's bounds, and stops it otherwise.
 
-By default the simulator loads `configuration/simulation/manifest.json`. To load a different configuration, pass its manifest as the argument, for example `dotnet run --project simulation -- configuration/quick-stage/manifest.json`. The environment variables `TRIFECTA_CONFIG_DIR` and `TRIFECTA_LOG_DIR` (see [Running the tests](#running-the-tests)) locate the `configuration` and log directories; if they are unset, the program uses `configuration` and `log` in the current directory. A manifest that references a missing file is rejected at startup.
+By default the simulator loads `configuration/simulation/manifest.json`. To load a different configuration, pass its manifest as the argument, for example `dotnet run --project simulator -- configuration/quick-stage/manifest.json`. The environment variables `TRIFECTA_CONFIG_DIR` and `TRIFECTA_LOG_DIR` (see [Running the tests](#running-the-tests)) locate the `configuration` and log directories; if they are unset, the program uses `configuration` and `log` in the current directory. A manifest that references a missing file is rejected at startup.
 
 ### Default configuration
 

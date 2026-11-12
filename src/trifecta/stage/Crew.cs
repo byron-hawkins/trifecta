@@ -197,7 +197,7 @@ public class Actor : IConditionAware {
         while (true) {
           TimeSpan duration = _onstage.GetStepDuration();
 
-          ComponentLog.singleton.Log($"{_identity} loops work() with scene step duration {duration.Milliseconds}");
+          ComponentLog.singleton.Trace($"{_identity} loops work() with scene step duration {duration.Milliseconds}");
 
           SceneStatus status = _onstage.Execute(duration);
 
@@ -272,6 +272,8 @@ public class Appearance : IResourceConsumer {
   public IEnumerable<ResourceName> Scope() { return _actor.Scope(); }
 
   public void Grant(ResourceInstance resource) { _actor.Grant(resource); }
+
+  public string Identity() { return _actor.Identity(); }
 
   private Actor _actor;
 }

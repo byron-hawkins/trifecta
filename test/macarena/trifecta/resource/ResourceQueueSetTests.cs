@@ -338,6 +338,8 @@ public sealed class ResourceQueueSetTests : ComponentLogTestBase {
         Push();
       });
     }
+
+    public string Identity() { return "CyclingActor"; }
   }
 
   // Like Spec, but each actor requests its own set of resource types.
@@ -646,6 +648,8 @@ public sealed class ResourceQueueSetTests : ComponentLogTestBase {
         Push();
       });
     }
+
+    public string Identity() { return "MultiTypeActor"; }
   }
 
   private sealed class MockActor : IResourceConsumer {
@@ -702,6 +706,8 @@ public sealed class ResourceQueueSetTests : ComponentLogTestBase {
         lock (_lock) { return _granted.ToArray(); }
       }
     }
+
+    public string Identity() { return "MockActor"; }
   }
 }
 
