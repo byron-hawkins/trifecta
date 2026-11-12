@@ -28,6 +28,10 @@ run with the standard `dotnet test` command.
 
 ### Simulator configuration
 
+```powershell
+dotnet run --project simulator -- configuration/simulation/manifest.json
+```
+
 The specification fixes *what* a simulation must do, but not *how* a particular simulation is described to the program. That part is a design choice made here: the simulator contains no hard-coded scenario. Everything it simulates (the resources, the roles and their scenes, the sensors and what they read) is described in JSON files that it loads at startup. Changing the scenario means editing those files, with no rebuild.
 
 The files are grouped in a directory under `configuration/`, and one file, the **manifest**, names all the others:
