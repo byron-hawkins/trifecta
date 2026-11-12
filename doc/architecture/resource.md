@@ -5,6 +5,10 @@
 <!--- @context namespace trifecta.resource --->
 `namespace trifecta.resource`
 
+## Diagrams
+
+<!--- @diagram [figures/resources.md] [class ResourceInstance, class ResourceQueueSet, class ResourceQueue, interface IResourceConsumer] -->
+
 <!--- @context class ResourceQueue --->
 ## ResourceQueue
 
@@ -102,6 +106,3 @@ operations concurrently.
     - working
     - error
 
-## Diagrams
-
-<!--- @diagram [figures/resources.md] [class ResourceInstance, class ResourceQueueSet, class ResourceQueue, interface IResourceConsumer] -->

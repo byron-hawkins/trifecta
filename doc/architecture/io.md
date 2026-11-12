@@ -6,6 +6,10 @@
 <!--- @context namespace trifecta.io --->
 `namespace trifecta.io`
 
+## Diagrams
+
+<!--- @diagram [figures/io.logging.md] [class ComponentLog, interface ITextLog, interface ITextLogSink, class FileLog, enum LogContext] -->
+
 <!--- @context class ComponentLog --->
 ## ComponentLog
 
@@ -86,6 +90,3 @@ the factory and are routed to static singletons (e.g., actor.Directory.instance(
     - ensemble
     - simulation
 
-## Diagrams
-
-<!--- @diagram [figures/io.logging.md] [class ComponentLog, interface ITextLog, interface ITextLogSink, class FileLog, enum LogContext] -->

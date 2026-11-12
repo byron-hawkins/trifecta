@@ -23,6 +23,9 @@ Additional essential reading:
   `meta/grammar/markdown-architecture.bnf`,
   `meta/grammar/markdown-architecture-semantics.md`, and
   `meta/grammar/architecture-schema.json`.
+- For architecture synchronization, read
+  `meta/generate/architecture-synchronization-rules.md`; public members must
+  correspond one-to-one by name, including overloads.
 
 Whenever a session-essential file is created, add it to this bootstrap
 document.

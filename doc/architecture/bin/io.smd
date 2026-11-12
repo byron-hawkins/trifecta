@@ -39,7 +39,11 @@
     },
     {
       "kind": "markdown",
-      "text": "`namespace trifecta.io`"
+      "text": "`namespace trifecta.io`\n\n## Diagrams"
+    },
+    {
+      "kind": "diagram",
+      "diagram_index": 0
     },
     {
       "kind": "context",
@@ -96,14 +100,6 @@
     {
       "kind": "type",
       "type_id": "type:trifecta.io.LogContext"
-    },
-    {
-      "kind": "markdown",
-      "text": "## Diagrams"
-    },
-    {
-      "kind": "diagram",
-      "diagram_index": 0
     }
   ],
   "types": [

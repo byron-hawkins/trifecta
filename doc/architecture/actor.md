@@ -5,6 +5,10 @@
 <!--- @context namespace trifecta.stage --->
 `namespace trifecta.stage`
 
+## Diagrams
+
+<!--- @diagram [figures/actor.md] [class Actor, class Appearance, class Scene, class Director, class CastOptimizer, enum ActorPhase, enum SceneStatus] --->
+
 <!--- @context class Actor --->
 ## Actor
 
@@ -161,6 +165,3 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
     - stop_now
     - exit
 
-## Diagrams
-
-<!--- @diagram [figures/actor.md] [class Actor, class Appearance, class Scene, class Director, class CastOptimizer, enum ActorPhase, enum SceneStatus] --->

@@ -23,6 +23,99 @@
   <p><em>Author: Byron</em></p>
   <p><em>Subject: outline an event model for an autonomous stage executor</em></p>
   <p><code>namespace trifecta.environment</code></p>
+  <h2>Diagrams</h2>
+  <pre class="mermaid">
+classDiagram
+namespace trifecta.environment {
+  class SensorController {
+    singleton
+    System.Collections.Generic.List~ISensorDriver~ _actives
+    System.Collections.Generic.List~ISensorDriver~ _passives
+    +Register(ISensorDriver driver) void
+    +Release(ISensorDriver driver) void
+    +Start() void
+    +Stop() void
+    +Reset() void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
+  }
+  class SensorInterpreter {
+    singleton
+    System.Threading.Lock _lock
+    Thresholds _thresholds
+    System.Collections.Generic.List~IConditionAware~ _registry
+    System.Collections.Generic.List~IConditionAware~ _paranoid
+    +GetTemperature() Temperature
+    +GetPressure() Pressure
+    +SetThresholds(Thresholds thresholds) void
+    +Register(IConditionAware aware) void
+    +Release(IConditionAware aware) void
+    +Paranoid(IConditionParanoid paranoid, Granularity granularity, TimeSpan normalization) void
+    +Relax(IConditionParanoid relax) void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
+  }
+  class Thresholds {
+    &lt;&lt;struct&gt;&gt;
+    +Temperature[] t
+    +Pressure[] p
+  }
+  class Granularity {
+    &lt;&lt;struct&gt;&gt;
+    +Temperature t
+    +Pressure p
+  }
+  class IConditionAware {
+    &lt;&lt;interface&gt;&gt;
+    +ThresholdCross(Temperature t) void
+    +ThresholdCross(Pressure p) void
+  }
+  class IConditionParanoid {
+    &lt;&lt;interface&gt;&gt;
+    +Change(Temperature t) void
+    +Change(Pressure p) void
+  }
+}
+SensorInterpreter *-- Thresholds : _thresholds
+SensorInterpreter *-- IConditionAware : _registry
+SensorInterpreter *-- IConditionAware : _paranoid
+IConditionParanoid ..|&gt; IConditionAware
+  </pre>
+  <p><small>Diagrams use Mermaid from jsDelivr; rendering requires an internet connection.</small></p>
+  <pre class="mermaid">
+classDiagram
+namespace trifecta.environment {
+  class SensorController {
+    singleton
+    System.Collections.Generic.List~ISensorDriver~ _actives
+    System.Collections.Generic.List~ISensorDriver~ _passives
+    +Register(ISensorDriver driver) void
+    +Release(ISensorDriver driver) void
+    +Start() void
+    +Stop() void
+    +Reset() void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
+  }
+  class ISensorDriver {
+    &lt;&lt;interface&gt;&gt;
+    +GetId() SensorId
+    +GetSensorType() SensorType
+    +GetSensorMode() SensorMode
+    +Start() void
+    +Stop() void
+  }
+  class IActiveSensorDriver~T~ {
+    &lt;&lt;interface&gt;&gt;
+    +Attach(ISensorAware~T~ aware) void
+    +Detach(ISensorAware~T~ aware) void
+  }
+}
+SensorController *-- ISensorDriver : _actives
+SensorController *-- ISensorDriver : _passives
+IActiveSensorDriver~T~ ..|&gt; ISensorDriver
+  </pre>
+  <p><small>Diagrams use Mermaid from jsDelivr; rendering requires an internet connection.</small></p>
   <h2>SensorController</h2>
   <ul>
     <li>class SensorController</li>
@@ -165,98 +258,5 @@
       </ul>
     </ul>
   </ul>
-  <h2>Diagrams</h2>
-  <pre class="mermaid">
-classDiagram
-namespace trifecta.environment {
-  class SensorController {
-    singleton
-    System.Collections.Generic.List~ISensorDriver~ _actives
-    System.Collections.Generic.List~ISensorDriver~ _passives
-    +Register(ISensorDriver driver) void
-    +Release(ISensorDriver driver) void
-    +Start() void
-    +Stop() void
-    +Reset() void
-    +SensorUpdate(SensorId id, Temperature reading) void
-    +SensorUpdate(SensorId id, Pressure reading) void
-  }
-  class SensorInterpreter {
-    singleton
-    System.Threading.Lock _lock
-    Thresholds _thresholds
-    System.Collections.Generic.List~IConditionAware~ _registry
-    System.Collections.Generic.List~IConditionAware~ _paranoid
-    +GetTemperature() Temperature
-    +GetPressure() Pressure
-    +SetThresholds(Thresholds thresholds) void
-    +Register(IConditionAware aware) void
-    +Release(IConditionAware aware) void
-    +Paranoid(IConditionParanoid paranoid, Granularity granularity, TimeSpan normalization) void
-    +Relax(IConditionParanoid relax) void
-    +SensorUpdate(SensorId id, Temperature reading) void
-    +SensorUpdate(SensorId id, Pressure reading) void
-  }
-  class Thresholds {
-    &lt;&lt;struct&gt;&gt;
-    +Temperature[] t
-    +Pressure[] p
-  }
-  class Granularity {
-    &lt;&lt;struct&gt;&gt;
-    +Temperature t
-    +Pressure p
-  }
-  class IConditionAware {
-    &lt;&lt;interface&gt;&gt;
-    +ThresholdCross(Temperature t) void
-    +ThresholdCross(Pressure p) void
-  }
-  class IConditionParanoid {
-    &lt;&lt;interface&gt;&gt;
-    +Change(Temperature t) void
-    +Change(Pressure p) void
-  }
-}
-SensorInterpreter *-- Thresholds : _thresholds
-SensorInterpreter *-- IConditionAware : _registry
-SensorInterpreter *-- IConditionAware : _paranoid
-IConditionParanoid ..|&gt; IConditionAware
-  </pre>
-  <p><small>Diagrams use Mermaid from jsDelivr; rendering requires an internet connection.</small></p>
-  <pre class="mermaid">
-classDiagram
-namespace trifecta.environment {
-  class SensorController {
-    singleton
-    System.Collections.Generic.List~ISensorDriver~ _actives
-    System.Collections.Generic.List~ISensorDriver~ _passives
-    +Register(ISensorDriver driver) void
-    +Release(ISensorDriver driver) void
-    +Start() void
-    +Stop() void
-    +Reset() void
-    +SensorUpdate(SensorId id, Temperature reading) void
-    +SensorUpdate(SensorId id, Pressure reading) void
-  }
-  class ISensorDriver {
-    &lt;&lt;interface&gt;&gt;
-    +GetId() SensorId
-    +GetSensorType() SensorType
-    +GetSensorMode() SensorMode
-    +Start() void
-    +Stop() void
-  }
-  class IActiveSensorDriver~T~ {
-    &lt;&lt;interface&gt;&gt;
-    +Attach(ISensorAware~T~ aware) void
-    +Detach(ISensorAware~T~ aware) void
-  }
-}
-SensorController *-- ISensorDriver : _actives
-SensorController *-- ISensorDriver : _passives
-IActiveSensorDriver~T~ ..|&gt; ISensorDriver
-  </pre>
-  <p><small>Diagrams use Mermaid from jsDelivr; rendering requires an internet connection.</small></p>
 </body>
 </html>

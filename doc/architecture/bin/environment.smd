@@ -34,7 +34,15 @@
     },
     {
       "kind": "markdown",
-      "text": "`namespace trifecta.environment`"
+      "text": "`namespace trifecta.environment`\n\n## Diagrams"
+    },
+    {
+      "kind": "diagram",
+      "diagram_index": 0
+    },
+    {
+      "kind": "diagram",
+      "diagram_index": 1
     },
     {
       "kind": "context",
@@ -103,18 +111,6 @@
     {
       "kind": "type",
       "type_id": "type:trifecta.environment.SensorMode"
-    },
-    {
-      "kind": "markdown",
-      "text": "## Diagrams"
-    },
-    {
-      "kind": "diagram",
-      "diagram_index": 0
-    },
-    {
-      "kind": "diagram",
-      "diagram_index": 1
     }
   ],
   "types": [

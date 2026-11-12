@@ -5,6 +5,11 @@
 <!--- @context namespace trifecta.environment --->
 `namespace trifecta.environment`
 
+## Diagrams
+
+<!--- @diagram [figures/sensor-awareness.md] [class SensorController, class SensorInterpreter, struct Thresholds, struct Granularity, interface IConditionAware, interface IConditionParanoid] --->
+<!--- @diagram [figures/sensor-control.md] [class SensorController, interface ISensorDriver, interface IActiveSensorDriver<T>] --->
+
 <!--- @context class SensorController --->
 ## SensorController
 
@@ -105,7 +110,3 @@
     - active
     - passive
 
-## Diagrams
-
-<!--- @diagram [figures/sensor-awareness.md] [class SensorController, class SensorInterpreter, struct Thresholds, struct Granularity, interface IConditionAware, interface IConditionParanoid] --->
-<!--- @diagram [figures/sensor-control.md] [class SensorController, interface ISensorDriver, interface IActiveSensorDriver<T>] --->

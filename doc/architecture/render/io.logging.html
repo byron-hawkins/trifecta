@@ -23,6 +23,54 @@
   <p><em>Author: Byron</em></p>
   <p><em>Subject: outline I/O facilities for the application</em></p>
   <p><code>namespace trifecta.io</code></p>
+  <h2>Diagrams</h2>
+  <pre class="mermaid">
+classDiagram
+namespace trifecta.io {
+  class ComponentLog {
+    singleton
+    System.Threading.Lock _lock
+    ITextLogSink _sink
+    System.Dictionary~ThreadId, string~ _componentNames
+    +Configure(ITextLogSink sink) void
+    +EnableTrace(bool enabled) void
+    +Trace(string message, string path, int line, string member) void
+    +Log(string message, string path, int line, string member) void
+    +Flush() void
+    +Register(string componentName) LifespanToken
+    +Release() void
+  }
+  class ITextLog {
+    &lt;&lt;interface&gt;&gt;
+    +Log(string message) void
+  }
+  class ITextLogSink {
+    &lt;&lt;interface&gt;&gt;
+    +Log(string message) void
+    +Flush() void
+  }
+  class FileLog {
+    LogContext _context
+    string _basename
+    System.IO.StreamWriter _sink
+    +FileLog(LogContext context, string basename)
+    +Log(string message) void
+    +Flush() void
+  }
+  class LogContext {
+    &lt;&lt;enumeration&gt;&gt;
+    toddler
+    macarena
+    ensemble
+    simulation
+  }
+}
+ComponentLog *-- ITextLogSink : _sink
+ComponentLog ..|&gt; ITextLog
+FileLog *-- LogContext : _context
+FileLog ..|&gt; ITextLogSink
+  </pre>
+  <p><small>Diagrams use Mermaid from jsDelivr; rendering requires an internet connection.</small></p>
   <h2>ComponentLog</h2>
   <h3>Data Structure</h3>
   <ul>
@@ -117,53 +165,5 @@
       </ul>
     </ul>
   </ul>
-  <h2>Diagrams</h2>
-  <pre class="mermaid">
-classDiagram
-namespace trifecta.io {
-  class ComponentLog {
-    singleton
-    System.Threading.Lock _lock
-    ITextLogSink _sink
-    System.Dictionary~ThreadId, string~ _componentNames
-    +Configure(ITextLogSink sink) void
-    +EnableTrace(bool enabled) void
-    +Trace(string message, string path, int line, string member) void
-    +Log(string message, string path, int line, string member) void
-    +Flush() void
-    +Register(string componentName) LifespanToken
-    +Release() void
-  }
-  class ITextLog {
-    &lt;&lt;interface&gt;&gt;
-    +Log(string message) void
-  }
-  class ITextLogSink {
-    &lt;&lt;interface&gt;&gt;
-    +Log(string message) void
-    +Flush() void
-  }
-  class FileLog {
-    LogContext _context
-    string _basename
-    System.IO.StreamWriter _sink
-    +FileLog(LogContext context, string basename)
-    +Log(string message) void
-    +Flush() void
-  }
-  class LogContext {
-    &lt;&lt;enumeration&gt;&gt;
-    toddler
-    macarena
-    ensemble
-    simulation
-  }
-}
-ComponentLog *-- ITextLogSink : _sink
-ComponentLog ..|&gt; ITextLog
-FileLog *-- LogContext : _context
-FileLog ..|&gt; ITextLogSink
-  </pre>
-  <p><small>Diagrams use Mermaid from jsDelivr; rendering requires an internet connection.</small></p>
 </body>
 </html>

@@ -39,7 +39,11 @@
     },
     {
       "kind": "markdown",
-      "text": "`namespace trifecta.resource`"
+      "text": "`namespace trifecta.resource`\n\n## Diagrams"
+    },
+    {
+      "kind": "diagram",
+      "diagram_index": 0
     },
     {
       "kind": "context",
@@ -100,14 +104,6 @@
     {
       "kind": "type",
       "type_id": "type:trifecta.resource.ResourceDriverStatus"
-    },
-    {
-      "kind": "markdown",
-      "text": "## Diagrams"
-    },
-    {
-      "kind": "diagram",
-      "diagram_index": 0
     }
   ],
   "types": [
