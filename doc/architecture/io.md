@@ -20,7 +20,12 @@
     - System.Dictionary<ThreadId, string> _componentNames
   - operations
     - void Configure(ITextLogSink sink)
+    - void EnableTrace(bool enabled)
+    - void Trace(string message, string path = "", int line = 0, string member = "")
+    - void Log(string message, string path = "", int line = 0, string member = "")
+    - void Flush()
     - LifespanToken Register(string componentName)
+    - void Release()
 
 <!--- @context class LifespanToken --->
 ## LifespanToken
@@ -29,6 +34,8 @@
 - class LifespanToken
   - inherits
     - IDisposable
+  - operations
+    - void Dispose()
 
 <!--- @context class FileLogSink --->
 ## FileLogSink
@@ -43,6 +50,8 @@
     - System.IO.StreamWriter _sink
   - operations
     - FileLog(LogContext context, string basename = "trace")
+    - void Log(string message)
+    - void Flush()
 
 ## Prompt
 
@@ -65,6 +74,7 @@ the factory and are routed to static singletons (e.g., actor.Directory.instance(
 - interface ITextLogSink
   - operations
     - void Log(string message)
+    - void Flush()
 
 ## Enumerations
 

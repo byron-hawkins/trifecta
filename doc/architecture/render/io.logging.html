@@ -38,7 +38,12 @@
       <li>operations</li>
       <ul>
         <li>void Configure(ITextLogSink sink)</li>
+        <li>void EnableTrace(bool enabled)</li>
+        <li>void Trace(string message, string path = "", int line = 0, string member = "")</li>
+        <li>void Log(string message, string path = "", int line = 0, string member = "")</li>
+        <li>void Flush()</li>
         <li>LifespanToken Register(string componentName)</li>
+        <li>void Release()</li>
       </ul>
     </ul>
   </ul>
@@ -49,6 +54,10 @@
       <li>inherits</li>
       <ul>
         <li>IDisposable</li>
+      </ul>
+      <li>operations</li>
+      <ul>
+        <li>void Dispose()</li>
       </ul>
     </ul>
   </ul>
@@ -66,6 +75,8 @@
       <li>operations</li>
       <ul>
         <li>FileLog(LogContext context, string basename = "trace")</li>
+        <li>void Log(string message)</li>
+        <li>void Flush()</li>
       </ul>
     </ul>
   </ul>
@@ -89,6 +100,7 @@
       <li>operations</li>
       <ul>
         <li>void Log(string message)</li>
+        <li>void Flush()</li>
       </ul>
     </ul>
   </ul>
@@ -115,7 +127,12 @@ namespace trifecta.io {
     ITextLogSink _sink
     System.Dictionary~ThreadId, string~ _componentNames
     +Configure(ITextLogSink sink) void
+    +EnableTrace(bool enabled) void
+    +Trace(string message, string path, int line, string member) void
+    +Log(string message, string path, int line, string member) void
+    +Flush() void
     +Register(string componentName) LifespanToken
+    +Release() void
   }
   class ITextLog {
     &lt;&lt;interface&gt;&gt;
@@ -124,12 +141,15 @@ namespace trifecta.io {
   class ITextLogSink {
     &lt;&lt;interface&gt;&gt;
     +Log(string message) void
+    +Flush() void
   }
   class FileLog {
     LogContext _context
     string _basename
     System.IO.StreamWriter _sink
     +FileLog(LogContext context, string basename)
+    +Log(string message) void
+    +Flush() void
   }
   class LogContext {
     &lt;&lt;enumeration&gt;&gt;

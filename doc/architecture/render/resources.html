@@ -37,8 +37,11 @@
       </ul>
       <li>operations</li>
       <ul>
+        <li>ResourceQueue(ResourceType configuration)</li>
         <li>void Push(IResourceConsumer consumer)</li>
         <li>void Push(ResourceInstance resource)</li>
+        <li>void Dispatch()</li>
+        <li>string Identity()</li>
       </ul>
     </ul>
   </ul>
@@ -63,7 +66,9 @@
         <li>void Start()</li>
         <li>void Stop()</li>
         <li>void Bump()</li>
+        <li>void Reset()</li>
         <li>void MultiPush(IResourceConsumer consumer)</li>
+        <li>void MultiRelease(IEnumerable&lt;ResourceInstance&gt; release)</li>
       </ul>
     </ul>
   </ul>
@@ -78,7 +83,11 @@
       </ul>
       <li>operations</li>
       <ul>
+        <li>ResourceInstance(ResourceType type, IResourceDriver driver = null)</li>
+        <li>string GetName()</li>
         <li>ResourceDriverStatus GetStatus()</li>
+        <li>TimeSpan GetMinWork()</li>
+        <li>TimeSpan GetMaxWork()</li>
       </ul>
     </ul>
   </ul>
@@ -106,8 +115,10 @@
     <ul>
       <li>operations</li>
       <ul>
+        <li>bool IsGhost()</li>
         <li>IEnumerable&lt;ResourceName&gt; Scope()</li>
         <li>void Grant(ResourceInstance resource)</li>
+        <li>string Identity()</li>
       </ul>
     </ul>
   </ul>
@@ -129,7 +140,11 @@ classDiagram
 namespace trifecta.resource {
   class ResourceInstance {
     IResourceDriver _driver
+    +ResourceInstance(ResourceType type, IResourceDriver driver)
+    +GetName() string
     +GetStatus() ResourceDriverStatus
+    +GetMinWork() TimeSpan
+    +GetMaxWork() TimeSpan
   }
   class ResourceQueueSet {
     singleton
@@ -142,19 +157,26 @@ namespace trifecta.resource {
     +Start() void
     +Stop() void
     +Bump() void
+    +Reset() void
     +MultiPush(IResourceConsumer consumer) void
+    +MultiRelease(IEnumerable~ResourceInstance~ release) void
   }
   class ResourceQueue {
     System.Threading.Lock _lock
     Queue~ResourceInstance~ _resources
     Queue~IResourceConsumer~ _consumers
+    +ResourceQueue(ResourceType configuration)
     +Push(IResourceConsumer consumer) void
     +Push(ResourceInstance resource) void
+    +Dispatch() void
+    +Identity() string
   }
   class IResourceConsumer {
     &lt;&lt;interface&gt;&gt;
+    +IsGhost() bool
     +Scope() IEnumerable~ResourceName~
     +Grant(ResourceInstance resource) void
+    +Identity() string
   }
 }
 ResourceQueueSet *-- ResourceQueue : _queues

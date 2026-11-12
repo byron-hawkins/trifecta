@@ -18,6 +18,10 @@
     - void Register(ISensorDriver driver)
     - void Release(ISensorDriver driver)
     - void Start()
+    - void Stop()
+    - void Reset()
+    - void SensorUpdate(SensorId id, Temperature reading)
+    - void SensorUpdate(SensorId id, Pressure reading)
 
 <!--- @context class SensorInterpreter --->
 ## SensorInterpreter
@@ -38,6 +42,8 @@
     - void Release(IConditionAware aware)
     - void Paranoid(IConditionParanoid paranoid, Granularity granularity, TimeSpan normalization)
     - void Relax(IConditionParanoid relax)
+    - void SensorUpdate(SensorId id, Temperature reading)
+    - void SensorUpdate(SensorId id, Pressure reading)
 
 <!--- @type --->
 - struct Thresholds
@@ -70,6 +76,9 @@
   - operations
     - SensorId GetId()
     - SensorType GetSensorType()
+    - SensorMode GetSensorMode()
+    - void Start()
+    - void Stop()
 
 <!--- @type --->
 - interface IActiveSensorDriver<T> : ISensorDriver
@@ -100,4 +109,3 @@
 
 <!--- @diagram [figures/sensor-awareness.md] [class SensorController, class SensorInterpreter, struct Thresholds, struct Granularity, interface IConditionAware, interface IConditionParanoid] --->
 <!--- @diagram [figures/sensor-control.md] [class SensorController, interface ISensorDriver, interface IActiveSensorDriver<T>] --->
-

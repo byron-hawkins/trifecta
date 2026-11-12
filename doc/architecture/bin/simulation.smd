@@ -520,6 +520,36 @@
           "modifiers": [],
           "parameters": [],
           "source_text": "void Stop()"
+        },
+        {
+          "kind": "method",
+          "name": "GetId",
+          "return_type": {
+            "name": "SensorId"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "SensorId GetId()"
+        },
+        {
+          "kind": "method",
+          "name": "GetSensorType",
+          "return_type": {
+            "name": "SensorType"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "SensorType GetSensorType()"
+        },
+        {
+          "kind": "method",
+          "name": "GetSensorMode",
+          "return_type": {
+            "name": "SensorMode"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "SensorMode GetSensorMode()"
         }
       ]
     },
@@ -582,6 +612,70 @@
             }
           ],
           "source_text": "ScriptedActiveSensorDriver(SensorScript<T> _script, SensorConfiguration _configuration)"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Start()"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Stop()"
+        },
+        {
+          "kind": "method",
+          "name": "Attach",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "aware",
+              "type": {
+                "name": "ISensorAware",
+                "type_arguments": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ],
+          "source_text": "void Attach(ISensorAware<T> aware)"
+        },
+        {
+          "kind": "method",
+          "name": "Detach",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "unaware",
+              "type": {
+                "name": "ISensorAware",
+                "type_arguments": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ],
+          "source_text": "void Detach(ISensorAware<T> unaware)"
         }
       ]
     },
@@ -644,6 +738,26 @@
             }
           ],
           "source_text": "ScriptedPassiveSensorDriver(SensorScript<T> _script, SensorConfiguration _configuration)"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Start()"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Stop()"
         }
       ]
     }

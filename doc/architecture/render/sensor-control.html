@@ -38,6 +38,10 @@
         <li>void Register(ISensorDriver driver)</li>
         <li>void Release(ISensorDriver driver)</li>
         <li>void Start()</li>
+        <li>void Stop()</li>
+        <li>void Reset()</li>
+        <li>void SensorUpdate(SensorId id, Temperature reading)</li>
+        <li>void SensorUpdate(SensorId id, Pressure reading)</li>
       </ul>
     </ul>
   </ul>
@@ -62,6 +66,8 @@
         <li>void Release(IConditionAware aware)</li>
         <li>void Paranoid(IConditionParanoid paranoid, Granularity granularity, TimeSpan normalization)</li>
         <li>void Relax(IConditionParanoid relax)</li>
+        <li>void SensorUpdate(SensorId id, Temperature reading)</li>
+        <li>void SensorUpdate(SensorId id, Pressure reading)</li>
       </ul>
     </ul>
   </ul>
@@ -113,6 +119,9 @@
       <ul>
         <li>SensorId GetId()</li>
         <li>SensorType GetSensorType()</li>
+        <li>SensorMode GetSensorMode()</li>
+        <li>void Start()</li>
+        <li>void Stop()</li>
       </ul>
     </ul>
   </ul>
@@ -167,6 +176,10 @@ namespace trifecta.environment {
     +Register(ISensorDriver driver) void
     +Release(ISensorDriver driver) void
     +Start() void
+    +Stop() void
+    +Reset() void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
   }
   class SensorInterpreter {
     singleton
@@ -181,6 +194,8 @@ namespace trifecta.environment {
     +Release(IConditionAware aware) void
     +Paranoid(IConditionParanoid paranoid, Granularity granularity, TimeSpan normalization) void
     +Relax(IConditionParanoid relax) void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
   }
   class Thresholds {
     &lt;&lt;struct&gt;&gt;
@@ -219,11 +234,18 @@ namespace trifecta.environment {
     +Register(ISensorDriver driver) void
     +Release(ISensorDriver driver) void
     +Start() void
+    +Stop() void
+    +Reset() void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
   }
   class ISensorDriver {
     &lt;&lt;interface&gt;&gt;
     +GetId() SensorId
     +GetSensorType() SensorType
+    +GetSensorMode() SensorMode
+    +Start() void
+    +Stop() void
   }
   class IActiveSensorDriver~T~ {
     &lt;&lt;interface&gt;&gt;

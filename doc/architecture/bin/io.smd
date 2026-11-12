@@ -205,6 +205,109 @@
         },
         {
           "kind": "method",
+          "name": "EnableTrace",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "enabled",
+              "type": {
+                "name": "bool"
+              }
+            }
+          ],
+          "source_text": "void EnableTrace(bool enabled)"
+        },
+        {
+          "kind": "method",
+          "name": "Trace",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "message",
+              "type": {
+                "name": "string"
+              }
+            },
+            {
+              "name": "path",
+              "type": {
+                "name": "string"
+              },
+              "default_value": "\"\""
+            },
+            {
+              "name": "line",
+              "type": {
+                "name": "int"
+              },
+              "default_value": "0"
+            },
+            {
+              "name": "member",
+              "type": {
+                "name": "string"
+              },
+              "default_value": "\"\""
+            }
+          ],
+          "source_text": "void Trace(string message, string path = \"\", int line = 0, string member = \"\")"
+        },
+        {
+          "kind": "method",
+          "name": "Log",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "message",
+              "type": {
+                "name": "string"
+              }
+            },
+            {
+              "name": "path",
+              "type": {
+                "name": "string"
+              },
+              "default_value": "\"\""
+            },
+            {
+              "name": "line",
+              "type": {
+                "name": "int"
+              },
+              "default_value": "0"
+            },
+            {
+              "name": "member",
+              "type": {
+                "name": "string"
+              },
+              "default_value": "\"\""
+            }
+          ],
+          "source_text": "void Log(string message, string path = \"\", int line = 0, string member = \"\")"
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Flush()"
+        },
+        {
+          "kind": "method",
           "name": "Register",
           "return_type": {
             "name": "LifespanToken"
@@ -219,6 +322,16 @@
             }
           ],
           "source_text": "LifespanToken Register(string componentName)"
+        },
+        {
+          "kind": "method",
+          "name": "Release",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Release()"
         }
       ]
     },
@@ -248,7 +361,18 @@
         }
       ],
       "aliases": [],
-      "members": []
+      "members": [
+        {
+          "kind": "method",
+          "name": "Dispose",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Dispose()"
+        }
+      ]
     },
     {
       "id": "type:trifecta.io.FileLog",
@@ -327,6 +451,33 @@
             }
           ],
           "source_text": "FileLog(LogContext context, string basename = \"trace\")"
+        },
+        {
+          "kind": "method",
+          "name": "Log",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "message",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "source_text": "void Log(string message)"
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Flush()"
         }
       ]
     },
@@ -397,6 +548,16 @@
             }
           ],
           "source_text": "void Log(string message)"
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Flush()"
         }
       ]
     },

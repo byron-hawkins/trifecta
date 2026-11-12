@@ -11,13 +11,13 @@
 ## Actor
 
 To perform a sequence of Scene comprising a stage for some duration 100ms <= tx <= 5s, while responding to
-changes in conditions, an autonomous Actor will operate on its own threaed and coordinate events under a
+changes in conditions, an autonomous Actor will operate on its own thread and coordinate events under a
 single instance-specific lock. All actions will be trivial except when performing a Scene that involves
 significant continuous computation. Responsiveness to concurrent events during computation will depend on
 granularity of the computation steps; for example, if a Scene performs computation in 10ms loop iterations,
 then events relevant to the Actor may go unnoticed for as long as 10ms. For a Scene that consumes one or
 more resources and does not perform computation, it is assumed that the Actor remains passively available
-for event notification while each resource performs work on s separate driver thread.
+for event notification while each resource performs work on a separate driver thread.
 
 When not performing computation, an Actor is either busy with a trivial event while holding its lock, or
 waits on its lock until some notification occurs. Implementation can most likely use a simple Monitor,
@@ -35,9 +35,18 @@ changes on subscribed event sources; if found, no wait will occur and Actor will
     - Scene? _onstage
     - List<Scene> _scenes
   - operations
-    - Actor(RoleConfiguration configuration)
+    - Actor(int index, RoleConfiguration configuration)
+    - Actor(int index, RoleConfiguration configuration, resource.IResourceQueueSet qs)
+    - bool IsRunning()
     - void Start()
     - void Stop(ActorPhase mode, System.Action finalize)
+    - void ThresholdCross(Temperature t)
+    - void ThresholdCross(Pressure p)
+    - IEnumerable<ResourceName> Scope()
+    - void Grant(resource.ResourceInstance resource)
+    - void Remit(List<resource.ResourceInstance> free)
+    - bool IsGhost(Appearance appearance)
+    - string Identity()
 
 <!--- @context class Appearance --->
 ## Appearance
@@ -58,6 +67,7 @@ precluding the need to remove abandoned resource requests from the queue.
     - bool IsGhost()
     - IEnumerable<ResourceName> Scope()
     - void Grant(resource.ResourceInstance resource)
+    - string Identity()
 
 <!--- @context class Scene --->
 ## Scene
@@ -71,9 +81,19 @@ precluding the need to remove abandoned resource requests from the queue.
     - List<resource.ResourceInstance> _resources
     - SceneStatus _status
   - operations
-    - Scene(SceneConfiguration configuration)
+    - Scene(int index, SceneConfiguration configuration)
+    - Scene(int index, SceneConfiguration configuration, resource.IResourceQueueSet qs)
     - SceneStatus GetStatus()
+    - bool IsContinuation()
+    - void Begin()
     - SceneStatus Execute()
+    - bool Grant(resource.ResourceInstance resource)
+    - void Reset(Actor actor)
+    - void Remit(Actor actor)
+    - IEnumerable<ResourceName> Scope()
+    - bool IsLocal()
+    - TimeSpan GetStepDuration()
+    - string Identity()
 
 <!--- @context class Director --->
 ## Director
@@ -93,6 +113,11 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
     - void configure(DirectorConfiguration configuration)
     - void Start()
     - void Stop(bool nicely)
+    - void Reset()
+    - void ThresholdCross(Temperature t)
+    - void ThresholdCross(Pressure p)
+    - void Interrupt(RoleId role, ActorPhase exitStrategy)
+    - void Initiate(RoleId role)
 
 <!--- @context class CastOptimizer --->
 ## CastOptimizer
@@ -130,6 +155,7 @@ Attempts to optimize productivity by regulating the number of concurrent actors.
   - composition
     - ready
     - queue_up
+    - on_queue
     - work
     - suspension
     - stop_at_cost
@@ -147,9 +173,18 @@ namespace trifecta.stage {
     ActorPhase _phase
     Scene? _onstage
     List~Scene~ _scenes
-    +Actor(RoleConfiguration configuration)
+    +Actor(int index, RoleConfiguration configuration)
+    +Actor(int index, RoleConfiguration configuration, resource.IResourceQueueSet qs)
+    +IsRunning() bool
     +Start() void
     +Stop(ActorPhase mode, System.Action finalize) void
+    +ThresholdCross(Temperature t) void
+    +ThresholdCross(Pressure p) void
+    +Scope() IEnumerable~ResourceName~
+    +Grant(resource.ResourceInstance resource) void
+    +Remit(List~resource.ResourceInstance~ free) void
+    +IsGhost(Appearance appearance) bool
+    +Identity() string
   }
   class Appearance {
     Actor _actor
@@ -157,14 +192,25 @@ namespace trifecta.stage {
     +IsGhost() bool
     +Scope() IEnumerable~ResourceName~
     +Grant(resource.ResourceInstance resource) void
+    +Identity() string
   }
   class Scene {
     SceneConfiguration _configuration
     List~resource.ResourceInstance~ _resources
     SceneStatus _status
-    +Scene(SceneConfiguration configuration)
+    +Scene(int index, SceneConfiguration configuration)
+    +Scene(int index, SceneConfiguration configuration, resource.IResourceQueueSet qs)
     +GetStatus() SceneStatus
+    +IsContinuation() bool
+    +Begin() void
     +Execute() SceneStatus
+    +Grant(resource.ResourceInstance resource) bool
+    +Reset(Actor actor) void
+    +Remit(Actor actor) void
+    +Scope() IEnumerable~ResourceName~
+    +IsLocal() bool
+    +GetStepDuration() TimeSpan
+    +Identity() string
   }
   class Director {
     singleton
@@ -174,6 +220,11 @@ namespace trifecta.stage {
     +configure(DirectorConfiguration configuration) void
     +Start() void
     +Stop(bool nicely) void
+    +Reset() void
+    +ThresholdCross(Temperature t) void
+    +ThresholdCross(Pressure p) void
+    +Interrupt(RoleId role, ActorPhase exitStrategy) void
+    +Initiate(RoleId role) void
   }
   class CastOptimizer {
     ICastManager _manager
@@ -185,6 +236,7 @@ namespace trifecta.stage {
     <<enumeration>>
     ready
     queue_up
+    on_queue
     work
     suspension
     stop_at_cost

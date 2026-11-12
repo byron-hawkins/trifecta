@@ -226,6 +226,72 @@
           "modifiers": [],
           "parameters": [],
           "source_text": "void Start()"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Stop()"
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Reset()"
+        },
+        {
+          "kind": "method",
+          "name": "SensorUpdate",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "name": "SensorId"
+              }
+            },
+            {
+              "name": "reading",
+              "type": {
+                "name": "Temperature"
+              }
+            }
+          ],
+          "source_text": "void SensorUpdate(SensorId id, Temperature reading)"
+        },
+        {
+          "kind": "method",
+          "name": "SensorUpdate",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "name": "SensorId"
+              }
+            },
+            {
+              "name": "reading",
+              "type": {
+                "name": "Pressure"
+              }
+            }
+          ],
+          "source_text": "void SensorUpdate(SensorId id, Pressure reading)"
         }
       ]
     },
@@ -451,6 +517,52 @@
             }
           ],
           "source_text": "void Relax(IConditionParanoid relax)"
+        },
+        {
+          "kind": "method",
+          "name": "SensorUpdate",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "name": "SensorId"
+              }
+            },
+            {
+              "name": "reading",
+              "type": {
+                "name": "Temperature"
+              }
+            }
+          ],
+          "source_text": "void SensorUpdate(SensorId id, Temperature reading)"
+        },
+        {
+          "kind": "method",
+          "name": "SensorUpdate",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "name": "SensorId"
+              }
+            },
+            {
+              "name": "reading",
+              "type": {
+                "name": "Pressure"
+              }
+            }
+          ],
+          "source_text": "void SensorUpdate(SensorId id, Pressure reading)"
         }
       ]
     },
@@ -689,6 +801,36 @@
           "modifiers": [],
           "parameters": [],
           "source_text": "SensorType GetSensorType()"
+        },
+        {
+          "kind": "method",
+          "name": "GetSensorMode",
+          "return_type": {
+            "name": "SensorMode"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "SensorMode GetSensorMode()"
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Start()"
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Stop()"
         }
       ]
     },

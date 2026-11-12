@@ -21,8 +21,11 @@ Configurable set of resources potentially available to the machine.
     - Queue<ResourceInstance> _resources
     - Queue<IResourceConsumer> _consumers
   - operations
+    - ResourceQueue(ResourceType configuration)
     - void Push(IResourceConsumer consumer)
     - void Push(ResourceInstance resource)
+    - void Dispatch()
+    - string Identity()
 
 <!--- @context class ResourceQueueSet --->
 ## ResourceQueueSet
@@ -49,7 +52,9 @@ enqeueued with differing precedence on at least two queues of RQS.
     - void Start()
     - void Stop()
     - void Bump()
+    - void Reset()
     - void MultiPush(IResourceConsumer consumer)
+    - void MultiRelease(IEnumerable<ResourceInstance> release)
 
 <!--- @context class ResourceInstance --->
 ## ResourceInstance
@@ -64,7 +69,11 @@ operations concurrently.
   - composition
     - IResourceDriver _driver
   - operations
+    - ResourceInstance(ResourceType type, IResourceDriver driver = null)
+    - string GetName()
     - ResourceDriverStatus GetStatus()
+    - TimeSpan GetMinWork()
+    - TimeSpan GetMaxWork()
 
 ## Interfaces
 
@@ -81,8 +90,10 @@ operations concurrently.
 <!--- @type --->
 - interface IResourceConsumer
   - operations
+    - bool IsGhost()
     - IEnumerable<ResourceName> Scope()
     - void Grant(ResourceInstance resource)
+    - string Identity()
 
 ## Enumerations
 
@@ -100,7 +111,11 @@ classDiagram
 namespace trifecta.resource {
   class ResourceInstance {
     IResourceDriver _driver
+    +ResourceInstance(ResourceType type, IResourceDriver driver)
+    +GetName() string
     +GetStatus() ResourceDriverStatus
+    +GetMinWork() TimeSpan
+    +GetMaxWork() TimeSpan
   }
   class ResourceQueueSet {
     singleton
@@ -113,19 +128,26 @@ namespace trifecta.resource {
     +Start() void
     +Stop() void
     +Bump() void
+    +Reset() void
     +MultiPush(IResourceConsumer consumer) void
+    +MultiRelease(IEnumerable~ResourceInstance~ release) void
   }
   class ResourceQueue {
     System.Threading.Lock _lock
     Queue~ResourceInstance~ _resources
     Queue~IResourceConsumer~ _consumers
+    +ResourceQueue(ResourceType configuration)
     +Push(IResourceConsumer consumer) void
     +Push(ResourceInstance resource) void
+    +Dispatch() void
+    +Identity() string
   }
   class IResourceConsumer {
     <<interface>>
+    +IsGhost() bool
     +Scope() IEnumerable~ResourceName~
     +Grant(ResourceInstance resource) void
+    +Identity() string
   }
 }
 ResourceQueueSet *-- ResourceQueue : _queues

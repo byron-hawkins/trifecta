@@ -173,6 +173,20 @@
           ]
         },
         {
+          "kind": "constructor",
+          "name": "ResourceQueue",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "configuration",
+              "type": {
+                "name": "ResourceType"
+              }
+            }
+          ],
+          "source_text": "ResourceQueue(ResourceType configuration)"
+        },
+        {
           "kind": "method",
           "name": "Push",
           "return_type": {
@@ -205,6 +219,26 @@
             }
           ],
           "source_text": "void Push(ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "Dispatch",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Dispatch()"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "string Identity()"
         }
       ]
     },
@@ -351,6 +385,16 @@
         },
         {
           "kind": "method",
+          "name": "Reset",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Reset()"
+        },
+        {
+          "kind": "method",
           "name": "MultiPush",
           "return_type": {
             "name": "void"
@@ -365,6 +409,28 @@
             }
           ],
           "source_text": "void MultiPush(IResourceConsumer consumer)"
+        },
+        {
+          "kind": "method",
+          "name": "MultiRelease",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "release",
+              "type": {
+                "name": "IEnumerable",
+                "type_arguments": [
+                  {
+                    "name": "ResourceInstance"
+                  }
+                ]
+              }
+            }
+          ],
+          "source_text": "void MultiRelease(IEnumerable<ResourceInstance> release)"
         }
       ]
     },
@@ -400,6 +466,37 @@
           ]
         },
         {
+          "kind": "constructor",
+          "name": "ResourceInstance",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "type",
+              "type": {
+                "name": "ResourceType"
+              }
+            },
+            {
+              "name": "driver",
+              "type": {
+                "name": "IResourceDriver"
+              },
+              "default_value": "null"
+            }
+          ],
+          "source_text": "ResourceInstance(ResourceType type, IResourceDriver driver = null)"
+        },
+        {
+          "kind": "method",
+          "name": "GetName",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "string GetName()"
+        },
+        {
           "kind": "method",
           "name": "GetStatus",
           "return_type": {
@@ -408,6 +505,26 @@
           "modifiers": [],
           "parameters": [],
           "source_text": "ResourceDriverStatus GetStatus()"
+        },
+        {
+          "kind": "method",
+          "name": "GetMinWork",
+          "return_type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "TimeSpan GetMinWork()"
+        },
+        {
+          "kind": "method",
+          "name": "GetMaxWork",
+          "return_type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "TimeSpan GetMaxWork()"
         }
       ]
     },
@@ -491,6 +608,16 @@
       "members": [
         {
           "kind": "method",
+          "name": "IsGhost",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "bool IsGhost()"
+        },
+        {
+          "kind": "method",
           "name": "Scope",
           "return_type": {
             "name": "IEnumerable",
@@ -520,6 +647,16 @@
             }
           ],
           "source_text": "void Grant(ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "string Identity()"
         }
       ]
     },

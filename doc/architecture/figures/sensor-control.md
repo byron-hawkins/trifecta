@@ -10,11 +10,18 @@ namespace trifecta.environment {
     +Register(ISensorDriver driver) void
     +Release(ISensorDriver driver) void
     +Start() void
+    +Stop() void
+    +Reset() void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
   }
   class ISensorDriver {
     <<interface>>
     +GetId() SensorId
     +GetSensorType() SensorType
+    +GetSensorMode() SensorMode
+    +Start() void
+    +Stop() void
   }
   class IActiveSensorDriver~T~ {
     <<interface>>

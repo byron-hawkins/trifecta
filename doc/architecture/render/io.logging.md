@@ -21,7 +21,12 @@
     - System.Dictionary<ThreadId, string> _componentNames
   - operations
     - void Configure(ITextLogSink sink)
+    - void EnableTrace(bool enabled)
+    - void Trace(string message, string path = "", int line = 0, string member = "")
+    - void Log(string message, string path = "", int line = 0, string member = "")
+    - void Flush()
     - LifespanToken Register(string componentName)
+    - void Release()
 
 <!--- @context class LifespanToken --->
 ## LifespanToken
@@ -30,6 +35,8 @@
 - class LifespanToken
   - inherits
     - IDisposable
+  - operations
+    - void Dispose()
 
 <!--- @context class FileLogSink --->
 ## FileLogSink
@@ -44,6 +51,8 @@
     - System.IO.StreamWriter _sink
   - operations
     - FileLog(LogContext context, string basename = "trace")
+    - void Log(string message)
+    - void Flush()
 
 ## Prompt
 
@@ -66,6 +75,7 @@ the factory and are routed to static singletons (e.g., actor.Directory.instance(
 - interface ITextLogSink
   - operations
     - void Log(string message)
+    - void Flush()
 
 ## Enumerations
 
@@ -88,7 +98,12 @@ namespace trifecta.io {
     ITextLogSink _sink
     System.Dictionary~ThreadId, string~ _componentNames
     +Configure(ITextLogSink sink) void
+    +EnableTrace(bool enabled) void
+    +Trace(string message, string path, int line, string member) void
+    +Log(string message, string path, int line, string member) void
+    +Flush() void
     +Register(string componentName) LifespanToken
+    +Release() void
   }
   class ITextLog {
     <<interface>>
@@ -97,12 +112,15 @@ namespace trifecta.io {
   class ITextLogSink {
     <<interface>>
     +Log(string message) void
+    +Flush() void
   }
   class FileLog {
     LogContext _context
     string _basename
     System.IO.StreamWriter _sink
     +FileLog(LogContext context, string basename)
+    +Log(string message) void
+    +Flush() void
   }
   class LogContext {
     <<enumeration>>

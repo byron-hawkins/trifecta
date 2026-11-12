@@ -60,6 +60,9 @@
     - ScriptedSensorDriver(SensorScript<T> _script, SensorConfiguration _configuration)
     - void Start()
     - void Stop()
+    - SensorId GetId()
+    - SensorType GetSensorType()
+    - SensorMode GetSensorMode()
 
 <!--- @context class ScriptedActiveSensorDriver --->
 ## ScriptedActiveSensorDriver
@@ -68,6 +71,10 @@
 - class ScriptedActiveSensorDriver<T> : ScriptedSensorDriver<T>
   - operations
     - ScriptedActiveSensorDriver(SensorScript<T> _script, SensorConfiguration _configuration)
+    - void Start()
+    - void Stop()
+    - void Attach(ISensorAware<T> aware)
+    - void Detach(ISensorAware<T> unaware)
 
 <!--- @context class ScriptedPassiveSensorDriver --->
 ## ScriptedPassiveSensorDriver
@@ -76,4 +83,5 @@
 - class ScriptedPassiveSensorDriver<T> : ScriptedSensorDriver<T>
   - operations
     - ScriptedPassiveSensorDriver(SensorScript<T> _script, SensorConfiguration _configuration)
-
+    - void Start()
+    - void Stop()

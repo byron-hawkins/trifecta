@@ -57,7 +57,7 @@
     },
     {
       "kind": "markdown",
-      "text": "## Actor\n\nTo perform a sequence of Scene comprising a stage for some duration 100ms <= tx <= 5s, while responding to\nchanges in conditions, an autonomous Actor will operate on its own threaed and coordinate events under a\nsingle instance-specific lock. All actions will be trivial except when performing a Scene that involves\nsignificant continuous computation. Responsiveness to concurrent events during computation will depend on\ngranularity of the computation steps; for example, if a Scene performs computation in 10ms loop iterations,\nthen events relevant to the Actor may go unnoticed for as long as 10ms. For a Scene that consumes one or\nmore resources and does not perform computation, it is assumed that the Actor remains passively available\nfor event notification while each resource performs work on s separate driver thread.\n\nWhen not performing computation, an Actor is either busy with a trivial event while holding its lock, or\nwaits on its lock until some notification occurs. Implementation can most likely use a simple Monitor,\nwhich can be held privately within Actor. Events will arrive over interface callbacks, which Actor can\nimplement as synchronizing on its Monitor. Before initiating a wait phase, Actor will discover any state\nchanges on subscribed event sources; if found, no wait will occur and Actor will directly respond.\n\n### Data Structure"
+      "text": "## Actor\n\nTo perform a sequence of Scene comprising a stage for some duration 100ms <= tx <= 5s, while responding to\nchanges in conditions, an autonomous Actor will operate on its own thread and coordinate events under a\nsingle instance-specific lock. All actions will be trivial except when performing a Scene that involves\nsignificant continuous computation. Responsiveness to concurrent events during computation will depend on\ngranularity of the computation steps; for example, if a Scene performs computation in 10ms loop iterations,\nthen events relevant to the Actor may go unnoticed for as long as 10ms. For a Scene that consumes one or\nmore resources and does not perform computation, it is assumed that the Actor remains passively available\nfor event notification while each resource performs work on a separate driver thread.\n\nWhen not performing computation, an Actor is either busy with a trivial event while holding its lock, or\nwaits on its lock until some notification occurs. Implementation can most likely use a simple Monitor,\nwhich can be held privately within Actor. Events will arrive over interface callbacks, which Actor can\nimplement as synchronizing on its Monitor. Before initiating a wait phase, Actor will discover any state\nchanges on subscribed event sources; if found, no wait will occur and Actor will directly respond.\n\n### Data Structure"
     },
     {
       "kind": "type",
@@ -220,13 +220,55 @@
           "modifiers": [],
           "parameters": [
             {
+              "name": "index",
+              "type": {
+                "name": "int"
+              }
+            },
+            {
               "name": "configuration",
               "type": {
                 "name": "RoleConfiguration"
               }
             }
           ],
-          "source_text": "Actor(RoleConfiguration configuration)"
+          "source_text": "Actor(int index, RoleConfiguration configuration)"
+        },
+        {
+          "kind": "constructor",
+          "name": "Actor",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "name": "int"
+              }
+            },
+            {
+              "name": "configuration",
+              "type": {
+                "name": "RoleConfiguration"
+              }
+            },
+            {
+              "name": "qs",
+              "type": {
+                "name": "resource.IResourceQueueSet"
+              }
+            }
+          ],
+          "source_text": "Actor(int index, RoleConfiguration configuration, resource.IResourceQueueSet qs)"
+        },
+        {
+          "kind": "method",
+          "name": "IsRunning",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "bool IsRunning()"
         },
         {
           "kind": "method",
@@ -260,6 +302,121 @@
             }
           ],
           "source_text": "void Stop(ActorPhase mode, System.Action finalize)"
+        },
+        {
+          "kind": "method",
+          "name": "ThresholdCross",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "t",
+              "type": {
+                "name": "Temperature"
+              }
+            }
+          ],
+          "source_text": "void ThresholdCross(Temperature t)"
+        },
+        {
+          "kind": "method",
+          "name": "ThresholdCross",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "p",
+              "type": {
+                "name": "Pressure"
+              }
+            }
+          ],
+          "source_text": "void ThresholdCross(Pressure p)"
+        },
+        {
+          "kind": "method",
+          "name": "Scope",
+          "return_type": {
+            "name": "IEnumerable",
+            "type_arguments": [
+              {
+                "name": "ResourceName"
+              }
+            ]
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "IEnumerable<ResourceName> Scope()"
+        },
+        {
+          "kind": "method",
+          "name": "Grant",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "resource",
+              "type": {
+                "name": "resource.ResourceInstance"
+              }
+            }
+          ],
+          "source_text": "void Grant(resource.ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "Remit",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "free",
+              "type": {
+                "name": "List",
+                "type_arguments": [
+                  {
+                    "name": "resource.ResourceInstance"
+                  }
+                ]
+              }
+            }
+          ],
+          "source_text": "void Remit(List<resource.ResourceInstance> free)"
+        },
+        {
+          "kind": "method",
+          "name": "IsGhost",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "appearance",
+              "type": {
+                "name": "Appearance"
+              }
+            }
+          ],
+          "source_text": "bool IsGhost(Appearance appearance)"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "string Identity()"
         }
       ]
     },
@@ -355,6 +512,16 @@
             }
           ],
           "source_text": "void Grant(resource.ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "string Identity()"
         }
       ]
     },
@@ -420,13 +587,45 @@
           "modifiers": [],
           "parameters": [
             {
+              "name": "index",
+              "type": {
+                "name": "int"
+              }
+            },
+            {
               "name": "configuration",
               "type": {
                 "name": "SceneConfiguration"
               }
             }
           ],
-          "source_text": "Scene(SceneConfiguration configuration)"
+          "source_text": "Scene(int index, SceneConfiguration configuration)"
+        },
+        {
+          "kind": "constructor",
+          "name": "Scene",
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "name": "int"
+              }
+            },
+            {
+              "name": "configuration",
+              "type": {
+                "name": "SceneConfiguration"
+              }
+            },
+            {
+              "name": "qs",
+              "type": {
+                "name": "resource.IResourceQueueSet"
+              }
+            }
+          ],
+          "source_text": "Scene(int index, SceneConfiguration configuration, resource.IResourceQueueSet qs)"
         },
         {
           "kind": "method",
@@ -440,6 +639,26 @@
         },
         {
           "kind": "method",
+          "name": "IsContinuation",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "bool IsContinuation()"
+        },
+        {
+          "kind": "method",
+          "name": "Begin",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Begin()"
+        },
+        {
+          "kind": "method",
           "name": "Execute",
           "return_type": {
             "name": "SceneStatus"
@@ -447,6 +666,102 @@
           "modifiers": [],
           "parameters": [],
           "source_text": "SceneStatus Execute()"
+        },
+        {
+          "kind": "method",
+          "name": "Grant",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "resource",
+              "type": {
+                "name": "resource.ResourceInstance"
+              }
+            }
+          ],
+          "source_text": "bool Grant(resource.ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "actor",
+              "type": {
+                "name": "Actor"
+              }
+            }
+          ],
+          "source_text": "void Reset(Actor actor)"
+        },
+        {
+          "kind": "method",
+          "name": "Remit",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "actor",
+              "type": {
+                "name": "Actor"
+              }
+            }
+          ],
+          "source_text": "void Remit(Actor actor)"
+        },
+        {
+          "kind": "method",
+          "name": "Scope",
+          "return_type": {
+            "name": "IEnumerable",
+            "type_arguments": [
+              {
+                "name": "ResourceName"
+              }
+            ]
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "IEnumerable<ResourceName> Scope()"
+        },
+        {
+          "kind": "method",
+          "name": "IsLocal",
+          "return_type": {
+            "name": "bool"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "bool IsLocal()"
+        },
+        {
+          "kind": "method",
+          "name": "GetStepDuration",
+          "return_type": {
+            "name": "TimeSpan"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "TimeSpan GetStepDuration()"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "string Identity()"
         }
       ]
     },
@@ -582,6 +897,90 @@
             }
           ],
           "source_text": "void Stop(bool nicely)"
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_text": "void Reset()"
+        },
+        {
+          "kind": "method",
+          "name": "ThresholdCross",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "t",
+              "type": {
+                "name": "Temperature"
+              }
+            }
+          ],
+          "source_text": "void ThresholdCross(Temperature t)"
+        },
+        {
+          "kind": "method",
+          "name": "ThresholdCross",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "p",
+              "type": {
+                "name": "Pressure"
+              }
+            }
+          ],
+          "source_text": "void ThresholdCross(Pressure p)"
+        },
+        {
+          "kind": "method",
+          "name": "Interrupt",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "role",
+              "type": {
+                "name": "RoleId"
+              }
+            },
+            {
+              "name": "exitStrategy",
+              "type": {
+                "name": "ActorPhase"
+              }
+            }
+          ],
+          "source_text": "void Interrupt(RoleId role, ActorPhase exitStrategy)"
+        },
+        {
+          "kind": "method",
+          "name": "Initiate",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [],
+          "parameters": [
+            {
+              "name": "role",
+              "type": {
+                "name": "RoleId"
+              }
+            }
+          ],
+          "source_text": "void Initiate(RoleId role)"
         }
       ]
     },
@@ -777,6 +1176,10 @@
         {
           "kind": "enum_member",
           "name": "queue_up"
+        },
+        {
+          "kind": "enum_member",
+          "name": "on_queue"
         },
         {
           "kind": "enum_member",

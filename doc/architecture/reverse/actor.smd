@@ -164,7 +164,7 @@
           ],
           "source_location": {
             "start_line": 36,
-            "end_line": 54,
+            "end_line": 58,
             "start_column": 3,
             "end_column": 4
           },
@@ -188,8 +188,8 @@
                 "resolved_name": "trifecta.stage.ActorPhase"
               },
               "source_location": {
-                "start_line": 56,
-                "end_line": 56,
+                "start_line": 60,
+                "end_line": 60,
                 "start_column": 28,
                 "end_column": 43
               }
@@ -202,8 +202,8 @@
               },
               "default_value": "null",
               "source_location": {
-                "start_line": 56,
-                "end_line": 56,
+                "start_line": 60,
+                "end_line": 60,
                 "start_column": 45,
                 "end_column": 68
               }
@@ -215,16 +215,16 @@
               },
               "default_value": "false",
               "source_location": {
-                "start_line": 56,
-                "end_line": 56,
+                "start_line": 60,
+                "end_line": 60,
                 "start_column": 70,
                 "end_column": 92
               }
             }
           ],
           "source_location": {
-            "start_line": 56,
-            "end_line": 81,
+            "start_line": 60,
+            "end_line": 85,
             "start_column": 3,
             "end_column": 4
           },
@@ -246,16 +246,16 @@
                 "name": "Temperature"
               },
               "source_location": {
-                "start_line": 84,
-                "end_line": 84,
+                "start_line": 88,
+                "end_line": 88,
                 "start_column": 30,
                 "end_column": 43
               }
             }
           ],
           "source_location": {
-            "start_line": 84,
-            "end_line": 84,
+            "start_line": 88,
+            "end_line": 88,
             "start_column": 3,
             "end_column": 47
           },
@@ -277,16 +277,16 @@
                 "name": "Pressure"
               },
               "source_location": {
-                "start_line": 87,
-                "end_line": 87,
+                "start_line": 91,
+                "end_line": 91,
                 "start_column": 30,
                 "end_column": 40
               }
             }
           ],
           "source_location": {
-            "start_line": 87,
-            "end_line": 87,
+            "start_line": 91,
+            "end_line": 91,
             "start_column": 3,
             "end_column": 44
           },
@@ -308,8 +308,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 89,
-            "end_line": 96,
+            "start_line": 93,
+            "end_line": 100,
             "start_column": 3,
             "end_column": 4
           },
@@ -332,16 +332,16 @@
                 "resolved_name": "trifecta.resource.ResourceInstance"
               },
               "source_location": {
-                "start_line": 98,
-                "end_line": 98,
+                "start_line": 102,
+                "end_line": 102,
                 "start_column": 21,
                 "end_column": 46
               }
             }
           ],
           "source_location": {
-            "start_line": 98,
-            "end_line": 115,
+            "start_line": 102,
+            "end_line": 119,
             "start_column": 3,
             "end_column": 4
           },
@@ -358,8 +358,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 117,
-            "end_line": 182,
+            "start_line": 121,
+            "end_line": 186,
             "start_column": 3,
             "end_column": 4
           },
@@ -376,8 +376,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 184,
-            "end_line": 222,
+            "start_line": 188,
+            "end_line": 226,
             "start_column": 3,
             "end_column": 4
           },
@@ -405,16 +405,16 @@
                 ]
               },
               "source_location": {
-                "start_line": 224,
-                "end_line": 224,
+                "start_line": 228,
+                "end_line": 228,
                 "start_column": 21,
                 "end_column": 48
               }
             }
           ],
           "source_location": {
-            "start_line": 224,
-            "end_line": 230,
+            "start_line": 228,
+            "end_line": 234,
             "start_column": 3,
             "end_column": 4
           },
@@ -437,16 +437,16 @@
                 "resolved_name": "trifecta.stage.Appearance"
               },
               "source_location": {
-                "start_line": 232,
-                "end_line": 232,
+                "start_line": 236,
+                "end_line": 236,
                 "start_column": 23,
                 "end_column": 44
               }
             }
           ],
           "source_location": {
-            "start_line": 232,
-            "end_line": 237,
+            "start_line": 236,
+            "end_line": 241,
             "start_column": 3,
             "end_column": 4
           },
@@ -463,8 +463,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 239,
-            "end_line": 239,
+            "start_line": 243,
+            "end_line": 243,
             "start_column": 3,
             "end_column": 49
           },
@@ -486,16 +486,16 @@
                 "name": "string"
               },
               "source_location": {
-                "start_line": 241,
-                "end_line": 241,
+                "start_line": 245,
+                "end_line": 245,
                 "start_column": 24,
                 "end_column": 35
               }
             }
           ],
           "source_location": {
-            "start_line": 241,
-            "end_line": 241,
+            "start_line": 245,
+            "end_line": 245,
             "start_column": 3,
             "end_column": 123
           },
@@ -519,16 +519,16 @@
               },
               "default_value": "ActorPhase.ready",
               "source_location": {
-                "start_line": 243,
-                "end_line": 243,
+                "start_line": 247,
+                "end_line": 247,
                 "start_column": 22,
                 "end_column": 57
               }
             }
           ],
           "source_location": {
-            "start_line": 243,
-            "end_line": 247,
+            "start_line": 247,
+            "end_line": 251,
             "start_column": 3,
             "end_column": 4
           },
@@ -545,8 +545,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 249,
-            "end_line": 249,
+            "start_line": 253,
+            "end_line": 253,
             "start_column": 29,
             "end_column": 32
           },
@@ -562,8 +562,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 250,
-            "end_line": 250,
+            "start_line": 254,
+            "end_line": 254,
             "start_column": 15,
             "end_column": 21
           },
@@ -579,8 +579,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 251,
-            "end_line": 251,
+            "start_line": 255,
+            "end_line": 255,
             "start_column": 18,
             "end_column": 27
           },
@@ -597,8 +597,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 252,
-            "end_line": 252,
+            "start_line": 256,
+            "end_line": 256,
             "start_column": 29,
             "end_column": 43
           },
@@ -615,8 +615,8 @@
           ],
           "initializer": "new()",
           "source_location": {
-            "start_line": 254,
-            "end_line": 254,
+            "start_line": 258,
+            "end_line": 258,
             "start_column": 18,
             "end_column": 31
           },
@@ -634,8 +634,8 @@
           ],
           "initializer": "null",
           "source_location": {
-            "start_line": 255,
-            "end_line": 255,
+            "start_line": 259,
+            "end_line": 259,
             "start_column": 17,
             "end_column": 29
           },
@@ -651,8 +651,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 256,
-            "end_line": 256,
+            "start_line": 260,
+            "end_line": 260,
             "start_column": 15,
             "end_column": 24
           },
@@ -670,8 +670,8 @@
           ],
           "initializer": "ActorPhase.exit",
           "source_location": {
-            "start_line": 257,
-            "end_line": 257,
+            "start_line": 261,
+            "end_line": 261,
             "start_column": 22,
             "end_column": 46
           },
@@ -689,8 +689,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 258,
-            "end_line": 258,
+            "start_line": 262,
+            "end_line": 262,
             "start_column": 18,
             "end_column": 26
           },
@@ -709,8 +709,8 @@
           ],
           "initializer": "null",
           "source_location": {
-            "start_line": 259,
-            "end_line": 259,
+            "start_line": 263,
+            "end_line": 263,
             "start_column": 23,
             "end_column": 41
           },
@@ -733,8 +733,8 @@
           ],
           "initializer": "[]",
           "source_location": {
-            "start_line": 260,
-            "end_line": 260,
+            "start_line": 264,
+            "end_line": 264,
             "start_column": 23,
             "end_column": 35
           },
@@ -743,7 +743,7 @@
       ],
       "source_location": {
         "start_line": 15,
-        "end_line": 261,
+        "end_line": 265,
         "start_column": 1,
         "end_column": 2
       }
@@ -778,16 +778,16 @@
                 "resolved_name": "trifecta.stage.Actor"
               },
               "source_location": {
-                "start_line": 264,
-                "end_line": 264,
+                "start_line": 268,
+                "end_line": 268,
                 "start_column": 21,
                 "end_column": 32
               }
             }
           ],
           "source_location": {
-            "start_line": 264,
-            "end_line": 264,
+            "start_line": 268,
+            "end_line": 268,
             "start_column": 3,
             "end_column": 53
           },
@@ -804,8 +804,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 266,
-            "end_line": 266,
+            "start_line": 270,
+            "end_line": 270,
             "start_column": 3,
             "end_column": 57
           },
@@ -827,8 +827,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 268,
-            "end_line": 268,
+            "start_line": 272,
+            "end_line": 272,
             "start_column": 3,
             "end_column": 70
           },
@@ -851,20 +851,38 @@
                 "resolved_name": "trifecta.resource.ResourceInstance"
               },
               "source_location": {
-                "start_line": 270,
-                "end_line": 270,
+                "start_line": 274,
+                "end_line": 274,
                 "start_column": 21,
                 "end_column": 46
               }
             }
           ],
           "source_location": {
-            "start_line": 270,
-            "end_line": 270,
+            "start_line": 274,
+            "end_line": 274,
             "start_column": 3,
             "end_column": 75
           },
           "source_text": "public void Grant(ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [],
+          "source_location": {
+            "start_line": 276,
+            "end_line": 276,
+            "start_column": 3,
+            "end_column": 57
+          },
+          "source_text": "public string Identity()"
         },
         {
           "kind": "field",
@@ -877,8 +895,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 272,
-            "end_line": 272,
+            "start_line": 278,
+            "end_line": 278,
             "start_column": 17,
             "end_column": 23
           },
@@ -886,8 +904,8 @@
         }
       ],
       "source_location": {
-        "start_line": 263,
-        "end_line": 273,
+        "start_line": 267,
+        "end_line": 279,
         "start_column": 1,
         "end_column": 2
       }
@@ -915,8 +933,8 @@
                 "name": "int"
               },
               "source_location": {
-                "start_line": 276,
-                "end_line": 276,
+                "start_line": 282,
+                "end_line": 282,
                 "start_column": 16,
                 "end_column": 25
               }
@@ -928,16 +946,16 @@
                 "resolved_name": "trifecta.stage.SceneConfiguration"
               },
               "source_location": {
-                "start_line": 276,
-                "end_line": 276,
+                "start_line": 282,
+                "end_line": 282,
                 "start_column": 27,
                 "end_column": 59
               }
             }
           ],
           "source_location": {
-            "start_line": 276,
-            "end_line": 276,
+            "start_line": 282,
+            "end_line": 282,
             "start_column": 3,
             "end_column": 120
           },
@@ -956,8 +974,8 @@
                 "name": "int"
               },
               "source_location": {
-                "start_line": 277,
-                "end_line": 277,
+                "start_line": 283,
+                "end_line": 283,
                 "start_column": 16,
                 "end_column": 25
               }
@@ -969,8 +987,8 @@
                 "resolved_name": "trifecta.stage.SceneConfiguration"
               },
               "source_location": {
-                "start_line": 277,
-                "end_line": 277,
+                "start_line": 283,
+                "end_line": 283,
                 "start_column": 27,
                 "end_column": 59
               }
@@ -982,16 +1000,16 @@
                 "resolved_name": "trifecta.resource.IResourceQueueSet"
               },
               "source_location": {
-                "start_line": 277,
-                "end_line": 277,
+                "start_line": 283,
+                "end_line": 283,
                 "start_column": 61,
                 "end_column": 81
               }
             }
           ],
           "source_location": {
-            "start_line": 277,
-            "end_line": 286,
+            "start_line": 283,
+            "end_line": 292,
             "start_column": 3,
             "end_column": 4
           },
@@ -1009,8 +1027,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 288,
-            "end_line": 288,
+            "start_line": 294,
+            "end_line": 294,
             "start_column": 3,
             "end_column": 53
           },
@@ -1027,8 +1045,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 290,
-            "end_line": 290,
+            "start_line": 296,
+            "end_line": 296,
             "start_column": 3,
             "end_column": 73
           },
@@ -1045,8 +1063,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 292,
-            "end_line": 316,
+            "start_line": 298,
+            "end_line": 322,
             "start_column": 3,
             "end_column": 4
           },
@@ -1069,16 +1087,16 @@
                 "name": "TimeSpan"
               },
               "source_location": {
-                "start_line": 318,
-                "end_line": 318,
+                "start_line": 324,
+                "end_line": 324,
                 "start_column": 30,
                 "end_column": 47
               }
             }
           ],
           "source_location": {
-            "start_line": 318,
-            "end_line": 341,
+            "start_line": 324,
+            "end_line": 347,
             "start_column": 3,
             "end_column": 4
           },
@@ -1101,16 +1119,16 @@
                 "resolved_name": "trifecta.resource.ResourceInstance"
               },
               "source_location": {
-                "start_line": 343,
-                "end_line": 343,
+                "start_line": 349,
+                "end_line": 349,
                 "start_column": 21,
                 "end_column": 46
               }
             }
           ],
           "source_location": {
-            "start_line": 343,
-            "end_line": 346,
+            "start_line": 349,
+            "end_line": 352,
             "start_column": 3,
             "end_column": 4
           },
@@ -1119,38 +1137,6 @@
         {
           "kind": "method",
           "name": "Reset",
-          "return_type": {
-            "name": "void"
-          },
-          "modifiers": [
-            "public"
-          ],
-          "parameters": [
-            {
-              "name": "actor",
-              "type": {
-                "name": "Actor",
-                "resolved_name": "trifecta.stage.Actor"
-              },
-              "source_location": {
-                "start_line": 348,
-                "end_line": 348,
-                "start_column": 21,
-                "end_column": 32
-              }
-            }
-          ],
-          "source_location": {
-            "start_line": 348,
-            "end_line": 352,
-            "start_column": 3,
-            "end_column": 4
-          },
-          "source_text": "public void Reset(Actor actor)"
-        },
-        {
-          "kind": "method",
-          "name": "Remit",
           "return_type": {
             "name": "void"
           },
@@ -1174,7 +1160,39 @@
           ],
           "source_location": {
             "start_line": 354,
-            "end_line": 362,
+            "end_line": 358,
+            "start_column": 3,
+            "end_column": 4
+          },
+          "source_text": "public void Reset(Actor actor)"
+        },
+        {
+          "kind": "method",
+          "name": "Remit",
+          "return_type": {
+            "name": "void"
+          },
+          "modifiers": [
+            "public"
+          ],
+          "parameters": [
+            {
+              "name": "actor",
+              "type": {
+                "name": "Actor",
+                "resolved_name": "trifecta.stage.Actor"
+              },
+              "source_location": {
+                "start_line": 360,
+                "end_line": 360,
+                "start_column": 21,
+                "end_column": 32
+              }
+            }
+          ],
+          "source_location": {
+            "start_line": 360,
+            "end_line": 368,
             "start_column": 3,
             "end_column": 4
           },
@@ -1196,8 +1214,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 364,
-            "end_line": 364,
+            "start_line": 370,
+            "end_line": 370,
             "start_column": 3,
             "end_column": 80
           },
@@ -1214,8 +1232,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 366,
-            "end_line": 366,
+            "start_line": 372,
+            "end_line": 372,
             "start_column": 3,
             "end_column": 72
           },
@@ -1232,8 +1250,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 368,
-            "end_line": 377,
+            "start_line": 374,
+            "end_line": 383,
             "start_column": 3,
             "end_column": 4
           },
@@ -1250,8 +1268,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 379,
-            "end_line": 379,
+            "start_line": 385,
+            "end_line": 385,
             "start_column": 3,
             "end_column": 49
           },
@@ -1275,16 +1293,16 @@
                 "resolved_name": "trifecta.stage.SceneStatus"
               },
               "source_location": {
-                "start_line": 381,
-                "end_line": 381,
+                "start_line": 387,
+                "end_line": 387,
                 "start_column": 29,
                 "end_column": 42
               }
             }
           ],
           "source_location": {
-            "start_line": 381,
-            "end_line": 381,
+            "start_line": 387,
+            "end_line": 387,
             "start_column": 3,
             "end_column": 69
           },
@@ -1301,8 +1319,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 391,
-            "end_line": 391,
+            "start_line": 397,
+            "end_line": 397,
             "start_column": 29,
             "end_column": 32
           },
@@ -1318,8 +1336,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 392,
-            "end_line": 392,
+            "start_line": 398,
+            "end_line": 398,
             "start_column": 15,
             "end_column": 21
           },
@@ -1335,8 +1353,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 393,
-            "end_line": 393,
+            "start_line": 399,
+            "end_line": 399,
             "start_column": 18,
             "end_column": 27
           },
@@ -1354,8 +1372,8 @@
           ],
           "initializer": "new()",
           "source_location": {
-            "start_line": 394,
-            "end_line": 394,
+            "start_line": 400,
+            "end_line": 400,
             "start_column": 18,
             "end_column": 33
           },
@@ -1372,8 +1390,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 395,
-            "end_line": 395,
+            "start_line": 401,
+            "end_line": 401,
             "start_column": 30,
             "end_column": 44
           },
@@ -1396,8 +1414,8 @@
           ],
           "initializer": "[]",
           "source_location": {
-            "start_line": 396,
-            "end_line": 396,
+            "start_line": 402,
+            "end_line": 402,
             "start_column": 34,
             "end_column": 49
           },
@@ -1414,8 +1432,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 397,
-            "end_line": 397,
+            "start_line": 403,
+            "end_line": 403,
             "start_column": 23,
             "end_column": 30
           },
@@ -1423,8 +1441,8 @@
         }
       ],
       "source_location": {
-        "start_line": 275,
-        "end_line": 398,
+        "start_line": 281,
+        "end_line": 404,
         "start_column": 1,
         "end_column": 2
       }
@@ -1466,8 +1484,8 @@
             "singleton"
           ],
           "source_location": {
-            "start_line": 401,
-            "end_line": 401,
+            "start_line": 407,
+            "end_line": 407,
             "start_column": 26,
             "end_column": 43
           },
@@ -1490,8 +1508,8 @@
                 "resolved_name": "trifecta.stage.DirectorConfiguration"
               },
               "source_location": {
-                "start_line": 403,
-                "end_line": 403,
+                "start_line": 409,
+                "end_line": 409,
                 "start_column": 25,
                 "end_column": 60
               }
@@ -1518,16 +1536,16 @@
               },
               "default_value": "null",
               "source_location": {
-                "start_line": 403,
-                "end_line": 403,
+                "start_line": 409,
+                "end_line": 409,
                 "start_column": 62,
                 "end_column": 109
               }
             }
           ],
           "source_location": {
-            "start_line": 403,
-            "end_line": 422,
+            "start_line": 409,
+            "end_line": 428,
             "start_column": 3,
             "end_column": 4
           },
@@ -1544,8 +1562,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 424,
-            "end_line": 436,
+            "start_line": 430,
+            "end_line": 442,
             "start_column": 3,
             "end_column": 4
           },
@@ -1567,16 +1585,16 @@
                 "name": "bool"
               },
               "source_location": {
-                "start_line": 438,
-                "end_line": 438,
+                "start_line": 444,
+                "end_line": 444,
                 "start_column": 20,
                 "end_column": 31
               }
             }
           ],
           "source_location": {
-            "start_line": 438,
-            "end_line": 461,
+            "start_line": 444,
+            "end_line": 467,
             "start_column": 3,
             "end_column": 4
           },
@@ -1593,8 +1611,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 463,
-            "end_line": 473,
+            "start_line": 469,
+            "end_line": 479,
             "start_column": 3,
             "end_column": 4
           },
@@ -1616,16 +1634,16 @@
                 "name": "Temperature"
               },
               "source_location": {
-                "start_line": 475,
-                "end_line": 475,
+                "start_line": 481,
+                "end_line": 481,
                 "start_column": 30,
                 "end_column": 43
               }
             }
           ],
           "source_location": {
-            "start_line": 475,
-            "end_line": 483,
+            "start_line": 481,
+            "end_line": 489,
             "start_column": 3,
             "end_column": 4
           },
@@ -1647,16 +1665,16 @@
                 "name": "Pressure"
               },
               "source_location": {
-                "start_line": 485,
-                "end_line": 485,
+                "start_line": 491,
+                "end_line": 491,
                 "start_column": 30,
                 "end_column": 40
               }
             }
           ],
           "source_location": {
-            "start_line": 485,
-            "end_line": 493,
+            "start_line": 491,
+            "end_line": 499,
             "start_column": 3,
             "end_column": 4
           },
@@ -1678,8 +1696,8 @@
                 "name": "RoleId"
               },
               "source_location": {
-                "start_line": 495,
-                "end_line": 495,
+                "start_line": 501,
+                "end_line": 501,
                 "start_column": 25,
                 "end_column": 36
               }
@@ -1691,16 +1709,16 @@
                 "resolved_name": "trifecta.stage.ActorPhase"
               },
               "source_location": {
-                "start_line": 495,
-                "end_line": 495,
+                "start_line": 501,
+                "end_line": 501,
                 "start_column": 38,
                 "end_column": 61
               }
             }
           ],
           "source_location": {
-            "start_line": 495,
-            "end_line": 497,
+            "start_line": 501,
+            "end_line": 503,
             "start_column": 3,
             "end_column": 4
           },
@@ -1722,16 +1740,16 @@
                 "name": "RoleId"
               },
               "source_location": {
-                "start_line": 499,
-                "end_line": 499,
+                "start_line": 505,
+                "end_line": 505,
                 "start_column": 24,
                 "end_column": 35
               }
             }
           ],
           "source_location": {
-            "start_line": 499,
-            "end_line": 501,
+            "start_line": 505,
+            "end_line": 507,
             "start_column": 3,
             "end_column": 4
           },
@@ -1748,8 +1766,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 503,
-            "end_line": 529,
+            "start_line": 509,
+            "end_line": 535,
             "start_column": 3,
             "end_column": 4
           },
@@ -1766,8 +1784,8 @@
           ],
           "initializer": "false",
           "source_location": {
-            "start_line": 531,
-            "end_line": 531,
+            "start_line": 537,
+            "end_line": 537,
             "start_column": 16,
             "end_column": 32
           },
@@ -1784,8 +1802,8 @@
           ],
           "initializer": "false",
           "source_location": {
-            "start_line": 532,
-            "end_line": 532,
+            "start_line": 538,
+            "end_line": 538,
             "start_column": 16,
             "end_column": 29
           },
@@ -1802,8 +1820,8 @@
           ],
           "initializer": "false",
           "source_location": {
-            "start_line": 533,
-            "end_line": 533,
+            "start_line": 539,
+            "end_line": 539,
             "start_column": 16,
             "end_column": 33
           },
@@ -1821,8 +1839,8 @@
           ],
           "initializer": "null",
           "source_location": {
-            "start_line": 534,
-            "end_line": 534,
+            "start_line": 540,
+            "end_line": 540,
             "start_column": 17,
             "end_column": 29
           },
@@ -1839,8 +1857,8 @@
           ],
           "initializer": "new()",
           "source_location": {
-            "start_line": 535,
-            "end_line": 535,
+            "start_line": 541,
+            "end_line": 541,
             "start_column": 18,
             "end_column": 31
           },
@@ -1871,8 +1889,8 @@
           ],
           "initializer": "[]",
           "source_location": {
-            "start_line": 537,
-            "end_line": 537,
+            "start_line": 543,
+            "end_line": 543,
             "start_column": 43,
             "end_column": 53
           },
@@ -1891,8 +1909,8 @@
           ],
           "initializer": "null",
           "source_location": {
-            "start_line": 538,
-            "end_line": 538,
+            "start_line": 544,
+            "end_line": 544,
             "start_column": 26,
             "end_column": 43
           },
@@ -1910,8 +1928,8 @@
           ],
           "initializer": "null!",
           "source_location": {
-            "start_line": 539,
-            "end_line": 539,
+            "start_line": 545,
+            "end_line": 545,
             "start_column": 33,
             "end_column": 55
           },
@@ -1919,8 +1937,8 @@
         }
       ],
       "source_location": {
-        "start_line": 400,
-        "end_line": 540,
+        "start_line": 406,
+        "end_line": 546,
         "start_column": 1,
         "end_column": 2
       }
@@ -1949,8 +1967,8 @@
                 "resolved_name": "trifecta.stage.DirectorConfiguration"
               },
               "source_location": {
-                "start_line": 543,
-                "end_line": 543,
+                "start_line": 549,
+                "end_line": 549,
                 "start_column": 24,
                 "end_column": 59
               }
@@ -1962,16 +1980,16 @@
                 "resolved_name": "trifecta.stage.ICastManager"
               },
               "source_location": {
-                "start_line": 543,
-                "end_line": 543,
+                "start_line": 549,
+                "end_line": 549,
                 "start_column": 61,
                 "end_column": 81
               }
             }
           ],
           "source_location": {
-            "start_line": 543,
-            "end_line": 546,
+            "start_line": 549,
+            "end_line": 552,
             "start_column": 3,
             "end_column": 4
           },
@@ -1993,8 +2011,8 @@
                 "name": "Temperature"
               },
               "source_location": {
-                "start_line": 548,
-                "end_line": 548,
+                "start_line": 554,
+                "end_line": 554,
                 "start_column": 24,
                 "end_column": 37
               }
@@ -2005,16 +2023,16 @@
                 "name": "Pressure"
               },
               "source_location": {
-                "start_line": 548,
-                "end_line": 548,
+                "start_line": 554,
+                "end_line": 554,
                 "start_column": 39,
                 "end_column": 49
               }
             }
           ],
           "source_location": {
-            "start_line": 548,
-            "end_line": 560,
+            "start_line": 554,
+            "end_line": 566,
             "start_column": 3,
             "end_column": 4
           },
@@ -2031,8 +2049,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 562,
-            "end_line": 562,
+            "start_line": 568,
+            "end_line": 568,
             "start_column": 24,
             "end_column": 32
           },
@@ -2049,8 +2067,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 563,
-            "end_line": 563,
+            "start_line": 569,
+            "end_line": 569,
             "start_column": 33,
             "end_column": 47
           },
@@ -2058,8 +2076,8 @@
         }
       ],
       "source_location": {
-        "start_line": 542,
-        "end_line": 564,
+        "start_line": 548,
+        "end_line": 570,
         "start_column": 1,
         "end_column": 2
       }
@@ -2088,8 +2106,8 @@
                 "name": "RoleId"
               },
               "source_location": {
-                "start_line": 567,
-                "end_line": 567,
+                "start_line": 573,
+                "end_line": 573,
                 "start_column": 18,
                 "end_column": 29
               }
@@ -2101,16 +2119,16 @@
                 "resolved_name": "trifecta.stage.ActorPhase"
               },
               "source_location": {
-                "start_line": 567,
-                "end_line": 567,
+                "start_line": 573,
+                "end_line": 573,
                 "start_column": 31,
                 "end_column": 54
               }
             }
           ],
           "source_location": {
-            "start_line": 567,
-            "end_line": 567,
+            "start_line": 573,
+            "end_line": 573,
             "start_column": 3,
             "end_column": 56
           },
@@ -2130,16 +2148,16 @@
                 "name": "RoleId"
               },
               "source_location": {
-                "start_line": 568,
-                "end_line": 568,
+                "start_line": 574,
+                "end_line": 574,
                 "start_column": 17,
                 "end_column": 28
               }
             }
           ],
           "source_location": {
-            "start_line": 568,
-            "end_line": 568,
+            "start_line": 574,
+            "end_line": 574,
             "start_column": 3,
             "end_column": 30
           },
@@ -2147,8 +2165,8 @@
         }
       ],
       "source_location": {
-        "start_line": 566,
-        "end_line": 569,
+        "start_line": 572,
+        "end_line": 575,
         "start_column": 1,
         "end_column": 2
       }
@@ -2167,8 +2185,8 @@
           "kind": "enum_member",
           "name": "dark",
           "source_location": {
-            "start_line": 572,
-            "end_line": 572,
+            "start_line": 578,
+            "end_line": 578,
             "start_column": 3,
             "end_column": 7
           }
@@ -2177,8 +2195,8 @@
           "kind": "enum_member",
           "name": "working",
           "source_location": {
-            "start_line": 573,
-            "end_line": 573,
+            "start_line": 579,
+            "end_line": 579,
             "start_column": 3,
             "end_column": 10
           }
@@ -2187,8 +2205,8 @@
           "kind": "enum_member",
           "name": "underflow",
           "source_location": {
-            "start_line": 574,
-            "end_line": 574,
+            "start_line": 580,
+            "end_line": 580,
             "start_column": 3,
             "end_column": 12
           }
@@ -2197,8 +2215,8 @@
           "kind": "enum_member",
           "name": "completed",
           "source_location": {
-            "start_line": 575,
-            "end_line": 575,
+            "start_line": 581,
+            "end_line": 581,
             "start_column": 3,
             "end_column": 12
           }
@@ -2207,16 +2225,16 @@
           "kind": "enum_member",
           "name": "error",
           "source_location": {
-            "start_line": 576,
-            "end_line": 576,
+            "start_line": 582,
+            "end_line": 582,
             "start_column": 3,
             "end_column": 8
           }
         }
       ],
       "source_location": {
-        "start_line": 571,
-        "end_line": 577,
+        "start_line": 577,
+        "end_line": 583,
         "start_column": 1,
         "end_column": 2
       }
@@ -2235,8 +2253,8 @@
           "kind": "enum_member",
           "name": "ready",
           "source_location": {
-            "start_line": 580,
-            "end_line": 580,
+            "start_line": 586,
+            "end_line": 586,
             "start_column": 3,
             "end_column": 8
           }
@@ -2244,66 +2262,6 @@
         {
           "kind": "enum_member",
           "name": "queue_up",
-          "source_location": {
-            "start_line": 581,
-            "end_line": 581,
-            "start_column": 3,
-            "end_column": 11
-          }
-        },
-        {
-          "kind": "enum_member",
-          "name": "on_queue",
-          "source_location": {
-            "start_line": 582,
-            "end_line": 582,
-            "start_column": 3,
-            "end_column": 11
-          }
-        },
-        {
-          "kind": "enum_member",
-          "name": "work",
-          "source_location": {
-            "start_line": 583,
-            "end_line": 583,
-            "start_column": 3,
-            "end_column": 7
-          }
-        },
-        {
-          "kind": "enum_member",
-          "name": "suspension",
-          "source_location": {
-            "start_line": 584,
-            "end_line": 584,
-            "start_column": 3,
-            "end_column": 13
-          }
-        },
-        {
-          "kind": "enum_member",
-          "name": "stop_at_cost",
-          "source_location": {
-            "start_line": 585,
-            "end_line": 585,
-            "start_column": 3,
-            "end_column": 15
-          }
-        },
-        {
-          "kind": "enum_member",
-          "name": "stop_at_completion",
-          "source_location": {
-            "start_line": 586,
-            "end_line": 586,
-            "start_column": 3,
-            "end_column": 21
-          }
-        },
-        {
-          "kind": "enum_member",
-          "name": "stop_now",
           "source_location": {
             "start_line": 587,
             "end_line": 587,
@@ -2313,18 +2271,78 @@
         },
         {
           "kind": "enum_member",
-          "name": "exit",
+          "name": "on_queue",
           "source_location": {
             "start_line": 588,
             "end_line": 588,
+            "start_column": 3,
+            "end_column": 11
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "work",
+          "source_location": {
+            "start_line": 589,
+            "end_line": 589,
+            "start_column": 3,
+            "end_column": 7
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "suspension",
+          "source_location": {
+            "start_line": 590,
+            "end_line": 590,
+            "start_column": 3,
+            "end_column": 13
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "stop_at_cost",
+          "source_location": {
+            "start_line": 591,
+            "end_line": 591,
+            "start_column": 3,
+            "end_column": 15
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "stop_at_completion",
+          "source_location": {
+            "start_line": 592,
+            "end_line": 592,
+            "start_column": 3,
+            "end_column": 21
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "stop_now",
+          "source_location": {
+            "start_line": 593,
+            "end_line": 593,
+            "start_column": 3,
+            "end_column": 11
+          }
+        },
+        {
+          "kind": "enum_member",
+          "name": "exit",
+          "source_location": {
+            "start_line": 594,
+            "end_line": 594,
             "start_column": 3,
             "end_column": 7
           }
         }
       ],
       "source_location": {
-        "start_line": 579,
-        "end_line": 589,
+        "start_line": 585,
+        "end_line": 595,
         "start_column": 1,
         "end_column": 2
       }
@@ -2337,7 +2355,7 @@
       "message": "trifecta.stage.Actor read from src/trifecta/stage/Crew.cs.",
       "source_location": {
         "start_line": 15,
-        "end_line": 261,
+        "end_line": 265,
         "start_column": 1,
         "end_column": 2
       }
@@ -2347,8 +2365,8 @@
       "code": "type-source",
       "message": "trifecta.stage.Appearance read from src/trifecta/stage/Crew.cs.",
       "source_location": {
-        "start_line": 263,
-        "end_line": 273,
+        "start_line": 267,
+        "end_line": 279,
         "start_column": 1,
         "end_column": 2
       }
@@ -2358,8 +2376,8 @@
       "code": "type-source",
       "message": "trifecta.stage.Scene read from src/trifecta/stage/Crew.cs.",
       "source_location": {
-        "start_line": 275,
-        "end_line": 398,
+        "start_line": 281,
+        "end_line": 404,
         "start_column": 1,
         "end_column": 2
       }
@@ -2369,8 +2387,8 @@
       "code": "type-source",
       "message": "trifecta.stage.Director read from src/trifecta/stage/Crew.cs.",
       "source_location": {
-        "start_line": 400,
-        "end_line": 540,
+        "start_line": 406,
+        "end_line": 546,
         "start_column": 1,
         "end_column": 2
       }
@@ -2380,8 +2398,8 @@
       "code": "type-source",
       "message": "trifecta.stage.CastOptimizer read from src/trifecta/stage/Crew.cs.",
       "source_location": {
-        "start_line": 542,
-        "end_line": 564,
+        "start_line": 548,
+        "end_line": 570,
         "start_column": 1,
         "end_column": 2
       }
@@ -2391,8 +2409,8 @@
       "code": "type-source",
       "message": "trifecta.stage.ICastManager read from src/trifecta/stage/Crew.cs.",
       "source_location": {
-        "start_line": 566,
-        "end_line": 569,
+        "start_line": 572,
+        "end_line": 575,
         "start_column": 1,
         "end_column": 2
       }
@@ -2402,8 +2420,8 @@
       "code": "type-source",
       "message": "trifecta.stage.SceneStatus read from src/trifecta/stage/Crew.cs.",
       "source_location": {
-        "start_line": 571,
-        "end_line": 577,
+        "start_line": 577,
+        "end_line": 583,
         "start_column": 1,
         "end_column": 2
       }
@@ -2413,8 +2431,8 @@
       "code": "type-source",
       "message": "trifecta.stage.ActorPhase read from src/trifecta/stage/Crew.cs.",
       "source_location": {
-        "start_line": 579,
-        "end_line": 589,
+        "start_line": 585,
+        "end_line": 595,
         "start_column": 1,
         "end_column": 2
       }

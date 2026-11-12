@@ -20,6 +20,10 @@
     - void Register(ISensorDriver driver)
     - void Release(ISensorDriver driver)
     - void Start()
+    - void Stop()
+    - void Reset()
+    - void SensorUpdate(SensorId id, Temperature reading)
+    - void SensorUpdate(SensorId id, Pressure reading)
 
 <!--- @context class SensorInterpreter --->
 ## SensorInterpreter
@@ -40,6 +44,8 @@
     - void Release(IConditionAware aware)
     - void Paranoid(IConditionParanoid paranoid, Granularity granularity, TimeSpan normalization)
     - void Relax(IConditionParanoid relax)
+    - void SensorUpdate(SensorId id, Temperature reading)
+    - void SensorUpdate(SensorId id, Pressure reading)
 
 <!--- @type --->
 - struct Thresholds
@@ -72,6 +78,9 @@
   - operations
     - SensorId GetId()
     - SensorType GetSensorType()
+    - SensorMode GetSensorMode()
+    - void Start()
+    - void Stop()
 
 <!--- @type --->
 - interface IActiveSensorDriver<T> : ISensorDriver
@@ -110,6 +119,10 @@ namespace trifecta.environment {
     +Register(ISensorDriver driver) void
     +Release(ISensorDriver driver) void
     +Start() void
+    +Stop() void
+    +Reset() void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
   }
   class SensorInterpreter {
     singleton
@@ -124,6 +137,8 @@ namespace trifecta.environment {
     +Release(IConditionAware aware) void
     +Paranoid(IConditionParanoid paranoid, Granularity granularity, TimeSpan normalization) void
     +Relax(IConditionParanoid relax) void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
   }
   class Thresholds {
     <<struct>>
@@ -161,11 +176,18 @@ namespace trifecta.environment {
     +Register(ISensorDriver driver) void
     +Release(ISensorDriver driver) void
     +Start() void
+    +Stop() void
+    +Reset() void
+    +SensorUpdate(SensorId id, Temperature reading) void
+    +SensorUpdate(SensorId id, Pressure reading) void
   }
   class ISensorDriver {
     <<interface>>
     +GetId() SensorId
     +GetSensorType() SensorType
+    +GetSensorMode() SensorMode
+    +Start() void
+    +Stop() void
   }
   class IActiveSensorDriver~T~ {
     <<interface>>
@@ -177,4 +199,3 @@ SensorController *-- ISensorDriver : _actives
 SensorController *-- ISensorDriver : _passives
 IActiveSensorDriver~T~ ..|> ISensorDriver
 ```
-

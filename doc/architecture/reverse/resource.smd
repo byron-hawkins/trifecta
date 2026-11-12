@@ -32,16 +32,16 @@
                 "resolved_name": "trifecta.stage.ResourceType"
               },
               "source_location": {
-                "start_line": 15,
-                "end_line": 15,
+                "start_line": 16,
+                "end_line": 16,
                 "start_column": 24,
                 "end_column": 50
               }
             }
           ],
           "source_location": {
-            "start_line": 15,
-            "end_line": 21,
+            "start_line": 16,
+            "end_line": 22,
             "start_column": 3,
             "end_column": 4
           },
@@ -64,16 +64,16 @@
                 "resolved_name": "trifecta.resource.IResourceConsumer"
               },
               "source_location": {
-                "start_line": 23,
-                "end_line": 23,
+                "start_line": 24,
+                "end_line": 24,
                 "start_column": 20,
                 "end_column": 46
               }
             }
           ],
           "source_location": {
-            "start_line": 23,
-            "end_line": 41,
+            "start_line": 24,
+            "end_line": 42,
             "start_column": 3,
             "end_column": 4
           },
@@ -96,16 +96,16 @@
                 "resolved_name": "trifecta.resource.ResourceInstance"
               },
               "source_location": {
-                "start_line": 43,
-                "end_line": 43,
+                "start_line": 44,
+                "end_line": 44,
                 "start_column": 20,
                 "end_column": 45
               }
             }
           ],
           "source_location": {
-            "start_line": 43,
-            "end_line": 67,
+            "start_line": 44,
+            "end_line": 68,
             "start_column": 3,
             "end_column": 4
           },
@@ -122,8 +122,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 69,
-            "end_line": 82,
+            "start_line": 70,
+            "end_line": 83,
             "start_column": 3,
             "end_column": 4
           },
@@ -140,8 +140,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 84,
-            "end_line": 84,
+            "start_line": 85,
+            "end_line": 85,
             "start_column": 3,
             "end_column": 49
           },
@@ -157,8 +157,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 86,
-            "end_line": 86,
+            "start_line": 87,
+            "end_line": 87,
             "start_column": 18,
             "end_column": 27
           },
@@ -175,8 +175,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 87,
-            "end_line": 87,
+            "start_line": 88,
+            "end_line": 88,
             "start_column": 24,
             "end_column": 38
           },
@@ -193,8 +193,8 @@
           ],
           "initializer": "new()",
           "source_location": {
-            "start_line": 88,
-            "end_line": 88,
+            "start_line": 89,
+            "end_line": 89,
             "start_column": 16,
             "end_column": 29
           },
@@ -217,8 +217,8 @@
           ],
           "initializer": "new()",
           "source_location": {
-            "start_line": 89,
-            "end_line": 89,
+            "start_line": 90,
+            "end_line": 90,
             "start_column": 35,
             "end_column": 53
           },
@@ -241,8 +241,8 @@
           ],
           "initializer": "new()",
           "source_location": {
-            "start_line": 90,
-            "end_line": 90,
+            "start_line": 91,
+            "end_line": 91,
             "start_column": 36,
             "end_column": 54
           },
@@ -250,8 +250,8 @@
         }
       ],
       "source_location": {
-        "start_line": 14,
-        "end_line": 91,
+        "start_line": 15,
+        "end_line": 92,
         "start_column": 1,
         "end_column": 2
       }
@@ -288,8 +288,8 @@
             "singleton"
           ],
           "source_location": {
-            "start_line": 99,
-            "end_line": 99,
+            "start_line": 100,
+            "end_line": 100,
             "start_column": 34,
             "end_column": 51
           },
@@ -312,16 +312,16 @@
                 "resolved_name": "trifecta.stage.ResourceSet"
               },
               "source_location": {
-                "start_line": 101,
-                "end_line": 101,
+                "start_line": 102,
+                "end_line": 102,
                 "start_column": 25,
                 "end_column": 46
               }
             }
           ],
           "source_location": {
-            "start_line": 101,
-            "end_line": 108,
+            "start_line": 102,
+            "end_line": 109,
             "start_column": 3,
             "end_column": 4
           },
@@ -338,8 +338,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 110,
-            "end_line": 121,
+            "start_line": 111,
+            "end_line": 122,
             "start_column": 3,
             "end_column": 4
           },
@@ -356,8 +356,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 123,
-            "end_line": 142,
+            "start_line": 124,
+            "end_line": 143,
             "start_column": 3,
             "end_column": 4
           },
@@ -374,8 +374,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 144,
-            "end_line": 153,
+            "start_line": 145,
+            "end_line": 154,
             "start_column": 3,
             "end_column": 4
           },
@@ -392,8 +392,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 155,
-            "end_line": 166,
+            "start_line": 156,
+            "end_line": 167,
             "start_column": 3,
             "end_column": 4
           },
@@ -416,16 +416,16 @@
                 "resolved_name": "trifecta.resource.IResourceConsumer"
               },
               "source_location": {
-                "start_line": 168,
-                "end_line": 168,
+                "start_line": 169,
+                "end_line": 169,
                 "start_column": 25,
                 "end_column": 51
               }
             }
           ],
           "source_location": {
-            "start_line": 168,
-            "end_line": 175,
+            "start_line": 169,
+            "end_line": 176,
             "start_column": 3,
             "end_column": 4
           },
@@ -453,16 +453,16 @@
                 ]
               },
               "source_location": {
-                "start_line": 177,
-                "end_line": 177,
+                "start_line": 178,
+                "end_line": 178,
                 "start_column": 28,
                 "end_column": 65
               }
             }
           ],
           "source_location": {
-            "start_line": 177,
-            "end_line": 181,
+            "start_line": 178,
+            "end_line": 182,
             "start_column": 3,
             "end_column": 4
           },
@@ -479,8 +479,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 183,
-            "end_line": 198,
+            "start_line": 184,
+            "end_line": 199,
             "start_column": 3,
             "end_column": 4
           },
@@ -497,8 +497,8 @@
           ],
           "initializer": "false",
           "source_location": {
-            "start_line": 200,
-            "end_line": 200,
+            "start_line": 201,
+            "end_line": 201,
             "start_column": 16,
             "end_column": 32
           },
@@ -515,8 +515,8 @@
           ],
           "initializer": "false",
           "source_location": {
-            "start_line": 201,
-            "end_line": 201,
+            "start_line": 202,
+            "end_line": 202,
             "start_column": 16,
             "end_column": 29
           },
@@ -534,8 +534,8 @@
           ],
           "initializer": "null",
           "source_location": {
-            "start_line": 202,
-            "end_line": 202,
+            "start_line": 203,
+            "end_line": 203,
             "start_column": 17,
             "end_column": 29
           },
@@ -553,8 +553,8 @@
           ],
           "initializer": "new()",
           "source_location": {
-            "start_line": 203,
-            "end_line": 203,
+            "start_line": 204,
+            "end_line": 204,
             "start_column": 27,
             "end_column": 40
           },
@@ -571,8 +571,8 @@
           ],
           "initializer": "new()",
           "source_location": {
-            "start_line": 204,
-            "end_line": 204,
+            "start_line": 205,
+            "end_line": 205,
             "start_column": 16,
             "end_column": 34
           },
@@ -590,8 +590,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 206,
-            "end_line": 206,
+            "start_line": 207,
+            "end_line": 207,
             "start_column": 24,
             "end_column": 34
           },
@@ -617,8 +617,8 @@
           ],
           "initializer": "new()",
           "source_location": {
-            "start_line": 207,
-            "end_line": 207,
+            "start_line": 208,
+            "end_line": 208,
             "start_column": 51,
             "end_column": 66
           },
@@ -626,8 +626,8 @@
         }
       ],
       "source_location": {
-        "start_line": 98,
-        "end_line": 208,
+        "start_line": 99,
+        "end_line": 209,
         "start_column": 1,
         "end_column": 2
       }
@@ -656,8 +656,8 @@
                 "resolved_name": "trifecta.stage.ResourceType"
               },
               "source_location": {
-                "start_line": 211,
-                "end_line": 211,
+                "start_line": 212,
+                "end_line": 212,
                 "start_column": 27,
                 "end_column": 44
               }
@@ -670,16 +670,16 @@
               },
               "default_value": "null",
               "source_location": {
-                "start_line": 211,
-                "end_line": 211,
+                "start_line": 212,
+                "end_line": 212,
                 "start_column": 46,
                 "end_column": 75
               }
             }
           ],
           "source_location": {
-            "start_line": 211,
-            "end_line": 214,
+            "start_line": 212,
+            "end_line": 215,
             "start_column": 3,
             "end_column": 4
           },
@@ -696,8 +696,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 216,
-            "end_line": 216,
+            "start_line": 217,
+            "end_line": 217,
             "start_column": 3,
             "end_column": 49
           },
@@ -715,8 +715,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 218,
-            "end_line": 218,
+            "start_line": 219,
+            "end_line": 219,
             "start_column": 3,
             "end_column": 74
           },
@@ -733,8 +733,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 220,
-            "end_line": 220,
+            "start_line": 221,
+            "end_line": 221,
             "start_column": 3,
             "end_column": 57
           },
@@ -751,8 +751,8 @@
           ],
           "parameters": [],
           "source_location": {
-            "start_line": 221,
-            "end_line": 221,
+            "start_line": 222,
+            "end_line": 222,
             "start_column": 3,
             "end_column": 57
           },
@@ -769,8 +769,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 223,
-            "end_line": 223,
+            "start_line": 224,
+            "end_line": 224,
             "start_column": 24,
             "end_column": 29
           },
@@ -787,8 +787,8 @@
             "private"
           ],
           "source_location": {
-            "start_line": 224,
-            "end_line": 224,
+            "start_line": 225,
+            "end_line": 225,
             "start_column": 27,
             "end_column": 34
           },
@@ -796,8 +796,8 @@
         }
       ],
       "source_location": {
-        "start_line": 210,
-        "end_line": 225,
+        "start_line": 211,
+        "end_line": 226,
         "start_column": 1,
         "end_column": 2
       }
@@ -822,8 +822,8 @@
           "modifiers": [],
           "parameters": [],
           "source_location": {
-            "start_line": 240,
-            "end_line": 240,
+            "start_line": 242,
+            "end_line": 242,
             "start_column": 3,
             "end_column": 36
           },
@@ -831,8 +831,8 @@
         }
       ],
       "source_location": {
-        "start_line": 239,
-        "end_line": 241,
+        "start_line": 241,
+        "end_line": 243,
         "start_column": 1,
         "end_column": 2
       }
@@ -868,16 +868,16 @@
                 "name": "TimeSpan"
               },
               "source_location": {
-                "start_line": 244,
-                "end_line": 244,
+                "start_line": 246,
+                "end_line": 246,
                 "start_column": 29,
                 "end_column": 46
               }
             }
           ],
           "source_location": {
-            "start_line": 244,
-            "end_line": 244,
+            "start_line": 246,
+            "end_line": 246,
             "start_column": 3,
             "end_column": 48
           },
@@ -885,8 +885,8 @@
         }
       ],
       "source_location": {
-        "start_line": 243,
-        "end_line": 245,
+        "start_line": 245,
+        "end_line": 247,
         "start_column": 1,
         "end_column": 2
       }
@@ -910,8 +910,8 @@
           "modifiers": [],
           "parameters": [],
           "source_location": {
-            "start_line": 228,
-            "end_line": 228,
+            "start_line": 229,
+            "end_line": 229,
             "start_column": 3,
             "end_column": 18
           },
@@ -931,8 +931,8 @@
           "modifiers": [],
           "parameters": [],
           "source_location": {
-            "start_line": 229,
-            "end_line": 229,
+            "start_line": 230,
+            "end_line": 230,
             "start_column": 3,
             "end_column": 37
           },
@@ -953,25 +953,41 @@
                 "resolved_name": "trifecta.resource.ResourceInstance"
               },
               "source_location": {
-                "start_line": 230,
-                "end_line": 230,
+                "start_line": 231,
+                "end_line": 231,
                 "start_column": 14,
                 "end_column": 39
               }
             }
           ],
           "source_location": {
-            "start_line": 230,
-            "end_line": 230,
+            "start_line": 231,
+            "end_line": 231,
             "start_column": 3,
             "end_column": 41
           },
           "source_text": "void Grant(ResourceInstance resource)"
+        },
+        {
+          "kind": "method",
+          "name": "Identity",
+          "return_type": {
+            "name": "string"
+          },
+          "modifiers": [],
+          "parameters": [],
+          "source_location": {
+            "start_line": 232,
+            "end_line": 232,
+            "start_column": 3,
+            "end_column": 21
+          },
+          "source_text": "string Identity()"
         }
       ],
       "source_location": {
-        "start_line": 227,
-        "end_line": 231,
+        "start_line": 228,
+        "end_line": 233,
         "start_column": 1,
         "end_column": 2
       }
@@ -990,8 +1006,8 @@
           "kind": "enum_member",
           "name": "idle",
           "source_location": {
-            "start_line": 234,
-            "end_line": 234,
+            "start_line": 236,
+            "end_line": 236,
             "start_column": 3,
             "end_column": 7
           }
@@ -1000,8 +1016,8 @@
           "kind": "enum_member",
           "name": "working",
           "source_location": {
-            "start_line": 235,
-            "end_line": 235,
+            "start_line": 237,
+            "end_line": 237,
             "start_column": 3,
             "end_column": 10
           }
@@ -1010,16 +1026,16 @@
           "kind": "enum_member",
           "name": "error",
           "source_location": {
-            "start_line": 236,
-            "end_line": 236,
+            "start_line": 238,
+            "end_line": 238,
             "start_column": 3,
             "end_column": 8
           }
         }
       ],
       "source_location": {
-        "start_line": 233,
-        "end_line": 237,
+        "start_line": 235,
+        "end_line": 239,
         "start_column": 1,
         "end_column": 2
       }
@@ -1031,8 +1047,8 @@
       "code": "type-source",
       "message": "trifecta.resource.ResourceQueue read from src/trifecta/resource/Resources.cs.",
       "source_location": {
-        "start_line": 14,
-        "end_line": 91,
+        "start_line": 15,
+        "end_line": 92,
         "start_column": 1,
         "end_column": 2
       }
@@ -1042,8 +1058,8 @@
       "code": "type-source",
       "message": "trifecta.resource.ResourceQueueSet read from src/trifecta/resource/Resources.cs.",
       "source_location": {
-        "start_line": 98,
-        "end_line": 208,
+        "start_line": 99,
+        "end_line": 209,
         "start_column": 1,
         "end_column": 2
       }
@@ -1053,8 +1069,8 @@
       "code": "type-source",
       "message": "trifecta.resource.ResourceInstance read from src/trifecta/resource/Resources.cs.",
       "source_location": {
-        "start_line": 210,
-        "end_line": 225,
+        "start_line": 211,
+        "end_line": 226,
         "start_column": 1,
         "end_column": 2
       }
@@ -1064,8 +1080,8 @@
       "code": "type-source",
       "message": "trifecta.resource.IResourceDriver read from src/trifecta/resource/Resources.cs.",
       "source_location": {
-        "start_line": 239,
-        "end_line": 241,
+        "start_line": 241,
+        "end_line": 243,
         "start_column": 1,
         "end_column": 2
       }
@@ -1075,8 +1091,8 @@
       "code": "type-source",
       "message": "trifecta.resource.IPassiveResourceDriver read from src/trifecta/resource/Resources.cs.",
       "source_location": {
-        "start_line": 243,
-        "end_line": 245,
+        "start_line": 245,
+        "end_line": 247,
         "start_column": 1,
         "end_column": 2
       }
@@ -1086,8 +1102,8 @@
       "code": "type-source",
       "message": "trifecta.resource.IResourceConsumer read from src/trifecta/resource/Resources.cs.",
       "source_location": {
-        "start_line": 227,
-        "end_line": 231,
+        "start_line": 228,
+        "end_line": 233,
         "start_column": 1,
         "end_column": 2
       }
@@ -1097,8 +1113,8 @@
       "code": "type-source",
       "message": "trifecta.resource.ResourceDriverStatus read from src/trifecta/resource/Resources.cs.",
       "source_location": {
-        "start_line": 233,
-        "end_line": 237,
+        "start_line": 235,
+        "end_line": 239,
         "start_column": 1,
         "end_column": 2
       }
